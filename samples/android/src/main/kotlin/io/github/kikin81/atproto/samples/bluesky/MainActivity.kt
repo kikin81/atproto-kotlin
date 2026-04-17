@@ -25,10 +25,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import io.github.kikin81.atproto.app.bsky.feed.Post
+import io.github.kikin81.atproto.app.bsky.feed.PostReplyRef
+import io.github.kikin81.atproto.app.bsky.feed.PostView
+import io.github.kikin81.atproto.runtime.AtField
+import io.github.kikin81.atproto.runtime.AtUri
+import io.github.kikin81.atproto.runtime.decodeRecord
 import io.github.kikin81.atproto.samples.bluesky.ui.ComposeScreen
+import io.github.kikin81.atproto.samples.bluesky.ui.ComposeViewModel
 import io.github.kikin81.atproto.samples.bluesky.ui.FeedScreen
 import io.github.kikin81.atproto.samples.bluesky.ui.LoginScreen
+import io.github.kikin81.atproto.samples.bluesky.ui.ThreadScreen
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -101,22 +110,71 @@ private fun MainScreen(
             )
         }
         is MainUiState.LoggedIn -> {
-            var showCompose by remember { mutableStateOf(false) }
-            if (showCompose) {
-                ComposeScreen(
-                    onBack = { showCompose = false },
-                    onPosted = { showCompose = false },
-                )
-            } else {
-                FeedScreen(
+            // Shared ComposeViewModel across Feed / Thread / Compose so reply
+            // context + draft text survive round-trips (tap post → thread →
+            // tap reply → compose → post → thread refresh).
+            val composeViewModel: ComposeViewModel = hiltViewModel()
+            var screen by remember { mutableStateOf<LoggedInScreen>(LoggedInScreen.Feed) }
+
+            when (val s = screen) {
+                LoggedInScreen.Feed -> FeedScreen(
                     handle = current.handle,
                     currentDid = current.did,
                     onLogout = { viewModel.onEvent(MainEvent.Logout) },
-                    onCompose = { showCompose = true },
+                    onCompose = {
+                        composeViewModel.reset()
+                        screen = LoggedInScreen.Compose()
+                    },
+                    onPostTap = { uri -> screen = LoggedInScreen.Thread(uri) },
                 )
+                is LoggedInScreen.Thread -> ThreadScreen(
+                    rootUri = s.rootUri,
+                    currentDid = current.did,
+                    onBack = { screen = LoggedInScreen.Feed },
+                    onReply = { post ->
+                        composeViewModel.reset()
+                        composeViewModel.setReplyTo(post)
+                        screen = LoggedInScreen.Compose(replyTo = post)
+                    },
+                )
+                is LoggedInScreen.Compose -> {
+                    // Sync the VM's replyTo to the current nav state in case
+                    // the activity was recreated (VM survives, nav state
+                    // doesn't — re-hydrate from the sealed arg).
+                    LaunchedEffect(s.replyTo) {
+                        composeViewModel.setReplyTo(s.replyTo)
+                    }
+                    ComposeScreen(
+                        onBack = {
+                            screen = s.replyTo
+                                ?.let { LoggedInScreen.Thread(threadRootFor(it)) }
+                                ?: LoggedInScreen.Feed
+                        },
+                        onPosted = {
+                            // Route back to the thread on a successful reply so
+                            // the refetched thread shows the new post; otherwise
+                            // return to feed.
+                            screen = s.replyTo
+                                ?.let { LoggedInScreen.Thread(threadRootFor(it)) }
+                                ?: LoggedInScreen.Feed
+                        },
+                        viewModel = composeViewModel,
+                    )
+                }
             }
         }
     }
+}
+
+/**
+ * Returns the thread root URI for [target]. If [target] is itself a reply we
+ * decode its reply ref and jump straight to the thread root; otherwise the
+ * target post IS the thread root.
+ */
+private fun threadRootFor(target: PostView): AtUri {
+    val decoded = runCatching { target.record.decodeRecord<Post>() }.getOrNull()
+    val root = (decoded?.reply as? AtField.Defined<PostReplyRef>)?.value?.root?.uri
+    return root ?: target.uri
 }
 
 @Composable

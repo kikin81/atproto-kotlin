@@ -1,6 +1,7 @@
 package io.github.kikin81.atproto.samples.bluesky.ui
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -63,6 +64,7 @@ import io.github.kikin81.atproto.app.bsky.feed.FeedViewPostReasonUnion
 import io.github.kikin81.atproto.app.bsky.feed.Post
 import io.github.kikin81.atproto.app.bsky.feed.PostView
 import io.github.kikin81.atproto.app.bsky.feed.ReasonRepost
+import io.github.kikin81.atproto.runtime.AtUri
 import io.github.kikin81.atproto.runtime.Datetime
 import io.github.kikin81.atproto.runtime.decodeRecord
 import java.time.OffsetDateTime
@@ -76,6 +78,7 @@ fun FeedScreen(
     currentDid: String?,
     onLogout: () -> Unit,
     onCompose: () -> Unit,
+    onPostTap: (AtUri) -> Unit,
     viewModel: FeedViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsState()
@@ -138,6 +141,7 @@ fun FeedScreen(
                                 isOwnPost = entry.post.author.did.raw == currentDid,
                                 onLikeToggle = { viewModel.onEvent(FeedEvent.ToggleLike(entry.post)) },
                                 onDelete = { viewModel.onEvent(FeedEvent.DeletePost(entry.post)) },
+                                onTap = { onPostTap(entry.post.uri) },
                             )
                             HorizontalDivider()
                         }
@@ -154,6 +158,7 @@ private fun PostRow(
     isOwnPost: Boolean,
     onLikeToggle: () -> Unit,
     onDelete: () -> Unit,
+    onTap: () -> Unit,
 ) {
     val post = entry.post
     val record = runCatching { post.record.decodeRecord<Post>() }.getOrNull()
@@ -165,7 +170,12 @@ private fun PostRow(
     val isLiked = post.viewer?.like != null
     val likeCount = post.likeCount ?: 0
 
-    Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onTap)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+    ) {
         RepostHeader(entry.reason)
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
