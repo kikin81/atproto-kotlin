@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
@@ -35,7 +36,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -114,7 +118,20 @@ fun FeedScreen(
                     }
                 }
                 is FeedUiState.Loaded -> {
-                    LazyColumn(Modifier.fillMaxSize()) {
+                    val listState = rememberLazyListState()
+                    val shouldLoadMore by remember {
+                        derivedStateOf {
+                            val last = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+                            val total = listState.layoutInfo.totalItemsCount
+                            last != null && total > 0 && last >= total - 3
+                        }
+                    }
+                    LaunchedEffect(listState) {
+                        snapshotFlow { shouldLoadMore }.collect { near ->
+                            if (near) viewModel.onEvent(FeedEvent.LoadMore)
+                        }
+                    }
+                    LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
                         items(s.feed) { entry ->
                             PostRow(
                                 entry = entry,
@@ -123,11 +140,6 @@ fun FeedScreen(
                                 onDelete = { viewModel.onEvent(FeedEvent.DeletePost(entry.post)) },
                             )
                             HorizontalDivider()
-                        }
-                        item {
-                            LaunchedEffect(Unit) {
-                                viewModel.onEvent(FeedEvent.LoadMore)
-                            }
                         }
                     }
                 }

@@ -10,6 +10,7 @@ import io.github.kikin81.atproto.app.bsky.feed.GetTimelineRequest
 import io.github.kikin81.atproto.app.bsky.feed.Like
 import io.github.kikin81.atproto.app.bsky.feed.PostView
 import io.github.kikin81.atproto.app.bsky.feed.ViewerState
+import io.github.kikin81.atproto.app.bsky.feed.timelinePageFlow
 import io.github.kikin81.atproto.com.atproto.repo.CreateRecordRequest
 import io.github.kikin81.atproto.com.atproto.repo.DeleteRecordRequest
 import io.github.kikin81.atproto.com.atproto.repo.RepoService
@@ -23,12 +24,15 @@ import io.github.kikin81.atproto.runtime.RecordKey
 import io.github.kikin81.atproto.runtime.XrpcClient
 import io.github.kikin81.atproto.runtime.encodeRecord
 import io.github.kikin81.atproto.samples.bluesky.util.datetimeNow
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -60,9 +64,8 @@ class FeedViewModel @Inject constructor(
 
     private var client: XrpcClient? = null
     private var currentDid: String? = null
-    private var nextCursor: String? = null
-    private var loadingMore = false
-    private var endOfFeed = false
+    private var timelineJob: Job? = null
+    private var loadMoreSignal: Channel<Unit>? = null
 
     init {
         loadTimeline()
@@ -71,7 +74,7 @@ class FeedViewModel @Inject constructor(
     fun onEvent(event: FeedEvent) {
         when (event) {
             FeedEvent.LoadTimeline, FeedEvent.Retry -> loadTimeline()
-            FeedEvent.LoadMore -> loadMore()
+            FeedEvent.LoadMore -> loadMoreSignal?.trySend(Unit)
             is FeedEvent.ToggleLike -> toggleLike(event.post)
             is FeedEvent.DeletePost -> deletePost(event.post)
         }
@@ -82,46 +85,36 @@ class FeedViewModel @Inject constructor(
     }
 
     private fun loadTimeline() {
-        viewModelScope.launch {
+        timelineJob?.cancel()
+        loadMoreSignal?.close()
+        val signal = Channel<Unit>(Channel.CONFLATED)
+        loadMoreSignal = signal
+
+        timelineJob = viewModelScope.launch {
             _uiState.value = FeedUiState.Loading
-            nextCursor = null
-            endOfFeed = false
-            runCatching {
-                val c = oauth.createClient()
-                client = c
+            val c = runCatching {
+                val created = oauth.createClient()
+                client = created
                 currentDid = sessionStore.load()?.did
-                FeedService(c).getTimeline(GetTimelineRequest(limit = 25L))
-            }.onSuccess { response ->
-                nextCursor = response.cursor
-                endOfFeed = response.cursor == null
-                _uiState.value = FeedUiState.Loaded(response.feed)
-            }.onFailure { t ->
-                Log.e("FeedViewModel", "Failed to load timeline", t)
+                created
+            }.getOrElse { t ->
+                Log.e("FeedViewModel", "Failed to create client", t)
                 _uiState.value = FeedUiState.Error(t.message ?: t::class.simpleName.orEmpty())
+                return@launch
             }
-        }
-    }
 
-    private fun loadMore() {
-        if (loadingMore || endOfFeed) return
-        val c = client ?: return
-        val cursor = nextCursor ?: return
-
-        loadingMore = true
-        viewModelScope.launch {
-            runCatching {
-                FeedService(c).getTimeline(GetTimelineRequest(limit = 25L, cursor = cursor))
-            }.onSuccess { response ->
-                nextCursor = response.cursor
-                endOfFeed = response.cursor == null
-                val state = _uiState.value
-                if (state is FeedUiState.Loaded) {
-                    _uiState.value = state.copy(feed = state.feed + response.feed)
+            FeedService(c).timelinePageFlow(GetTimelineRequest(limit = 25L))
+                .catch { t ->
+                    Log.e("FeedViewModel", "Timeline flow failed", t)
+                    _uiState.value = FeedUiState.Error(t.message ?: t::class.simpleName.orEmpty())
                 }
-            }.onFailure { t ->
-                Log.e("FeedViewModel", "Failed to load more", t)
-            }
-            loadingMore = false
+                .collect { page ->
+                    val current = (_uiState.value as? FeedUiState.Loaded)?.feed.orEmpty()
+                    _uiState.value = FeedUiState.Loaded(current + page)
+                    // Gate the next page fetch on a LoadMore signal — upstream
+                    // Flow suspends until this collector block returns.
+                    signal.receive()
+                }
         }
     }
 
