@@ -80,11 +80,11 @@ skill that matches the current task.
 
 ### Requirement: Skills SHALL link to referenced library artifacts, not restate their source
 
-When a skill needs to show a file that lives elsewhere in the repo
-(e.g. the sample app's `FeedViewModel.kt`), the SKILL.md SHALL link
-to the file via its raw GitHub URL or its in-repo path rather than
-duplicating its contents inline. This keeps skills small and prevents
-content drift when the source file changes.
+Skills SHALL reference files that live elsewhere in the repository
+(e.g. the sample app's `FeedViewModel.kt`) by linking to the raw
+GitHub URL or in-repo path, and SHALL NOT duplicate those file
+contents inline. This keeps skills small and prevents drift when
+the underlying source file changes.
 
 #### Scenario: Skill references sample code by URL
 
