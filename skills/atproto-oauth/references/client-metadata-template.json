@@ -1,0 +1,14 @@
+{
+  "client_id": "https://your-app.example.com/oauth/client-metadata.json",
+  "application_type": "native",
+  "client_name": "Your App Name",
+  "client_uri": "https://your-app.example.com",
+  "tos_uri": "https://your-app.example.com/tos",
+  "policy_uri": "https://your-app.example.com/privacy",
+  "dpop_bound_access_tokens": true,
+  "grant_types": ["authorization_code", "refresh_token"],
+  "redirect_uris": ["com.example.yourapp:/oauth-redirect"],
+  "response_types": ["code"],
+  "scope": "atproto transition:generic",
+  "token_endpoint_auth_method": "none"
+}
