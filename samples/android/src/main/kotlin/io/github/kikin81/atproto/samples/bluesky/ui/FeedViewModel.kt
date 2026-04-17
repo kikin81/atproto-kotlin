@@ -41,6 +41,7 @@ sealed interface FeedUiState {
 sealed interface FeedEvent {
     data object LoadTimeline : FeedEvent
     data object Retry : FeedEvent
+    data object LoadMore : FeedEvent
     data class ToggleLike(val post: PostView) : FeedEvent
     data class DeletePost(val post: PostView) : FeedEvent
 }
@@ -59,6 +60,9 @@ class FeedViewModel @Inject constructor(
 
     private var client: XrpcClient? = null
     private var currentDid: String? = null
+    private var nextCursor: String? = null
+    private var loadingMore = false
+    private var endOfFeed = false
 
     init {
         loadTimeline()
@@ -67,6 +71,7 @@ class FeedViewModel @Inject constructor(
     fun onEvent(event: FeedEvent) {
         when (event) {
             FeedEvent.LoadTimeline, FeedEvent.Retry -> loadTimeline()
+            FeedEvent.LoadMore -> loadMore()
             is FeedEvent.ToggleLike -> toggleLike(event.post)
             is FeedEvent.DeletePost -> deletePost(event.post)
         }
@@ -79,17 +84,44 @@ class FeedViewModel @Inject constructor(
     private fun loadTimeline() {
         viewModelScope.launch {
             _uiState.value = FeedUiState.Loading
+            nextCursor = null
+            endOfFeed = false
             runCatching {
                 val c = oauth.createClient()
                 client = c
                 currentDid = sessionStore.load()?.did
-                FeedService(c).getTimeline(GetTimelineRequest(limit = 50L))
+                FeedService(c).getTimeline(GetTimelineRequest(limit = 25L))
             }.onSuccess { response ->
+                nextCursor = response.cursor
+                endOfFeed = response.cursor == null
                 _uiState.value = FeedUiState.Loaded(response.feed)
             }.onFailure { t ->
                 Log.e("FeedViewModel", "Failed to load timeline", t)
                 _uiState.value = FeedUiState.Error(t.message ?: t::class.simpleName.orEmpty())
             }
+        }
+    }
+
+    private fun loadMore() {
+        if (loadingMore || endOfFeed) return
+        val c = client ?: return
+        val cursor = nextCursor ?: return
+
+        loadingMore = true
+        viewModelScope.launch {
+            runCatching {
+                FeedService(c).getTimeline(GetTimelineRequest(limit = 25L, cursor = cursor))
+            }.onSuccess { response ->
+                nextCursor = response.cursor
+                endOfFeed = response.cursor == null
+                val state = _uiState.value
+                if (state is FeedUiState.Loaded) {
+                    _uiState.value = state.copy(feed = state.feed + response.feed)
+                }
+            }.onFailure { t ->
+                Log.e("FeedViewModel", "Failed to load more", t)
+            }
+            loadingMore = false
         }
     }
 
