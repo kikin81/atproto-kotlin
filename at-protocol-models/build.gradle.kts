@@ -9,6 +9,12 @@ plugins {
 // `:at-protocol-runtime/build.gradle.kts` for the rationale.
 val isMacHost = System.getProperty("os.name").lowercase().contains("mac")
 
+dokka {
+    dokkaSourceSets.configureEach {
+        includes.from("MODULE.md")
+    }
+}
+
 kotlin {
     jvmToolchain(17)
 

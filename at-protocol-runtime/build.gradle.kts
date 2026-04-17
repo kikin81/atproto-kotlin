@@ -14,6 +14,15 @@ plugins {
 // healthy on Linux — iOS consumers wait for a macOS-hosted release job.
 val isMacHost = System.getProperty("os.name").lowercase().contains("mac")
 
+// Attach the module-level MODULE.md to every Dokka source set so the
+// landing page and per-module pages include hand-written prose
+// alongside the generated symbol reference.
+dokka {
+    dokkaSourceSets.configureEach {
+        includes.from("MODULE.md")
+    }
+}
+
 kotlin {
     jvmToolchain(17)
 

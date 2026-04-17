@@ -17,6 +17,16 @@ dependencies {
     dokka(project(":at-protocol-oauth"))
 }
 
+// Attach a top-level MODULE.md to the aggregated multi-module Dokka
+// publication so the landing page at build/dokka/html/index.html
+// carries a project overview + quick-start snippet instead of just
+// three bare module links.
+dokka {
+    dokkaPublications.html {
+        includes.from("MODULE.md")
+    }
+}
+
 allprojects {
     group = "io.github.kikin81.atproto"
 }

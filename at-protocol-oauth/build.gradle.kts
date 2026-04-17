@@ -9,6 +9,12 @@ kotlin {
     jvmToolchain(17)
 }
 
+dokka {
+    dokkaSourceSets.configureEach {
+        includes.from("MODULE.md")
+    }
+}
+
 dependencies {
     implementation(project(":at-protocol-runtime"))
     implementation(libs.kotlinx.serialization.json)
