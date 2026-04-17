@@ -32,17 +32,17 @@
 
 ## 5. Sample app: infinite scroll
 
-- [ ] 5.1 Update `FeedViewModel` to use `timelinePageFlow()` instead of single `getTimeline()` call
-- [ ] 5.2 Accumulate items in the StateFlow as pages arrive
-- [ ] 5.3 Add a load-more trigger in `FeedScreen` when the user scrolls near the bottom of the `LazyColumn`
-- [ ] 5.4 Handle errors from the Flow with a retry mechanism
-- [ ] 5.5 Manual test: scroll through the feed on device, verify new pages load automatically
+- [x] 5.1 Update `FeedViewModel` to use `timelinePageFlow()` instead of single `getTimeline()` call
+- [x] 5.2 Accumulate items in the StateFlow as pages arrive
+- [x] 5.3 Add a load-more trigger in `FeedScreen` when the user scrolls near the bottom of the `LazyColumn`
+- [x] 5.4 Handle errors from the Flow with a retry mechanism
+- [x] 5.5 Manual test: scroll through the feed on device, verify new pages load automatically
 
 ## 6. Build verification
 
 - [x] 6.1 `./gradlew :at-protocol-runtime:jvmTest` passes
 - [x] 6.2 `./gradlew :at-protocol-generator:test` passes (golden files updated)
 - [x] 6.3 `./gradlew :at-protocol-models:compileKotlinJvm` succeeds (generated Flow extensions compile)
-- [ ] 6.4 `./gradlew :samples:android:assembleDebug` builds
+- [x] 6.4 `./gradlew :samples:android:assembleDebug` builds
 - [x] 6.5 `./gradlew spotlessCheck` passes
-- [ ] 6.6 `pre-commit run --all-files` passes
+- [x] 6.6 `pre-commit run --all-files` passes
