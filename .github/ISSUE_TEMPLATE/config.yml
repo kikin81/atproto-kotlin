@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question or usage help
+    url: https://github.com/kikin81/atproto-kotlin/discussions
+    about: For how-to questions and design discussion, open a Discussion instead of an issue.
+  - name: AT Protocol spec questions
+    url: https://atproto.com
+    about: Questions about the AT Protocol itself (not this SDK) belong upstream.
