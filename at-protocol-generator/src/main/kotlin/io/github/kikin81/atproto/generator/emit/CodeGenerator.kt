@@ -160,8 +160,13 @@ public class CodeGenerator(
         // delegates to the right runtime call with the generated serializers.
         // This replaces the v1 pattern where consumers had to hand-write
         // `XrpcClient.query/procedure` extension functions.
+        val perFileFlowExtensions = LinkedHashMap<FileKey, MutableList<com.squareup.kotlinpoet.FunSpec>>()
         for (emission in services) {
             addType(emission.fqName, emission.typeSpec)
+            if (emission.flowExtensions.isNotEmpty()) {
+                val key = FileKey(emission.fqName.pkg, emission.fqName.simpleName)
+                perFileFlowExtensions.getOrPut(key) { mutableListOf() }.addAll(emission.flowExtensions)
+            }
         }
 
         // Build FileSpecs deterministically. Merge type-only and alias-only
@@ -174,6 +179,7 @@ public class CodeGenerator(
             val fb = FileSpec.builder(fk.pkg, fk.fileName)
             for (t in perFile[fk].orEmpty()) fb.addType(t)
             for (a in perFileAliases[fk].orEmpty()) fb.addTypeAlias(a)
+            for (f in perFileFlowExtensions[fk].orEmpty()) fb.addFunction(f)
             files += fb.build()
         }
         return files

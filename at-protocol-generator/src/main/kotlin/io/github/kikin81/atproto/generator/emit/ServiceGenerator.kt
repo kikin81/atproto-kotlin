@@ -4,14 +4,18 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.ParameterSpec
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
+import io.github.kikin81.atproto.generator.ir.ArrayType
 import io.github.kikin81.atproto.generator.ir.ObjectType
 import io.github.kikin81.atproto.generator.ir.ParamsType
 import io.github.kikin81.atproto.generator.ir.ProcedureDef
 import io.github.kikin81.atproto.generator.ir.QueryDef
+import io.github.kikin81.atproto.generator.ir.StringType
 import io.github.kikin81.atproto.generator.ir.SubscriptionDef
 import io.github.kikin81.atproto.generator.naming.NameRole
 import io.github.kikin81.atproto.generator.resolved.DefKey
@@ -50,10 +54,10 @@ public class ServiceGenerator(
     private val symbols: SymbolTable,
 ) {
 
-    /** A service class to emit: FqName + the list of query/procedure defs it should contain. */
     public data class ServiceEmission(
         public val fqName: FqName,
         public val typeSpec: TypeSpec,
+        public val flowExtensions: List<FunSpec> = emptyList(),
     )
 
     /**
@@ -85,8 +89,10 @@ public class ServiceGenerator(
         for ((pkg, defs) in grouped.toSortedMap()) {
             val simpleName = "${pascalTerminal(pkg)}Service"
             val fqName = FqName(pkg, simpleName)
-            val typeSpec = buildServiceClass(fqName, defs.sortedWith(defKeyComparator))
-            emissions += ServiceEmission(fqName, typeSpec)
+            val sortedDefs = defs.sortedWith(defKeyComparator)
+            val typeSpec = buildServiceClass(fqName, sortedDefs)
+            val flowExts = sortedDefs.flatMap { buildFlowExtensions(it, fqName) }
+            emissions += ServiceEmission(fqName, typeSpec, flowExts)
         }
         return emissions
     }
@@ -324,10 +330,77 @@ public class ServiceGenerator(
         return if (last.isEmpty()) "" else last[0].uppercaseChar() + last.substring(1)
     }
 
+    private fun buildFlowExtensions(defKey: DefKey, serviceFqName: FqName): List<FunSpec> {
+        val def = symbols.get(defKey)
+        if (def !is QueryDef) return emptyList()
+        val params = def.parameters ?: return emptyList()
+        val outputSchema = def.output?.schema
+        if (outputSchema !is ObjectType) return emptyList()
+
+        val hasCursorParam = params.properties.any { (name, ft) -> name == "cursor" && ft is StringType }
+        val hasCursorResponse = outputSchema.properties.any { (name, ft) -> name == "cursor" && ft is StringType }
+        if (!hasCursorParam || !hasCursorResponse) return emptyList()
+
+        val listFields = outputSchema.properties.filter { (name, ft) -> name != "cursor" && ft is ArrayType }
+        if (listFields.size != 1) return emptyList()
+
+        val (itemsFieldName, itemsFieldType) = listFields.entries.single()
+        val itemsArrayType = itemsFieldType as ArrayType
+
+        val requestClass = plan.classes[defKey]?.firstOrNull { it.role == NameRole.Request } ?: return emptyList()
+        val responseClass = plan.classes[defKey]?.firstOrNull { it.role == NameRole.Response } ?: return emptyList()
+        val requestCn = ClassName(requestClass.fqName.pkg, requestClass.fqName.simpleName)
+        val responseCn = ClassName(responseClass.fqName.pkg, responseClass.fqName.simpleName)
+
+        val typeResolver = TypeResolver(plan)
+        val itemType = typeResolver.resolve(itemsArrayType.items, defKey.nsid, responseClass.fqName, itemsFieldName)
+
+        val methodName = defKey.nsid.raw.substringAfterLast('.')
+        val flowMethodName = methodName.removePrefix("get").replaceFirstChar { it.lowercase() } + "Flow"
+        val pageFlowMethodName = methodName.removePrefix("get").replaceFirstChar { it.lowercase() } + "PageFlow"
+
+        val serviceCn = ClassName(serviceFqName.pkg, serviceFqName.simpleName)
+        val flowType = FLOW.parameterizedBy(itemType)
+        val pageFlowType = FLOW.parameterizedBy(LIST.parameterizedBy(itemType))
+
+        val hasDefault = requestConstructorHasNoRequiredArgs(params)
+
+        val funs = mutableListOf<FunSpec>()
+
+        for ((name, returnType, paginateFn) in listOf(
+            Triple(flowMethodName, flowType, PAGINATE),
+            Triple(pageFlowMethodName, pageFlowType, PAGINATE_PAGES),
+        )) {
+            val fn = FunSpec.builder(name)
+                .addModifiers(KModifier.PUBLIC)
+                .receiver(serviceCn)
+                .returns(returnType)
+            def.description?.let { fn.addKdoc("%L", it.sanitizeForKdoc()) }
+
+            val param = ParameterSpec.builder("request", requestCn)
+            if (hasDefault) param.defaultValue("%T()", requestCn)
+            fn.addParameter(param.build())
+
+            fn.addCode(
+                "return %M(\n    fetch = { cursor -> %L(request.copy(cursor = cursor)) },\n    getCursor = { it.cursor },\n    getItems = { it.%L },\n)\n",
+                paginateFn,
+                methodName,
+                itemsFieldName,
+            )
+            funs += fn.build()
+        }
+
+        return funs
+    }
+
     private companion object {
         val UNIT_CLASS_NAME = ClassName("kotlin", "Unit")
         val NO_XRPC_PARAMS = ClassName(RUNTIME_PKG, "NoXrpcParams")
         val UNIT_RESPONSE_SERIALIZER = ClassName(RUNTIME_PKG, "UnitResponseSerializer")
+        val FLOW = ClassName("kotlinx.coroutines.flow", "Flow")
+        val LIST = ClassName("kotlin.collections", "List")
+        val PAGINATE = MemberName(RUNTIME_PKG, "paginate")
+        val PAGINATE_PAGES = MemberName(RUNTIME_PKG, "paginatePages")
 
         val defKeyComparator: Comparator<DefKey> = compareBy({ it.nsid.raw }, { it.name })
     }
