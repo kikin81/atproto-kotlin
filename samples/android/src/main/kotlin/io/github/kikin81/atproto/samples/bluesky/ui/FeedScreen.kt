@@ -15,9 +15,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -49,7 +54,9 @@ import java.time.format.DateTimeParseException
 @Composable
 fun FeedScreen(
     handle: String,
+    currentDid: String?,
     onLogout: () -> Unit,
+    onCompose: () -> Unit,
     viewModel: FeedViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsState()
@@ -64,6 +71,11 @@ fun FeedScreen(
                     }
                 },
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = onCompose) {
+                Icon(Icons.Filled.Add, contentDescription = "New post")
+            }
         },
     ) { padding ->
         Box(modifier = Modifier.padding(padding).fillMaxSize()) {
@@ -89,7 +101,12 @@ fun FeedScreen(
                 is FeedUiState.Loaded -> {
                     LazyColumn(Modifier.fillMaxSize()) {
                         items(s.feed) { entry ->
-                            PostRow(entry.post)
+                            PostRow(
+                                post = entry.post,
+                                isOwnPost = entry.post.author.did.raw == currentDid,
+                                onLikeToggle = { viewModel.onEvent(FeedEvent.ToggleLike(entry.post)) },
+                                onDelete = { viewModel.onEvent(FeedEvent.DeletePost(entry.post)) },
+                            )
                             HorizontalDivider()
                         }
                     }
@@ -100,11 +117,18 @@ fun FeedScreen(
 }
 
 @Composable
-private fun PostRow(post: PostView) {
+private fun PostRow(
+    post: PostView,
+    isOwnPost: Boolean,
+    onLikeToggle: () -> Unit,
+    onDelete: () -> Unit,
+) {
     val record = runCatching { post.record.decodeRecord<Post>() }.getOrNull()
     val text = record?.text.orEmpty()
     val createdAt = record?.createdAt ?: post.indexedAt
     val thumbUrl = extractFirstImageThumb(post)
+    val isLiked = post.viewer?.like != null
+    val likeCount = post.likeCount ?: 0
 
     Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -132,6 +156,35 @@ private fun PostRow(post: PostView) {
                 modifier = Modifier.fillMaxWidth().height(192.dp).clip(RoundedCornerShape(8.dp)),
                 contentScale = ContentScale.Crop,
             )
+        }
+        Spacer(Modifier.height(4.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            IconButton(onClick = onLikeToggle, modifier = Modifier.size(36.dp)) {
+                Icon(
+                    imageVector = if (isLiked) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                    contentDescription = if (isLiked) "Unlike" else "Like",
+                    tint = if (isLiked) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(20.dp),
+                )
+            }
+            if (likeCount > 0) {
+                Text(
+                    "$likeCount",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            if (isOwnPost) {
+                Spacer(Modifier.weight(1f))
+                IconButton(onClick = onDelete, modifier = Modifier.size(36.dp)) {
+                    Icon(
+                        Icons.Filled.Delete,
+                        contentDescription = "Delete post",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(20.dp),
+                    )
+                }
+            }
         }
     }
 }

@@ -20,9 +20,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import dagger.hilt.android.AndroidEntryPoint
+import io.github.kikin81.atproto.samples.bluesky.ui.ComposeScreen
 import io.github.kikin81.atproto.samples.bluesky.ui.FeedScreen
 import io.github.kikin81.atproto.samples.bluesky.ui.LoginScreen
 
@@ -97,10 +101,20 @@ private fun MainScreen(
             )
         }
         is MainUiState.LoggedIn -> {
-            FeedScreen(
-                handle = current.handle,
-                onLogout = { viewModel.onEvent(MainEvent.Logout) },
-            )
+            var showCompose by remember { mutableStateOf(false) }
+            if (showCompose) {
+                ComposeScreen(
+                    onBack = { showCompose = false },
+                    onPosted = { showCompose = false },
+                )
+            } else {
+                FeedScreen(
+                    handle = current.handle,
+                    currentDid = current.did,
+                    onLogout = { viewModel.onEvent(MainEvent.Logout) },
+                    onCompose = { showCompose = true },
+                )
+            }
         }
     }
 }

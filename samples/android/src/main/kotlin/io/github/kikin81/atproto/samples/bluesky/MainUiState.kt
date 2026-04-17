@@ -9,7 +9,7 @@ sealed interface MainUiState {
         val error: String? = null,
         val busy: Boolean = false,
     ) : MainUiState
-    data class LoggedIn(val handle: String) : MainUiState
+    data class LoggedIn(val handle: String, val did: String? = null) : MainUiState
 }
 
 sealed interface MainEvent {

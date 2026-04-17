@@ -32,7 +32,7 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             val existing = sessionStore.load()
             _uiState.value = if (existing != null) {
-                MainUiState.LoggedIn(existing.handle)
+                MainUiState.LoggedIn(existing.handle, existing.did)
             } else {
                 MainUiState.LoggedOut()
             }
@@ -80,7 +80,7 @@ class MainViewModel @Inject constructor(
                     val session = sessionStore.load()
                     if (session != null) {
                         Log.d(TAG, "Session loaded: ${session.handle}")
-                        _uiState.value = MainUiState.LoggedIn(session.handle)
+                        _uiState.value = MainUiState.LoggedIn(session.handle, session.did)
                     } else {
                         Log.e(TAG, "Session not found after successful login")
                         _uiState.value = MainUiState.LoggedOut(error = "Session not found after login")
