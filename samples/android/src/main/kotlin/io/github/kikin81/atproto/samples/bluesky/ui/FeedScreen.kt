@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -100,51 +101,62 @@ fun FeedScreen(
             }
         },
     ) { padding ->
-        Box(modifier = Modifier.padding(padding).fillMaxSize()) {
-            when (val s = state) {
-                FeedUiState.Loading -> {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
+        // Per edge-to-edge guidance: don't apply innerPadding to the parent
+        // Box (would clip the list from scrolling under the system bars).
+        // Lists use contentPadding; Loading/Error centered states apply
+        // padding themselves so they sit within the safe area.
+        when (val s = state) {
+            FeedUiState.Loading -> {
+                Box(
+                    Modifier.fillMaxSize().padding(padding),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+            is FeedUiState.Error -> {
+                Column(
+                    Modifier.fillMaxSize().padding(padding).padding(24.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text("Failed to load timeline", style = MaterialTheme.typography.titleMedium)
+                    Spacer(Modifier.height(8.dp))
+                    Text(s.message, style = MaterialTheme.typography.bodySmall)
+                    Spacer(Modifier.height(16.dp))
+                    Button(onClick = { viewModel.onEvent(FeedEvent.Retry) }) { Text("Retry") }
+                }
+            }
+            is FeedUiState.Loaded -> {
+                val listState = rememberLazyListState()
+                val shouldLoadMore by remember {
+                    derivedStateOf {
+                        val last = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+                        val total = listState.layoutInfo.totalItemsCount
+                        last != null && total > 0 && last >= total - 3
                     }
                 }
-                is FeedUiState.Error -> {
-                    Column(
-                        Modifier.fillMaxSize().padding(24.dp),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Text("Failed to load timeline", style = MaterialTheme.typography.titleMedium)
-                        Spacer(Modifier.height(8.dp))
-                        Text(s.message, style = MaterialTheme.typography.bodySmall)
-                        Spacer(Modifier.height(16.dp))
-                        Button(onClick = { viewModel.onEvent(FeedEvent.Retry) }) { Text("Retry") }
+                LaunchedEffect(listState) {
+                    snapshotFlow { shouldLoadMore }.collect { near ->
+                        if (near) viewModel.onEvent(FeedEvent.LoadMore)
                     }
                 }
-                is FeedUiState.Loaded -> {
-                    val listState = rememberLazyListState()
-                    val shouldLoadMore by remember {
-                        derivedStateOf {
-                            val last = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
-                            val total = listState.layoutInfo.totalItemsCount
-                            last != null && total > 0 && last >= total - 3
-                        }
-                    }
-                    LaunchedEffect(listState) {
-                        snapshotFlow { shouldLoadMore }.collect { near ->
-                            if (near) viewModel.onEvent(FeedEvent.LoadMore)
-                        }
-                    }
-                    LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
-                        items(s.feed) { entry ->
-                            PostRow(
-                                entry = entry,
-                                isOwnPost = entry.post.author.did.raw == currentDid,
-                                onLikeToggle = { viewModel.onEvent(FeedEvent.ToggleLike(entry.post)) },
-                                onDelete = { viewModel.onEvent(FeedEvent.DeletePost(entry.post)) },
-                                onTap = { onPostTap(entry.post.uri) },
-                            )
-                            HorizontalDivider()
-                        }
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .consumeWindowInsets(padding),
+                    contentPadding = padding,
+                ) {
+                    items(s.feed) { entry ->
+                        PostRow(
+                            entry = entry,
+                            isOwnPost = entry.post.author.did.raw == currentDid,
+                            onLikeToggle = { viewModel.onEvent(FeedEvent.ToggleLike(entry.post)) },
+                            onDelete = { viewModel.onEvent(FeedEvent.DeletePost(entry.post)) },
+                            onTap = { onPostTap(entry.post.uri) },
+                        )
+                        HorizontalDivider()
                     }
                 }
             }

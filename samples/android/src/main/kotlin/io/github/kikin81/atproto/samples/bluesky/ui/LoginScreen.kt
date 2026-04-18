@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -32,7 +33,14 @@ fun LoginScreen(
     var handle by remember { mutableStateOf("") }
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(24.dp),
+        // safeDrawingPadding includes system bars + IME, so the handle
+        // input stays above the keyboard when focused and above the
+        // navigation bar when idle. No Scaffold here — this screen is
+        // a centered single-column layout.
+        modifier = Modifier
+            .fillMaxSize()
+            .safeDrawingPadding()
+            .padding(24.dp),
         verticalArrangement = Arrangement.Center,
     ) {
         Text(

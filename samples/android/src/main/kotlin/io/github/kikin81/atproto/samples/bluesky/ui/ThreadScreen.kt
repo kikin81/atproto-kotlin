@@ -4,8 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -72,43 +74,49 @@ fun ThreadScreen(
             )
         },
     ) { padding ->
-        Box(modifier = Modifier.padding(padding).fillMaxSize()) {
-            when (val s = state) {
-                ThreadUiState.Loading -> {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
-                    }
+        // innerPadding is pushed into the LazyColumn's contentPadding so the
+        // thread scrolls behind the system bars; centered Loading / Error /
+        // Unavailable states apply padding themselves to sit within the
+        // safe area.
+        when (val s = state) {
+            ThreadUiState.Loading -> {
+                Box(
+                    Modifier.fillMaxSize().padding(padding),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    CircularProgressIndicator()
                 }
-                is ThreadUiState.Error -> {
-                    Column(
-                        Modifier.fillMaxSize().padding(24.dp),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Text("Failed to load thread", style = MaterialTheme.typography.titleMedium)
-                        Spacer(Modifier.height(8.dp))
-                        Text(s.message, style = MaterialTheme.typography.bodySmall)
-                        Spacer(Modifier.height(16.dp))
-                        Button(onClick = { viewModel.onEvent(ThreadEvent.Retry) }) { Text("Retry") }
-                    }
-                }
-                is ThreadUiState.Unavailable -> {
-                    Column(
-                        Modifier.fillMaxSize().padding(24.dp),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Text(s.message, style = MaterialTheme.typography.titleMedium)
-                        Spacer(Modifier.height(16.dp))
-                        Button(onClick = onBack) { Text("Back") }
-                    }
-                }
-                is ThreadUiState.Loaded -> LoadedThread(
-                    state = s,
-                    currentDid = currentDid,
-                    onReply = onReply,
-                )
             }
+            is ThreadUiState.Error -> {
+                Column(
+                    Modifier.fillMaxSize().padding(padding).padding(24.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text("Failed to load thread", style = MaterialTheme.typography.titleMedium)
+                    Spacer(Modifier.height(8.dp))
+                    Text(s.message, style = MaterialTheme.typography.bodySmall)
+                    Spacer(Modifier.height(16.dp))
+                    Button(onClick = { viewModel.onEvent(ThreadEvent.Retry) }) { Text("Retry") }
+                }
+            }
+            is ThreadUiState.Unavailable -> {
+                Column(
+                    Modifier.fillMaxSize().padding(padding).padding(24.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text(s.message, style = MaterialTheme.typography.titleMedium)
+                    Spacer(Modifier.height(16.dp))
+                    Button(onClick = onBack) { Text("Back") }
+                }
+            }
+            is ThreadUiState.Loaded -> LoadedThread(
+                state = s,
+                currentDid = currentDid,
+                onReply = onReply,
+                contentPadding = padding,
+            )
         }
     }
 }
@@ -118,8 +126,14 @@ private fun LoadedThread(
     state: ThreadUiState.Loaded,
     currentDid: String?,
     onReply: (PostView) -> Unit,
+    contentPadding: PaddingValues,
 ) {
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .consumeWindowInsets(contentPadding),
+        contentPadding = contentPadding,
+    ) {
         if (state.ancestorsTruncated) {
             item { ContextUnavailableRow() }
         }
