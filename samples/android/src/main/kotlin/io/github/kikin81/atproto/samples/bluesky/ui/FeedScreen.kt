@@ -60,11 +60,14 @@ import io.github.kikin81.atproto.app.bsky.embed.RecordViewRecord
 import io.github.kikin81.atproto.app.bsky.embed.RecordViewRecordEmbedsUnion
 import io.github.kikin81.atproto.app.bsky.embed.RecordViewRecordUnion
 import io.github.kikin81.atproto.app.bsky.embed.RecordWithMediaView
+import io.github.kikin81.atproto.app.bsky.feed.BlockedPost
 import io.github.kikin81.atproto.app.bsky.feed.FeedViewPost
 import io.github.kikin81.atproto.app.bsky.feed.FeedViewPostReasonUnion
+import io.github.kikin81.atproto.app.bsky.feed.NotFoundPost
 import io.github.kikin81.atproto.app.bsky.feed.Post
 import io.github.kikin81.atproto.app.bsky.feed.PostView
 import io.github.kikin81.atproto.app.bsky.feed.ReasonRepost
+import io.github.kikin81.atproto.app.bsky.feed.ReplyRefParentUnion
 import io.github.kikin81.atproto.runtime.AtUri
 import io.github.kikin81.atproto.runtime.Datetime
 import io.github.kikin81.atproto.runtime.decodeRecord
@@ -154,7 +157,7 @@ fun FeedScreen(
                             isOwnPost = entry.post.author.did.raw == currentDid,
                             onLikeToggle = { viewModel.onEvent(FeedEvent.ToggleLike(entry.post)) },
                             onDelete = { viewModel.onEvent(FeedEvent.DeletePost(entry.post)) },
-                            onTap = { onPostTap(entry.post.uri) },
+                            onOpenThread = onPostTap,
                         )
                         HorizontalDivider()
                     }
@@ -170,7 +173,7 @@ private fun PostRow(
     isOwnPost: Boolean,
     onLikeToggle: () -> Unit,
     onDelete: () -> Unit,
-    onTap: () -> Unit,
+    onOpenThread: (AtUri) -> Unit,
 ) {
     val post = entry.post
     val record = runCatching { post.record.decodeRecord<Post>() }.getOrNull()
@@ -179,16 +182,18 @@ private fun PostRow(
     val thumbUrl = extractFirstImageThumb(post)
     val quotedRecord = extractQuotedRecord(post)
     val quotedPlaceholder = if (quotedRecord == null) extractQuotedPlaceholder(post) else null
+    val replyParent = extractReplyParent(entry)
     val isLiked = post.viewer?.like != null
     val likeCount = post.likeCount ?: 0
 
     Column(
         Modifier
             .fillMaxWidth()
-            .clickable(onClick = onTap)
+            .clickable { onOpenThread(post.uri) }
             .padding(horizontal = 16.dp, vertical = 12.dp),
     ) {
         RepostHeader(entry.reason)
+        ParentContextRow(replyParent, onOpenThread)
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 "@${post.author.handle.raw}",
@@ -360,4 +365,78 @@ internal fun formatDatetime(datetime: Datetime): String = try {
     OffsetDateTime.parse(datetime.raw).format(datetimeFormatter)
 } catch (e: DateTimeParseException) {
     datetime.raw
+}
+
+/**
+ * Pre-folded parent-post context extracted from `FeedViewPost.reply.parent`.
+ * Renders as a compact row above the reply in the feed.
+ */
+internal sealed interface ReplyParentInfo {
+    /** Real parent post — tappable, carries author + excerpt for inline rendering. */
+    data class Post(val view: PostView) : ReplyParentInfo
+
+    /** Non-happy parent arm (deleted / blocked / unknown). Not tappable. */
+    data class Unavailable(val message: String) : ReplyParentInfo
+}
+
+/**
+ * Returns parent-context info for a reply entry, or null for top-level posts.
+ * The AppView pre-denormalizes the parent onto every reply entry in
+ * `getTimeline` so no extra XRPC call is needed.
+ */
+internal fun extractReplyParent(entry: FeedViewPost): ReplyParentInfo? {
+    val ref = entry.reply ?: return null
+    return when (ref.parent) {
+        is PostView -> ReplyParentInfo.Post(ref.parent as PostView)
+        is NotFoundPost -> ReplyParentInfo.Unavailable("Replying to [deleted post]")
+        is BlockedPost -> ReplyParentInfo.Unavailable("Replying to [blocked account]")
+        is ReplyRefParentUnion.Unknown -> ReplyParentInfo.Unavailable("Replying to [unavailable]")
+        else -> ReplyParentInfo.Unavailable("Replying to [unavailable]")
+    }
+}
+
+@Composable
+private fun ParentContextRow(
+    info: ReplyParentInfo?,
+    onOpenThread: (AtUri) -> Unit,
+) {
+    info ?: return
+    when (info) {
+        is ReplyParentInfo.Post -> {
+            val parent = info.view
+            val parentRecord = runCatching { parent.record.decodeRecord<Post>() }.getOrNull()
+            val excerpt = parentRecord?.text.orEmpty()
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onOpenThread(parent.uri) }
+                    .padding(start = 8.dp, bottom = 6.dp),
+            ) {
+                Text(
+                    "Replying to @${parent.author.handle.raw}",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontWeight = FontWeight.Bold,
+                )
+                if (excerpt.isNotBlank()) {
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        excerpt,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 2,
+                    )
+                }
+            }
+        }
+        is ReplyParentInfo.Unavailable -> {
+            Text(
+                info.message,
+                style = MaterialTheme.typography.labelSmall,
+                fontStyle = FontStyle.Italic,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(bottom = 6.dp),
+            )
+        }
+    }
 }

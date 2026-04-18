@@ -15,6 +15,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 /**
  * Feed-side integration tests. These don't touch Android UI — they drive the
@@ -176,6 +177,94 @@ class FeedScreenTest {
 
         assertNull(extractQuotedRecord(post))
         assertEquals("Quoted post unavailable", extractQuotedPlaceholder(post))
+    }
+
+    @Test
+    fun replyWithKnownParentYieldsPostInfo() = runTest {
+        val response = json.decodeFromString(
+            GetTimelineResponse.serializer(),
+            TIMELINE_REPLY_WITH_KNOWN_PARENT,
+        )
+        val entry = response.feed.single()
+
+        val info = assertNotNull(extractReplyParent(entry))
+        val postInfo = assertIs<ReplyParentInfo.Post>(info)
+        assertEquals("alice.bsky.social", postInfo.view.author.handle.raw)
+        assertEquals("at://did:plc:alice/app.bsky.feed.post/root", postInfo.view.uri.raw)
+        assertEquals("original post", postInfo.view.record.decodeRecord<Post>().text)
+    }
+
+    @Test
+    fun replyWithNotFoundParentYieldsUnavailable() = runTest {
+        val response = json.decodeFromString(
+            GetTimelineResponse.serializer(),
+            TIMELINE_REPLY_WITH_NOT_FOUND_PARENT,
+        )
+        val entry = response.feed.single()
+
+        val info = assertNotNull(extractReplyParent(entry))
+        val unavailable = assertIs<ReplyParentInfo.Unavailable>(info)
+        assertEquals("Replying to [deleted post]", unavailable.message)
+    }
+
+    @Test
+    fun replyWithBlockedParentYieldsUnavailable() = runTest {
+        val response = json.decodeFromString(
+            GetTimelineResponse.serializer(),
+            TIMELINE_REPLY_WITH_BLOCKED_PARENT,
+        )
+        val entry = response.feed.single()
+
+        val info = assertNotNull(extractReplyParent(entry))
+        val unavailable = assertIs<ReplyParentInfo.Unavailable>(info)
+        assertEquals("Replying to [blocked account]", unavailable.message)
+    }
+
+    @Test
+    fun replyWithUnknownParentArmYieldsUnavailable() = runTest {
+        val response = json.decodeFromString(
+            GetTimelineResponse.serializer(),
+            TIMELINE_REPLY_WITH_UNKNOWN_PARENT,
+        )
+        val entry = response.feed.single()
+
+        val info = assertNotNull(extractReplyParent(entry))
+        val unavailable = assertIs<ReplyParentInfo.Unavailable>(info)
+        assertEquals("Replying to [unavailable]", unavailable.message)
+    }
+
+    @Test
+    fun topLevelPostHasNoReplyParent() = runTest {
+        val response = json.decodeFromString(
+            GetTimelineResponse.serializer(),
+            TIMELINE_WITH_NO_EMBED,
+        )
+        // TIMELINE_WITH_NO_EMBED happens to also have no `reply` field, making
+        // it a clean regression fixture for the top-level case.
+        val entry = response.feed.single()
+
+        assertNull(extractReplyParent(entry))
+    }
+
+    @Test
+    fun repostOfReplyExposesBothReasonAndParent() = runTest {
+        val response = json.decodeFromString(
+            GetTimelineResponse.serializer(),
+            TIMELINE_REPOST_OF_REPLY,
+        )
+        val entry = response.feed.single()
+
+        // Both signals are extractable — renderer stacks them as repost
+        // header → parent context → reply body.
+        val reason = assertNotNull(entry.reason)
+        val repost = assertIs<ReasonRepost>(reason)
+        assertEquals("bob.bsky.social", repost.by.handle.raw)
+
+        val parent = assertNotNull(extractReplyParent(entry))
+        val post = assertIs<ReplyParentInfo.Post>(parent)
+        assertEquals("alice.bsky.social", post.view.author.handle.raw)
+        // Main post is the reply itself, authored by a third party.
+        assertTrue(entry.post.author.handle.raw == "carol.bsky.social")
     }
 
     private companion object {
@@ -503,6 +592,231 @@ class FeedScreenTest {
                       }
                     },
                     "indexedAt": "2025-04-04T00:00:00Z"
+                  }
+                }
+              ]
+            }
+        """
+
+        // Reply entry: `reply.parent` is a known PostView. ExtractReplyParent
+        // must return ReplyParentInfo.Post with alice's handle and URI.
+        const val TIMELINE_REPLY_WITH_KNOWN_PARENT = """
+            {
+              "feed": [
+                {
+                  "post": {
+                    "uri": "at://did:plc:carol/app.bsky.feed.post/reply1",
+                    "cid": "bafycarol",
+                    "author": {
+                      "did": "did:plc:carol",
+                      "handle": "carol.bsky.social"
+                    },
+                    "record": {
+                      "text": "good take!",
+                      "createdAt": "2025-05-02T00:00:00Z"
+                    },
+                    "indexedAt": "2025-05-02T00:00:00Z"
+                  },
+                  "reply": {
+                    "parent": {
+                      "${'$'}type": "app.bsky.feed.defs#postView",
+                      "uri": "at://did:plc:alice/app.bsky.feed.post/root",
+                      "cid": "bafyalice",
+                      "author": {
+                        "did": "did:plc:alice",
+                        "handle": "alice.bsky.social"
+                      },
+                      "record": {
+                        "text": "original post",
+                        "createdAt": "2025-05-01T00:00:00Z"
+                      },
+                      "indexedAt": "2025-05-01T00:00:00Z"
+                    },
+                    "root": {
+                      "${'$'}type": "app.bsky.feed.defs#postView",
+                      "uri": "at://did:plc:alice/app.bsky.feed.post/root",
+                      "cid": "bafyalice",
+                      "author": {
+                        "did": "did:plc:alice",
+                        "handle": "alice.bsky.social"
+                      },
+                      "record": {
+                        "text": "original post",
+                        "createdAt": "2025-05-01T00:00:00Z"
+                      },
+                      "indexedAt": "2025-05-01T00:00:00Z"
+                    }
+                  }
+                }
+              ]
+            }
+        """
+
+        const val TIMELINE_REPLY_WITH_NOT_FOUND_PARENT = """
+            {
+              "feed": [
+                {
+                  "post": {
+                    "uri": "at://did:plc:carol/app.bsky.feed.post/reply2",
+                    "cid": "bafycarol2",
+                    "author": {
+                      "did": "did:plc:carol",
+                      "handle": "carol.bsky.social"
+                    },
+                    "record": {
+                      "text": "responding to something that's gone",
+                      "createdAt": "2025-05-03T00:00:00Z"
+                    },
+                    "indexedAt": "2025-05-03T00:00:00Z"
+                  },
+                  "reply": {
+                    "parent": {
+                      "${'$'}type": "app.bsky.feed.defs#notFoundPost",
+                      "uri": "at://did:plc:gone/app.bsky.feed.post/deleted",
+                      "notFound": true
+                    },
+                    "root": {
+                      "${'$'}type": "app.bsky.feed.defs#notFoundPost",
+                      "uri": "at://did:plc:gone/app.bsky.feed.post/deleted",
+                      "notFound": true
+                    }
+                  }
+                }
+              ]
+            }
+        """
+
+        const val TIMELINE_REPLY_WITH_BLOCKED_PARENT = """
+            {
+              "feed": [
+                {
+                  "post": {
+                    "uri": "at://did:plc:carol/app.bsky.feed.post/reply3",
+                    "cid": "bafycarol3",
+                    "author": {
+                      "did": "did:plc:carol",
+                      "handle": "carol.bsky.social"
+                    },
+                    "record": {
+                      "text": "reply to blocked",
+                      "createdAt": "2025-05-04T00:00:00Z"
+                    },
+                    "indexedAt": "2025-05-04T00:00:00Z"
+                  },
+                  "reply": {
+                    "parent": {
+                      "${'$'}type": "app.bsky.feed.defs#blockedPost",
+                      "uri": "at://did:plc:blocked/app.bsky.feed.post/x",
+                      "blocked": true,
+                      "author": {
+                        "did": "did:plc:blocked"
+                      }
+                    },
+                    "root": {
+                      "${'$'}type": "app.bsky.feed.defs#blockedPost",
+                      "uri": "at://did:plc:blocked/app.bsky.feed.post/x",
+                      "blocked": true,
+                      "author": {
+                        "did": "did:plc:blocked"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+        """
+
+        // Parent arm carries a $type the model set doesn't know — the
+        // ReplyRefParentUnion's Unknown fallback kicks in.
+        const val TIMELINE_REPLY_WITH_UNKNOWN_PARENT = """
+            {
+              "feed": [
+                {
+                  "post": {
+                    "uri": "at://did:plc:carol/app.bsky.feed.post/reply4",
+                    "cid": "bafycarol4",
+                    "author": {
+                      "did": "did:plc:carol",
+                      "handle": "carol.bsky.social"
+                    },
+                    "record": {
+                      "text": "reply to something new",
+                      "createdAt": "2025-05-05T00:00:00Z"
+                    },
+                    "indexedAt": "2025-05-05T00:00:00Z"
+                  },
+                  "reply": {
+                    "parent": {
+                      "${'$'}type": "app.bsky.feed.defs#futureReplyParent",
+                      "custom": "data"
+                    },
+                    "root": {
+                      "${'$'}type": "app.bsky.feed.defs#futureReplyParent",
+                      "custom": "data"
+                    }
+                  }
+                }
+              ]
+            }
+        """
+
+        // Someone reposted a reply: entry carries both ReasonRepost (by bob)
+        // and a reply ref whose parent is alice's original post. The main
+        // post itself is carol's reply.
+        const val TIMELINE_REPOST_OF_REPLY = """
+            {
+              "feed": [
+                {
+                  "post": {
+                    "uri": "at://did:plc:carol/app.bsky.feed.post/reply5",
+                    "cid": "bafycarol5",
+                    "author": {
+                      "did": "did:plc:carol",
+                      "handle": "carol.bsky.social"
+                    },
+                    "record": {
+                      "text": "carol's reply",
+                      "createdAt": "2025-05-06T00:00:00Z"
+                    },
+                    "indexedAt": "2025-05-06T00:00:00Z"
+                  },
+                  "reply": {
+                    "parent": {
+                      "${'$'}type": "app.bsky.feed.defs#postView",
+                      "uri": "at://did:plc:alice/app.bsky.feed.post/orig",
+                      "cid": "bafyalice2",
+                      "author": {
+                        "did": "did:plc:alice",
+                        "handle": "alice.bsky.social"
+                      },
+                      "record": {
+                        "text": "alice's original",
+                        "createdAt": "2025-05-05T00:00:00Z"
+                      },
+                      "indexedAt": "2025-05-05T00:00:00Z"
+                    },
+                    "root": {
+                      "${'$'}type": "app.bsky.feed.defs#postView",
+                      "uri": "at://did:plc:alice/app.bsky.feed.post/orig",
+                      "cid": "bafyalice2",
+                      "author": {
+                        "did": "did:plc:alice",
+                        "handle": "alice.bsky.social"
+                      },
+                      "record": {
+                        "text": "alice's original",
+                        "createdAt": "2025-05-05T00:00:00Z"
+                      },
+                      "indexedAt": "2025-05-05T00:00:00Z"
+                    }
+                  },
+                  "reason": {
+                    "${'$'}type": "app.bsky.feed.defs#reasonRepost",
+                    "by": {
+                      "did": "did:plc:bob",
+                      "handle": "bob.bsky.social"
+                    },
+                    "indexedAt": "2025-05-07T00:00:00Z"
                   }
                 }
               ]
