@@ -55,10 +55,10 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: at-protocol-generator/package-lock.json
+          cache-dependency-path: generator/package-lock.json
 
       - name: Install lexicon corpus
-        working-directory: at-protocol-generator
+        working-directory: generator
         run: |
           npm ci
           npx lex install --ci
@@ -70,7 +70,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
 
       - name: Runtime + generator tests
-        run: ./gradlew :at-protocol-runtime:jvmTest :at-protocol-generator:test
+        run: ./gradlew :runtime:jvmTest :generator:test
 
       - name: Android sample unit tests
         run: ./gradlew :samples:android:testDebugUnitTest
@@ -93,10 +93,10 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: at-protocol-generator/package-lock.json
+          cache-dependency-path: generator/package-lock.json
 
       - name: Install lexicon corpus
-        working-directory: at-protocol-generator
+        working-directory: generator
         run: |
           npm ci
           npx lex install --ci
@@ -108,7 +108,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
 
       - name: Compile library (JVM)
-        run: ./gradlew :at-protocol-runtime:compileKotlinJvm :at-protocol-models:compileKotlinJvm
+        run: ./gradlew :runtime:compileKotlinJvm :models:compileKotlinJvm
 
       - name: Build Android sample APK
         run: ./gradlew :samples:android:assembleDebug
@@ -137,10 +137,10 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: at-protocol-generator/package-lock.json
+          cache-dependency-path: generator/package-lock.json
 
       - name: Install lexicon corpus
-        working-directory: at-protocol-generator
+        working-directory: generator
         run: |
           npm ci
           npx lex install --ci
@@ -158,7 +158,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
 
       - name: Generate API docs
-        run: ./gradlew :at-protocol-generator:generateModels :dokkaGeneratePublicationHtml --no-configuration-cache
+        run: ./gradlew :generator:generateModels :dokkaGeneratePublicationHtml --no-configuration-cache
 
       - name: Stage API docs for GitHub Pages
         run: |

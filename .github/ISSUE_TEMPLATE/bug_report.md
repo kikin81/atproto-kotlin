@@ -14,10 +14,10 @@ assignees: ''
 
 <!-- Delete the ones that don't apply. -->
 
-- [ ] `at-protocol-runtime`
-- [ ] `at-protocol-generator`
-- [ ] `at-protocol-models` (generated code)
-- [ ] `at-protocol-oauth`
+- [ ] `runtime`
+- [ ] `generator`
+- [ ] `models` (generated code)
+- [ ] `oauth`
 - [ ] `samples:android`
 - [ ] Docs / build / CI
 

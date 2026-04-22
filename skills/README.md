@@ -31,7 +31,7 @@ whole library.
 ```markdown
 ## atproto-kotlin
 
-This app consumes `io.github.kikin81.atproto:{at-protocol-runtime,at-protocol-models,at-protocol-oauth}:4.6.0`.
+This app consumes `io.github.kikin81.atproto:{runtime,models,oauth}:4.6.0`.
 
 Before implementing any ATProto feature, fetch the relevant skill from
 the library repository. Do not load all of them — pick the one matching

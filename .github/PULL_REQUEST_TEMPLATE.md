@@ -13,10 +13,10 @@ Thanks for the PR! A few quick things:
 
 ## Affected module
 
-- [ ] `at-protocol-runtime`
-- [ ] `at-protocol-generator`
-- [ ] `at-protocol-models` (generator change — regenerated output included)
-- [ ] `at-protocol-oauth`
+- [ ] `runtime`
+- [ ] `generator`
+- [ ] `models` (generator change — regenerated output included)
+- [ ] `oauth`
 - [ ] `samples:android`
 - [ ] Docs / build / CI
 
@@ -26,8 +26,8 @@ Thanks for the PR! A few quick things:
 List the commands / flows you actually ran. Be specific — "works on my
 machine" is not enough. Examples:
 
-- ./gradlew :at-protocol-oauth:test
-- ./gradlew :at-protocol-generator:test (golden files updated, diff reviewed)
+- ./gradlew :oauth:test
+- ./gradlew :generator:test (golden files updated, diff reviewed)
 - Installed sample app, logged in, scrolled 3 pages of timeline
 -->
 

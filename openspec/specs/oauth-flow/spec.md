@@ -2,7 +2,7 @@
 
 ### Requirement: OAuth module SHALL implement the full AT Protocol authorization flow
 
-The `:at-protocol-oauth` module SHALL implement the complete AT Protocol OAuth 2.0 authorization flow for public clients: handle → DID → PDS → authorization server discovery, Pushed Authorization Request (PAR) with PKCE S256, browser-based user authorization, authorization code → token exchange with DPoP proof, and session persistence via an `OAuthSessionStore` interface.
+The `:oauth` module SHALL implement the complete AT Protocol OAuth 2.0 authorization flow for public clients: handle → DID → PDS → authorization server discovery, Pushed Authorization Request (PAR) with PKCE S256, browser-based user authorization, authorization code → token exchange with DPoP proof, and session persistence via an `OAuthSessionStore` interface.
 
 #### Scenario: Successful login flow against a real PDS
 

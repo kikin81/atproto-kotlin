@@ -2,31 +2,31 @@
 
 ## Purpose
 
-Minimal Android reference application that consumes `:at-protocol-runtime` and
-`:at-protocol-models` to demonstrate how a downstream consumer wires the
+Minimal Android reference application that consumes `:runtime` and
+`:models` to demonstrate how a downstream consumer wires the
 generated AT Protocol API surface into a real UI. Covers the
 login → session persistence → authenticated XRPC call → feed render loop.
 ## Requirements
 ### Requirement: Sample module SHALL depend on the library via project coordinates only
 
-The `samples/android/` module SHALL consume `:at-protocol-runtime` and
-`:at-protocol-models` through `project(...)` Gradle dependencies, never
+The `samples/android/` module SHALL consume `:runtime` and
+`:models` through `project(...)` Gradle dependencies, never
 through Maven coordinates. The sample SHALL NOT require any
 `publishToMavenLocal` step or Maven Central artifact to build and run.
 
 #### Scenario: Fresh clone can build and run the sample without publishing
 
 - **WHEN** a developer clones the repository, runs
-  `cd at-protocol-generator && npx lex install --ci && cd - && ./gradlew :samples:android:installDebug`
+  `cd generator && npx lex install --ci && cd - && ./gradlew :samples:android:installDebug`
 - **THEN** the sample APK builds and installs on a connected device without
   any `publishToMavenLocal` or Maven Central network access, and the
   installed app launches to the login screen.
 
 #### Scenario: Generator change is immediately visible in the sample
 
-- **WHEN** a developer modifies `:at-protocol-generator` emission logic and
+- **WHEN** a developer modifies `:generator` emission logic and
   runs `./gradlew :samples:android:assembleDebug`
-- **THEN** the Gradle task graph rebuilds `:at-protocol-models` from the
+- **THEN** the Gradle task graph rebuilds `:models` from the
   regenerated sources and the sample picks up the new models on the next
   app launch — no intermediate publish step is required.
 
@@ -147,8 +147,8 @@ Protocol server.
 ### Requirement: Sample SHALL NOT modify the library modules
 
 The `samples/android/` change SHALL be additive only. It SHALL NOT modify
-files under `at-protocol-runtime/`, `at-protocol-models/`, or
-`at-protocol-generator/`. It SHALL NOT add an `androidTarget()` to the
+files under `runtime/`, `models/`, or
+`generator/`. It SHALL NOT add an `androidTarget()` to the
 KMP configuration of the runtime or models modules. It SHALL NOT
 introduce AGP into the root `build.gradle.kts` or any module other than
 `samples/android/`.
@@ -158,14 +158,14 @@ introduce AGP into the root `build.gradle.kts` or any module other than
 - **WHEN** the samples-android-bluesky-feed change is archived
 - **THEN** a `git diff` between the pre-change and post-change main
   branches shows zero modifications to any file under
-  `at-protocol-runtime/`, `at-protocol-models/`, or
-  `at-protocol-generator/` other than (a) new samples module wiring and
+  `runtime/`, `models/`, or
+  `generator/` other than (a) new samples module wiring and
   (b) one `include(":samples:android")` line in `settings.gradle.kts`.
 
 #### Scenario: KMP targets are unchanged
 
-- **WHEN** `./gradlew :at-protocol-runtime:tasks` and
-  `./gradlew :at-protocol-models:tasks` are run before and after the
+- **WHEN** `./gradlew :runtime:tasks` and
+  `./gradlew :models:tasks` are run before and after the
   samples change
 - **THEN** the list of compile tasks for each KMP module is identical.
   No `compileKotlinAndroid` or `assembleRelease` tasks appear on the
@@ -560,7 +560,7 @@ posts authored by the logged-in user.
 
 ### Requirement: Runtime SHALL provide encodeRecord for typed record serialization
 
-The `:at-protocol-runtime` module SHALL provide a
+The `:runtime` module SHALL provide a
 `JsonObject.encodeRecord<T>()` extension that serializes a typed record
 data class into a `JsonObject` suitable for `CreateRecordRequest.record`,
 automatically injecting the `$type` discriminator field. This is the

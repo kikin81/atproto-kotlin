@@ -7,17 +7,17 @@ upstream Lexicon JSON corpus and emits idiomatic Kotlin: data classes, open
 unions, typed value classes, XRPC service interfaces, and KDoc documentation.
 
 **Repo:** https://github.com/kikin81/atproto-kotlin
-**Maven Central:** `io.github.kikin81.atproto:at-protocol-*`
+**Maven Central:** `io.github.kikin81.atproto:{runtime,models,oauth}`
 **API Docs:** https://kikin81.github.io/atproto-kotlin/api/
 
 ## Modules
 
 | Module | Type | Published | Purpose |
 |--------|------|-----------|---------|
-| `:at-protocol-runtime` | KMP (JVM + iOS) | Yes | Value classes, AtField, OpenUnion, XrpcClient, AuthProvider |
-| `:at-protocol-generator` | JVM-only | No | Lexicon parser, IR, ref resolver, KotlinPoet emitters |
-| `:at-protocol-models` | KMP (JVM + iOS) | Yes | Generated models, services, unions from Lexicon corpus |
-| `:at-protocol-oauth` | JVM-only | Yes | AT Protocol OAuth 2.0 (PAR + PKCE + DPoP) for public clients |
+| `:runtime` | KMP (JVM + iOS) | Yes | Value classes, AtField, OpenUnion, XrpcClient, AuthProvider |
+| `:generator` | JVM-only | No | Lexicon parser, IR, ref resolver, KotlinPoet emitters |
+| `:models` | KMP (JVM + iOS) | Yes | Generated models, services, unions from Lexicon corpus |
+| `:oauth` | JVM-only | Yes | AT Protocol OAuth 2.0 (PAR + PKCE + DPoP) for public clients |
 | `:samples:android` | Android | No | Reference Compose app with OAuth login + timeline feed |
 
 ## Build prerequisites
@@ -31,15 +31,15 @@ unions, typed value classes, XRPC service interfaces, and KDoc documentation.
 
 ```bash
 # Install lexicon corpus (required before first build)
-cd at-protocol-generator && npx lex install --ci && cd -
+cd generator && npx lex install --ci && cd -
 
 # Full build (all modules + tests + spotless)
 ./gradlew build
 
 # Module-specific tests
-./gradlew :at-protocol-runtime:jvmTest
-./gradlew :at-protocol-generator:test
-./gradlew :at-protocol-oauth:test
+./gradlew :runtime:jvmTest
+./gradlew :generator:test
+./gradlew :oauth:test
 ./gradlew :samples:android:testDebugUnitTest
 
 # Code formatting
@@ -53,7 +53,7 @@ cd at-protocol-generator && npx lex install --ci && cd -
 ./gradlew :samples:android:installDebug
 
 # Regenerate golden files after generator changes
-GOLDEN_UPDATE=1 ./gradlew :at-protocol-generator:test --tests '*GoldenFileTest*'
+GOLDEN_UPDATE=1 ./gradlew :generator:test --tests '*GoldenFileTest*'
 ```
 
 ## Code style
@@ -73,15 +73,15 @@ GOLDEN_UPDATE=1 ./gradlew :at-protocol-generator:test --tests '*GoldenFileTest*'
 6. **Plan**: `EmissionPlan` computes union sites, membership, contextual splits
 7. **Emit**: `ModelGenerator`, `XrpcGenerator`, `UnionGenerator`, `ServiceGenerator` produce KotlinPoet `FileSpec`s with KDoc and `@Deprecated` annotations
 
-Generated source lands in `at-protocol-models/build/generated/source/lexicon/commonMain/`.
+Generated source lands in `models/build/generated/source/lexicon/commonMain/`.
 
 ## Testing
 
 - **JUnit 5** via `kotlin.test` across all modules
 - **MockEngine** (Ktor) for HTTP-level tests in OAuth and sample modules
 - **GoldenFileTest**: byte-for-byte regression test for generator output. Update with `GOLDEN_UPDATE=1`
-- Golden lexicons: `at-protocol-generator/src/test/resources/golden/lexicons/`
-- Golden output: `at-protocol-generator/src/test/resources/golden/kotlin/`
+- Golden lexicons: `generator/src/test/resources/golden/lexicons/`
+- Golden output: `generator/src/test/resources/golden/kotlin/`
 
 ## Publishing
 

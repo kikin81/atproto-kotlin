@@ -17,10 +17,10 @@ ready to drop into a Ktor client.
 
 | Module | What it is |
 | --- | --- |
-| `:at-protocol-runtime` | KMP library (JVM + iOS) holding the hand-written base: typed value classes for every string format (`Did`, `Handle`, `AtUri`, `Cid`, `Datetime`, …), `sealed AtField<T>` for three-state optionality on mutation paths, `OpenUnionSerializer<T>` + `UnknownOpenUnionMember` for open-union `$type` dispatch, typed `Blob` + `CidLink`, and an `XrpcClient` built on Ktor with a pluggable `AuthProvider`. |
-| `:at-protocol-generator` | JVM-only code generator. Parses the lexicon JSON corpus, resolves refs, tags mutation/read usage contexts, runs a verification pass (INV-1..4 + pair-keyed collision overrides), then emits idiomatic Kotlin via KotlinPoet: records, sealed-equivalent open unions, request/response pairs for queries and procedures, and `<Namespace>Service` classes wrapping `XrpcClient`. |
-| `:at-protocol-models` | KMP library that picks up the generator's output at build time via `:at-protocol-generator:generateModels`. This is what downstream consumers depend on. |
-| `:at-protocol-oauth` | JVM library implementing AT Protocol OAuth 2.0 for public clients: handle/DID/PDS/auth-server discovery, PAR with PKCE (S256) + DPoP (EC P-256), browser-based authorization, token exchange, and transparent refresh with DPoP-bound rotation. See [`at-protocol-oauth/README.md`](at-protocol-oauth/README.md). |
+| `:runtime` | KMP library (JVM + iOS) holding the hand-written base: typed value classes for every string format (`Did`, `Handle`, `AtUri`, `Cid`, `Datetime`, …), `sealed AtField<T>` for three-state optionality on mutation paths, `OpenUnionSerializer<T>` + `UnknownOpenUnionMember` for open-union `$type` dispatch, typed `Blob` + `CidLink`, and an `XrpcClient` built on Ktor with a pluggable `AuthProvider`. |
+| `:generator` | JVM-only code generator. Parses the lexicon JSON corpus, resolves refs, tags mutation/read usage contexts, runs a verification pass (INV-1..4 + pair-keyed collision overrides), then emits idiomatic Kotlin via KotlinPoet: records, sealed-equivalent open unions, request/response pairs for queries and procedures, and `<Namespace>Service` classes wrapping `XrpcClient`. |
+| `:models` | KMP library that picks up the generator's output at build time via `:generator:generateModels`. This is what downstream consumers depend on. |
+| `:oauth` | JVM library implementing AT Protocol OAuth 2.0 for public clients: handle/DID/PDS/auth-server discovery, PAR with PKCE (S256) + DPoP (EC P-256), browser-based authorization, token exchange, and transparent refresh with DPoP-bound rotation. See [`oauth/README.md`](oauth/README.md). |
 | `:samples:android` | **Reference consumer.** A minimal Compose app that authenticates via OAuth 2.0 + DPoP and renders a Bluesky timeline. Dogfoods the generated API surface and the OAuth module end-to-end. See [`samples/android/README.md`](samples/android/README.md). |
 
 ## Sample app
@@ -40,7 +40,7 @@ instructions and architecture details.
 
 ```bash
 # 1. Install the upstream lexicon corpus (pinned by CID in lexicons.json).
-cd at-protocol-generator && npx lex install --ci && cd -
+cd generator && npx lex install --ci && cd -
 
 # 2. Run the whole test suite (runtime, generator, sample, golden files).
 ./gradlew build
@@ -70,9 +70,9 @@ dependencyResolutionManagement {
 ```kotlin
 // build.gradle.kts (or the KMP module's common source set)
 dependencies {
-    implementation("io.github.kikin81.atproto:at-protocol-runtime:<version>")
-    implementation("io.github.kikin81.atproto:at-protocol-models:<version>")
-    implementation("io.github.kikin81.atproto:at-protocol-oauth:<version>") // OAuth 2.0 + DPoP
+    implementation("io.github.kikin81.atproto:runtime:<version>")
+    implementation("io.github.kikin81.atproto:models:<version>")
+    implementation("io.github.kikin81.atproto:oauth:<version>") // OAuth 2.0 + DPoP
 }
 ```
 
@@ -106,6 +106,28 @@ maven {
     }
 }
 ```
+
+## Migrating from 4.x
+
+**5.0.0 renames every published artifactId** to drop the redundant
+`at-protocol-` prefix. The group (`io.github.kikin81.atproto`) is
+unchanged. No consumer code changes are required — only the coordinate
+strings in your build file.
+
+```kotlin
+// before (4.x)
+implementation("io.github.kikin81.atproto:at-protocol-runtime:4.9.0")
+implementation("io.github.kikin81.atproto:at-protocol-models:4.9.0")
+implementation("io.github.kikin81.atproto:at-protocol-oauth:4.9.0")
+
+// after (5.0.0+)
+implementation("io.github.kikin81.atproto:runtime:5.0.0")
+implementation("io.github.kikin81.atproto:models:5.0.0")
+implementation("io.github.kikin81.atproto:oauth:5.0.0")
+```
+
+The 4.x artifacts remain on Maven Central (they're immutable) but
+receive no further updates. Pin to 5.0.0+ to pick up new releases.
 
 ## Releases
 

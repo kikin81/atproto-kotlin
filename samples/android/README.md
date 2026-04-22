@@ -2,8 +2,8 @@
 
 Minimal Compose app that authenticates via **AT Protocol OAuth 2.0** (PAR +
 PKCE + DPoP) and renders a timeline from `app.bsky.feed.getTimeline`. Dogfoods
-the code-generated AT Protocol API surface (`:at-protocol-runtime` +
-`:at-protocol-models` + `:at-protocol-oauth`) against Bluesky's production servers.
+the code-generated AT Protocol API surface (`:runtime` +
+`:models` + `:oauth`) against Bluesky's production servers.
 
 ## What it does
 
@@ -24,7 +24,7 @@ One-Activity Compose app with Hilt DI and two screens:
 - The generator's lexicon corpus installed:
 
   ```bash
-  cd at-protocol-generator && npx lex install --ci && cd -
+  cd generator && npx lex install --ci && cd -
   ```
 
 ### Build and install
@@ -42,7 +42,7 @@ Tap the log-out icon in the top-right to clear the stored session.
 
 ## OAuth flow
 
-The sample uses `:at-protocol-oauth` for the full AT Protocol OAuth 2.0 flow:
+The sample uses `:oauth` for the full AT Protocol OAuth 2.0 flow:
 
 1. `AtOAuth.beginLogin(handle)` -- resolves handle via DNS-over-HTTPS,
    discovers the PDS and authorization server, sends a PAR request with
@@ -60,7 +60,7 @@ The sample uses `:at-protocol-oauth` for the full AT Protocol OAuth 2.0 flow:
 The OAuth client metadata is hosted on GitHub Pages:
 `https://kikin81.github.io/atproto-kotlin/oauth/client-metadata.json`
 
-See [`at-protocol-oauth/README.md`](../../at-protocol-oauth/README.md) for
+See [`oauth/README.md`](../../oauth/README.md) for
 client metadata field requirements and hosting instructions.
 
 ## Unit tests

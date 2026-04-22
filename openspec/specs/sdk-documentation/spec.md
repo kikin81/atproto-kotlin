@@ -2,21 +2,21 @@
 
 ### Requirement: Published artifacts SHALL include Dokka-generated javadoc JARs
 
-The system SHALL replace the empty javadoc JARs currently published to Maven Central with Dokka-generated javadoc JARs containing real KDoc documentation. IDE consumers SHALL see KDoc descriptions on hover/autocomplete for all public classes, properties, and methods in `:at-protocol-runtime`, `:at-protocol-models`, and `:at-protocol-oauth`.
+The system SHALL replace the empty javadoc JARs currently published to Maven Central with Dokka-generated javadoc JARs containing real KDoc documentation. IDE consumers SHALL see KDoc descriptions on hover/autocomplete for all public classes, properties, and methods in `:runtime`, `:models`, and `:oauth`.
 
 #### Scenario: IDE hover shows KDoc from published artifact
 
-- **WHEN** a consumer adds `io.github.kikin81.atproto:at-protocol-models:<version>` to their project and hovers over `FeedService.getTimeline()` in their IDE
+- **WHEN** a consumer adds `io.github.kikin81.atproto:models:<version>` to their project and hovers over `FeedService.getTimeline()` in their IDE
 - **THEN** the IDE displays the KDoc description from the Lexicon source
 
 #### Scenario: Javadoc JAR contains real documentation
 
-- **WHEN** `./gradlew :at-protocol-runtime:dokkaGeneratePublicationJavadoc` runs
+- **WHEN** `./gradlew :runtime:dokkaGeneratePublicationJavadoc` runs
 - **THEN** the output JAR contains HTML javadoc files for all public API elements
 
 ### Requirement: System SHALL generate browsable HTML documentation
 
-The system SHALL generate a multi-module HTML documentation site via Dokka that covers `:at-protocol-runtime`, `:at-protocol-models`, and `:at-protocol-oauth`. The HTML output SHALL be suitable for hosting on GitHub Pages.
+The system SHALL generate a multi-module HTML documentation site via Dokka that covers `:runtime`, `:models`, and `:oauth`. The HTML output SHALL be suitable for hosting on GitHub Pages.
 
 #### Scenario: Generating HTML docs
 

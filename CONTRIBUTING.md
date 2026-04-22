@@ -9,7 +9,7 @@ about before you open a PR.
 ```bash
 # 1. Clone and install the upstream lexicon corpus (pinned by CID).
 git clone https://github.com/kikin81/atproto-kotlin.git
-cd atproto-kotlin/at-protocol-generator && npx lex install --ci && cd -
+cd atproto-kotlin/generator && npx lex install --ci && cd -
 
 # 2. Build everything: runtime, generator, models, oauth, sample.
 ./gradlew build
@@ -27,22 +27,22 @@ Gradle 9.3.1 ships via the wrapper — no separate install needed.
 
 | Module | Hand-written? | Notes |
 |---|---|---|
-| `:at-protocol-runtime` | **Yes** | Value classes, `AtField`, `OpenUnionSerializer`, `XrpcClient`, `AuthProvider`. Edit freely. |
-| `:at-protocol-generator` | **Yes** | The Lexicon parser, IR, and KotlinPoet emitters. Edit freely, but see "Regenerating models" below. |
-| `:at-protocol-models` | **No — generated** | Do not edit files under `at-protocol-models/build/generated/…`. To change generated output, edit the generator. |
-| `:at-protocol-oauth` | **Yes** | OAuth 2.0 + PAR + PKCE + DPoP. Edit freely. |
+| `:runtime` | **Yes** | Value classes, `AtField`, `OpenUnionSerializer`, `XrpcClient`, `AuthProvider`. Edit freely. |
+| `:generator` | **Yes** | The Lexicon parser, IR, and KotlinPoet emitters. Edit freely, but see "Regenerating models" below. |
+| `:models` | **No — generated** | Do not edit files under `models/build/generated/…`. To change generated output, edit the generator. |
+| `:oauth` | **Yes** | OAuth 2.0 + PAR + PKCE + DPoP. Edit freely. |
 | `:samples:android` | **Yes** | Reference Compose consumer. Great place to verify end-to-end changes. |
 
 ### Regenerating models after generator changes
 
 ```bash
-./gradlew :at-protocol-models:generateModels
+./gradlew :models:generateModels
 ```
 
 If you change emitter output, update the golden fixtures:
 
 ```bash
-GOLDEN_UPDATE=1 ./gradlew :at-protocol-generator:test --tests '*GoldenFileTest*'
+GOLDEN_UPDATE=1 ./gradlew :generator:test --tests '*GoldenFileTest*'
 ```
 
 Review the diff carefully — golden updates are a signal, not a rubber stamp.
@@ -75,10 +75,10 @@ Review the diff carefully — golden updates are a signal, not a rubber stamp.
 Depending on what you touched:
 
 - **Runtime or models:** unit tests under the relevant module are usually
-  enough. `./gradlew :at-protocol-runtime:jvmTest` or
-  `./gradlew :at-protocol-models:jvmTest`.
+  enough. `./gradlew :runtime:jvmTest` or
+  `./gradlew :models:jvmTest`.
 - **Generator:** run the golden file tests and review the diff.
-- **OAuth:** `./gradlew :at-protocol-oauth:test` covers the MockEngine
+- **OAuth:** `./gradlew :oauth:test` covers the MockEngine
   flows. For end-to-end DPoP you'll want to run the Android sample.
 - **Anything consumer-facing:** build and run the sample app —
   `./gradlew :samples:android:installDebug`. Logging in and scrolling the

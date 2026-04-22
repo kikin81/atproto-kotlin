@@ -39,9 +39,9 @@ android {
 }
 
 dependencies {
-    implementation(project(":at-protocol-runtime"))
-    implementation(project(":at-protocol-models"))
-    implementation(project(":at-protocol-oauth"))
+    implementation(project(":runtime"))
+    implementation(project(":models"))
+    implementation(project(":oauth"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

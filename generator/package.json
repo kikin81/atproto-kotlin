@@ -1,0 +1,9 @@
+{
+  "name": "kikinlex-atproto-generator-lexicons",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Pins the @atproto/lex release whose lexicon JSON is consumed by :generator. Not published.",
+  "dependencies": {
+    "@atproto/lex": "*"
+  }
+}

@@ -124,7 +124,7 @@ These apply regardless of which task you're doing.
 
 ### Never edit generated sources
 
-Files in `at-protocol-models-<version>.jar` are the output of a
+Files in `models-<version>.jar` are the output of a
 KotlinPoet-based generator that runs against the upstream AT Protocol
 lexicon corpus. If a generated type is wrong, open an issue at
 https://github.com/kikin81/atproto-kotlin/issues — don't patch locally.

@@ -12,9 +12,9 @@ plugins {
 }
 
 dependencies {
-    dokka(project(":at-protocol-runtime"))
-    dokka(project(":at-protocol-models"))
-    dokka(project(":at-protocol-oauth"))
+    dokka(project(":runtime"))
+    dokka(project(":models"))
+    dokka(project(":oauth"))
 }
 
 // Attach a top-level MODULE.md to the aggregated multi-module Dokka
@@ -32,7 +32,7 @@ allprojects {
 }
 
 // Spotless + ktlint across every subproject. Skips build/ (including generated
-// lexicon sources under :at-protocol-models/build/generated), node_modules,
+// lexicon sources under :models/build/generated), node_modules,
 // and the installed @atproto/lex lexicons directory.
 val ktlintVersion = libs.versions.ktlint.get()
 

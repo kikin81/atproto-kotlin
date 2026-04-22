@@ -33,7 +33,7 @@ about polishing — we'll iterate in the thread.
 
 <!-- Delete the ones that don't apply. -->
 
-- [ ] New public API on `at-protocol-runtime`
+- [ ] New public API on `runtime`
 - [ ] Change to generator output (would affect all generated models)
 - [ ] OAuth / auth flow
 - [ ] Sample app / docs

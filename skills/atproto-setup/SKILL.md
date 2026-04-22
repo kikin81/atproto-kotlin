@@ -37,11 +37,11 @@ so the other ATProto skills have a working build to target.
 
 | Artifact | Targets | You need it when… |
 |---|---|---|
-| `at-protocol-runtime` | KMP (JVM + iOS) | Always. Value classes, `XrpcClient`, `AtField`, open-union base types. |
-| `at-protocol-models` | KMP (JVM + iOS) | Always. Generated record types, request/response pairs, `*Service` classes. |
-| `at-protocol-oauth` | JVM-only | If you need user login against Bluesky. |
+| `runtime` | KMP (JVM + iOS) | Always. Value classes, `XrpcClient`, `AtField`, open-union base types. |
+| `models` | KMP (JVM + iOS) | Always. Generated record types, request/response pairs, `*Service` classes. |
+| `oauth` | JVM-only | If you need user login against Bluesky. |
 
-`at-protocol-models` is **generated code** — never edit files under its
+`models` is **generated code** — never edit files under its
 `build/generated/` directory. All three publish to Maven Central under
 the `io.github.kikin81.atproto` group.
 
@@ -65,9 +65,9 @@ dependencyResolutionManagement {
 
 ```kotlin
 dependencies {
-    implementation("io.github.kikin81.atproto:at-protocol-runtime:4.6.0")
-    implementation("io.github.kikin81.atproto:at-protocol-models:4.6.0")
-    implementation("io.github.kikin81.atproto:at-protocol-oauth:4.6.0")
+    implementation("io.github.kikin81.atproto:runtime:4.6.0")
+    implementation("io.github.kikin81.atproto:models:4.6.0")
+    implementation("io.github.kikin81.atproto:oauth:4.6.0")
 
     // Pick one Ktor engine — CIO works on Android + JVM
     implementation("io.ktor:ktor-client-cio:3.0.0")
@@ -91,9 +91,9 @@ atproto = "4.6.0"
 ktor = "3.0.0"
 
 [libraries]
-atproto-runtime = { module = "io.github.kikin81.atproto:at-protocol-runtime", version.ref = "atproto" }
-atproto-models = { module = "io.github.kikin81.atproto:at-protocol-models", version.ref = "atproto" }
-atproto-oauth = { module = "io.github.kikin81.atproto:at-protocol-oauth", version.ref = "atproto" }
+atproto-runtime = { module = "io.github.kikin81.atproto:runtime", version.ref = "atproto" }
+atproto-models = { module = "io.github.kikin81.atproto:models", version.ref = "atproto" }
+atproto-oauth = { module = "io.github.kikin81.atproto:oauth", version.ref = "atproto" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ```
 
@@ -126,7 +126,7 @@ All generated code lives under `io.github.kikin81.atproto.<ns>`, where
   needed — this library regenerates from the upstream lexicon corpus
   on every release.
 - **Editing generated sources.** Files under
-  `at-protocol-models-<version>.jar` are the published output of the
+  `models-<version>.jar` are the published output of the
   generator. If a generated type is wrong, open an issue upstream.
 
 ## Related skills

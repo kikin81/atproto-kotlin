@@ -10,9 +10,9 @@ local.properties
 **/node_modules/
 
 # Installed lexicon corpus — derived from `npx lex install` and pinned by
-# CID in at-protocol-generator/lexicons.json. Reproducible on any clone via
-# `cd at-protocol-generator && npx lex install --ci`.
-at-protocol-generator/lexicons/
+# CID in generator/lexicons.json. Reproducible on any clone via
+# `cd generator && npx lex install --ci`.
+generator/lexicons/
 
 # Per-user assistant / IDE config
 .gemini/

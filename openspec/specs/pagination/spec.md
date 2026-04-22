@@ -2,7 +2,7 @@
 
 ### Requirement: Runtime SHALL provide a generic cursor-pagination Flow builder
 
-The `:at-protocol-runtime` module SHALL provide a `paginate()` function
+The `:runtime` module SHALL provide a `paginate()` function
 that accepts a fetcher lambda, a cursor extractor, and an items extractor,
 and returns a `Flow<T>` that lazily fetches pages as the collector
 consumes items.
@@ -53,7 +53,7 @@ The Flow SHALL:
 
 ### Requirement: Runtime SHALL provide a page-level pagination Flow
 
-The `:at-protocol-runtime` module SHALL provide a `paginatePages()`
+The `:runtime` module SHALL provide a `paginatePages()`
 function with the same signature as `paginate()` but returning
 `Flow<List<T>>` where each emission is one full page of items. This
 avoids excessive state updates when collecting into a UI StateFlow.
@@ -116,6 +116,6 @@ Android Paging 3, AndroidX, or any platform-specific library.
 
 #### Scenario: iOS compilation
 
-- **WHEN** `./gradlew :at-protocol-runtime:compileKotlinIosArm64` runs
+- **WHEN** `./gradlew :runtime:compileKotlinIosArm64` runs
   (on a macOS host)
 - **THEN** the pagination code compiles without errors

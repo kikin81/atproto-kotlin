@@ -6,10 +6,10 @@
 # are all machine-managed and shouldn't be rewritten by formatters.
 exclude: |
   (?x)^(
-    at-protocol-generator/lexicons/.*|
-    at-protocol-generator/node_modules/.*|
-    at-protocol-generator/package-lock\.json|
-    at-protocol-models/build/.*|
+    generator/lexicons/.*|
+    generator/node_modules/.*|
+    generator/package-lock\.json|
+    models/build/.*|
     .*/build/.*|
     .*/\.gradle/.*|
     docs/api/.*

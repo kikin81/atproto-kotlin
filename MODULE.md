@@ -12,9 +12,9 @@ service interfaces ready to drop into a Ktor client.
 ```kotlin
 // build.gradle.kts
 dependencies {
-    implementation("io.github.kikin81.atproto:at-protocol-runtime:<version>")
-    implementation("io.github.kikin81.atproto:at-protocol-models:<version>")
-    implementation("io.github.kikin81.atproto:at-protocol-oauth:<version>") // optional
+    implementation("io.github.kikin81.atproto:runtime:<version>")
+    implementation("io.github.kikin81.atproto:models:<version>")
+    implementation("io.github.kikin81.atproto:oauth:<version>") // optional
     implementation("io.ktor:ktor-client-cio:3.x") // or your preferred engine
 }
 ```
@@ -30,11 +30,11 @@ val timeline = FeedService(client).getTimeline(GetTimelineRequest(limit = 25L))
 
 See each module's documentation for details:
 
-- **at-protocol-runtime** — Hand-written base: value classes, `AtField`,
+- **runtime** — Hand-written base: value classes, `AtField`,
   `XrpcClient`, `AuthProvider`, pagination helpers.
-- **at-protocol-models** — Generated records, requests/responses, open
+- **models** — Generated records, requests/responses, open
   unions, and `*Service` classes.
-- **at-protocol-oauth** — OAuth 2.0 with PAR + PKCE + DPoP for public
+- **oauth** — OAuth 2.0 with PAR + PKCE + DPoP for public
   clients (Android / JVM).
 
 For LLM agents consuming this library, fetch task-oriented skills from
