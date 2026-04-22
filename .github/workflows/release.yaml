@@ -157,19 +157,6 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
 
-      - name: Generate API docs
-        run: ./gradlew :generator:generateModels :dokkaGeneratePublicationHtml --no-configuration-cache
-
-      - name: Stage API docs for GitHub Pages
-        run: |
-          rm -rf docs/api
-          cp -r build/dokka/html docs/api
-
-      - uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "docs: update API documentation [skip ci]"
-          file_pattern: "docs/api/**"
-
       - id: release
         uses: open-turo/actions-jvm/release@v2
         env:
@@ -182,3 +169,20 @@ jobs:
         with:
           github-token: ${{ secrets.RELEASE_PAT }}
           checkout-repo: false
+
+      # Regenerate API docs AFTER semantic-release bumps gradle.properties,
+      # so the Dokka-embedded `library-version` label matches the just-published
+      # artifacts. On non-release pushes (chore/docs/etc.), semantic-release is
+      # a no-op and Dokka reads the current released version — still correct.
+      - name: Generate API docs
+        run: ./gradlew :generator:generateModels :dokkaGeneratePublicationHtml --no-configuration-cache
+
+      - name: Stage API docs for GitHub Pages
+        run: |
+          rm -rf docs/api
+          cp -r build/dokka/html docs/api
+
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "docs: update API documentation [skip ci]"
+          file_pattern: "docs/api/**"
