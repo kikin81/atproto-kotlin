@@ -11,7 +11,7 @@ description: >
 license: MIT (see repo LICENSE)
 metadata:
   author: kikin81
-  library-version: "4.6.0"
+  library-version: "5.0.0"
   keywords:
     - AT Protocol
     - Bluesky

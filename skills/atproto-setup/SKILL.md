@@ -10,7 +10,7 @@ description: >
 license: MIT (see repo LICENSE)
 metadata:
   author: kikin81
-  library-version: "4.6.0"
+  library-version: "5.0.0"
   keywords:
     - AT Protocol
     - Bluesky
@@ -65,9 +65,9 @@ dependencyResolutionManagement {
 
 ```kotlin
 dependencies {
-    implementation("io.github.kikin81.atproto:runtime:4.6.0")
-    implementation("io.github.kikin81.atproto:models:4.6.0")
-    implementation("io.github.kikin81.atproto:oauth:4.6.0")
+    implementation("io.github.kikin81.atproto:runtime:5.0.0")
+    implementation("io.github.kikin81.atproto:models:5.0.0")
+    implementation("io.github.kikin81.atproto:oauth:5.0.0")
 
     // Pick one Ktor engine — CIO works on Android + JVM
     implementation("io.ktor:ktor-client-cio:3.0.0")
@@ -87,7 +87,7 @@ but **not** an engine — that's your choice. Options:
 ```toml
 # gradle/libs.versions.toml
 [versions]
-atproto = "4.6.0"
+atproto = "5.0.0"
 ktor = "3.0.0"
 
 [libraries]

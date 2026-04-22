@@ -9,7 +9,7 @@ Each skill is a self-contained `SKILL.md` with YAML frontmatter that
 agents pattern-match against the current task. Fetch only the skill
 that matches what you're doing — skills are designed to stand alone.
 
-**Documented library version:** `4.6.0`
+**Documented library version:** `5.0.0`
 
 ## Skills
 
@@ -31,7 +31,7 @@ whole library.
 ```markdown
 ## atproto-kotlin
 
-This app consumes `io.github.kikin81.atproto:{runtime,models,oauth}:4.6.0`.
+This app consumes `io.github.kikin81.atproto:{runtime,models,oauth}:5.0.0`.
 
 Before implementing any ATProto feature, fetch the relevant skill from
 the library repository. Do not load all of them — pick the one matching
@@ -52,7 +52,7 @@ those only when the SKILL.md explicitly links to them.
 
 Each `SKILL.md`'s frontmatter contains a `metadata.library-version`
 field pinned to the version the snippets were validated against
-(currently `4.6.0`). If a consumer is on a newer library version, the
+(currently `5.0.0`). If a consumer is on a newer library version, the
 skills may need updating — open an issue at
 https://github.com/kikin81/atproto-kotlin/issues.
 
