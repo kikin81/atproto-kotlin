@@ -239,4 +239,40 @@ class BlueskyTextBuilderTest {
         assertEquals(1, calls.size)
         assertTrue(calls[0].feature is FacetFeaturesUnion.Unknown)
     }
+
+    @Test
+    fun `facet indices are offset by the builder's existing length`() {
+        // Regression for the bug where appendBlueskyText returned facet
+        // char indices relative to `text` rather than the builder. A
+        // consumer that appends a prefix (e.g. "Replying to @parent — ")
+        // before the post body needs indices that line up with the
+        // builder's char space so addStyle(start, end) lands correctly.
+        val prefix = "Replying to @parent — "
+        val text = "@alice.bsky.social"
+        val facet = mention(byteStart = 0L, byteEnd = 18L, did = "did:plc:alice")
+
+        val calls = mutableListOf<FacetCall>()
+        val annotated = buildAnnotatedString {
+            append(prefix)
+            appendBlueskyText(text, listOf(facet)) { feature, start, end, slice ->
+                calls += FacetCall(feature, start, end, slice)
+            }
+        }
+
+        assertEquals(prefix + text, annotated.text)
+        assertEquals(1, calls.size)
+        // Indices reference the builder's char space — start must be
+        // offset by the prefix length, not 0.
+        assertEquals(prefix.length, calls[0].startChar)
+        assertEquals(prefix.length + text.length, calls[0].endChar)
+        // Slice is still the matched substring of `text`, not of the
+        // builder. (Otherwise the consumer's substring would be wrong.)
+        assertEquals("@alice.bsky.social", calls[0].slice)
+        // Final-form sanity check: the indices truly point at the
+        // mention in the assembled annotated string.
+        assertEquals(
+            "@alice.bsky.social",
+            annotated.text.substring(calls[0].startChar, calls[0].endChar),
+        )
+    }
 }

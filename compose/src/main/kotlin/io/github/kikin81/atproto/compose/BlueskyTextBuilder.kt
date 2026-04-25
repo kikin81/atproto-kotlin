@@ -61,6 +61,12 @@ public fun AnnotatedString.Builder.appendBlueskyText(
         slice: String,
     ) -> Unit,
 ) {
+    // Capture the builder's existing length so facet indices line up with
+    // the builder's char space, not just `text`'s. Consumers calling this
+    // after appending a prefix (e.g. a "@handle " label or a quoted-post
+    // attribution) need indices that work with `addStyle(start, end)` on
+    // the receiver.
+    val baseChar = length
     append(text)
 
     if (facets.isNullOrEmpty()) return
@@ -76,11 +82,13 @@ public fun AnnotatedString.Builder.appendBlueskyText(
         if (byteStart < 0L || byteEnd <= byteStart) continue
         if (byteStart > Int.MAX_VALUE || byteEnd > Int.MAX_VALUE) continue
 
-        val startChar = table.byteToChar(byteStart.toInt()) ?: continue
-        val endChar = table.byteToChar(byteEnd.toInt()) ?: continue
-        if (endChar <= startChar) continue
+        val startCharInText = table.byteToChar(byteStart.toInt()) ?: continue
+        val endCharInText = table.byteToChar(byteEnd.toInt()) ?: continue
+        if (endCharInText <= startCharInText) continue
 
-        val slice = text.substring(startChar, endChar)
+        val slice = text.substring(startCharInText, endCharInText)
+        val startChar = baseChar + startCharInText
+        val endChar = baseChar + endCharInText
         for (feature in facet.features) {
             onFacet(feature, startChar, endChar, slice)
         }

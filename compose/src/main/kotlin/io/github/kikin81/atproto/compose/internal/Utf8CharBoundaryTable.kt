@@ -26,46 +26,71 @@ internal class Utf8CharBoundaryTable(private val text: String) {
     val utf8ByteLength: Int
 
     /**
+     * `true` when every char in [text] is below U+0080 — pure ASCII.
+     * Byte offsets equal char offsets in this case, so we skip building
+     * the boundary tables entirely and answer [byteToChar] with the
+     * identity mapping. Bluesky posts have a 300-char limit, so even a
+     * single emoji opt-out is fine, but ASCII-only posts are common
+     * and benefit from the zero-allocation path on cold-scroll.
+     */
+    private val asciiOnly: Boolean
+
+    /**
      * Sorted byte offsets at which a codepoint starts. The very last
      * entry is [utf8ByteLength], representing the end-of-text boundary
      * (so a facet whose `byteEnd == utf8ByteLength` is mappable).
+     * Empty in the [asciiOnly] fast path.
      */
     private val byteBoundaries: IntArray
 
     /**
      * For each entry in [byteBoundaries], the corresponding UTF-16 char
      * index in [text]. Always the same length as [byteBoundaries].
+     * Empty in the [asciiOnly] fast path.
      */
     private val charBoundaries: IntArray
 
     init {
-        // Worst case: every char is its own codepoint. Allocate
-        // text.length + 1 (for the end-of-text sentinel) up front, then
-        // copy down to exact size after the walk so binary search has a
-        // tight bound.
-        val maxBoundaries = text.length + 1
-        val bytesAt = IntArray(maxBoundaries)
-        val charsAt = IntArray(maxBoundaries)
-        var byteIdx = 0
-        var charIdx = 0
-        var boundaryCount = 0
+        // Cheap first pass: scan char codes only, no allocation. Lets
+        // the common case (English-only posts) skip the boundary-table
+        // build entirely on the fast path below.
+        val allAscii = isAsciiOnly(text)
 
-        bytesAt[boundaryCount] = byteIdx
-        charsAt[boundaryCount] = charIdx
-        boundaryCount++
+        if (allAscii) {
+            asciiOnly = true
+            utf8ByteLength = text.length
+            byteBoundaries = EMPTY_INT_ARRAY
+            charBoundaries = EMPTY_INT_ARRAY
+        } else {
+            asciiOnly = false
+            // Worst case: every char is its own codepoint. Allocate
+            // text.length + 1 (for the end-of-text sentinel) up front,
+            // then copy down to exact size after the walk so binary
+            // search has a tight bound.
+            val maxBoundaries = text.length + 1
+            val bytesAt = IntArray(maxBoundaries)
+            val charsAt = IntArray(maxBoundaries)
+            var byteIdx = 0
+            var charIdx = 0
+            var boundaryCount = 0
 
-        while (charIdx < text.length) {
-            val codePoint = text.codePointAt(charIdx)
-            byteIdx += utf8ByteCount(codePoint)
-            charIdx += Character.charCount(codePoint)
             bytesAt[boundaryCount] = byteIdx
             charsAt[boundaryCount] = charIdx
             boundaryCount++
-        }
 
-        utf8ByteLength = byteIdx
-        byteBoundaries = bytesAt.copyOf(boundaryCount)
-        charBoundaries = charsAt.copyOf(boundaryCount)
+            while (charIdx < text.length) {
+                val codePoint = text.codePointAt(charIdx)
+                byteIdx += utf8ByteCount(codePoint)
+                charIdx += Character.charCount(codePoint)
+                bytesAt[boundaryCount] = byteIdx
+                charsAt[boundaryCount] = charIdx
+                boundaryCount++
+            }
+
+            utf8ByteLength = byteIdx
+            byteBoundaries = bytesAt.copyOf(boundaryCount)
+            charBoundaries = charsAt.copyOf(boundaryCount)
+        }
     }
 
     /**
@@ -77,9 +102,14 @@ internal class Utf8CharBoundaryTable(private val text: String) {
      */
     fun byteToChar(byte: Int): Int? {
         if (byte < 0 || byte > utf8ByteLength) return null
+        if (asciiOnly) return byte
         val idx = byteBoundaries.binarySearch(byte)
         if (idx < 0) return null
         return charBoundaries[idx]
+    }
+
+    private companion object {
+        val EMPTY_INT_ARRAY = IntArray(0)
     }
 
     private fun utf8ByteCount(codePoint: Int): Int = when {
@@ -87,5 +117,12 @@ internal class Utf8CharBoundaryTable(private val text: String) {
         codePoint < 0x800 -> 2
         codePoint < 0x10000 -> 3
         else -> 4
+    }
+
+    private fun isAsciiOnly(s: String): Boolean {
+        for (i in 0 until s.length) {
+            if (s[i].code >= 0x80) return false
+        }
+        return true
     }
 }

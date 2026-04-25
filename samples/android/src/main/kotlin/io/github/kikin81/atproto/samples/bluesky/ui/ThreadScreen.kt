@@ -44,11 +44,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import io.github.kikin81.atproto.app.bsky.feed.Post
 import io.github.kikin81.atproto.app.bsky.feed.PostView
-import io.github.kikin81.atproto.app.bsky.richtext.Facet
 import io.github.kikin81.atproto.compose.material3.rememberBlueskyAnnotatedString
-import io.github.kikin81.atproto.runtime.AtField
 import io.github.kikin81.atproto.runtime.AtUri
 import io.github.kikin81.atproto.runtime.decodeRecord
+import io.github.kikin81.atproto.samples.bluesky.util.toListOrNull
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -346,9 +345,4 @@ private fun ContextUnavailableRow() {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
-}
-
-private fun AtField<List<Facet>>.toListOrNull(): List<Facet>? = when (this) {
-    is AtField.Defined -> value
-    AtField.Missing, AtField.Null -> null
 }
