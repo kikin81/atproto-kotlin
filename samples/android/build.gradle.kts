@@ -42,6 +42,7 @@ dependencies {
     implementation(project(":runtime"))
     implementation(project(":models"))
     implementation(project(":oauth"))
+    implementation(project(":compose-material3"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

@@ -68,6 +68,9 @@ import io.github.kikin81.atproto.app.bsky.feed.Post
 import io.github.kikin81.atproto.app.bsky.feed.PostView
 import io.github.kikin81.atproto.app.bsky.feed.ReasonRepost
 import io.github.kikin81.atproto.app.bsky.feed.ReplyRefParentUnion
+import io.github.kikin81.atproto.app.bsky.richtext.Facet
+import io.github.kikin81.atproto.compose.material3.rememberBlueskyAnnotatedString
+import io.github.kikin81.atproto.runtime.AtField
 import io.github.kikin81.atproto.runtime.AtUri
 import io.github.kikin81.atproto.runtime.Datetime
 import io.github.kikin81.atproto.runtime.decodeRecord
@@ -178,6 +181,7 @@ private fun PostRow(
     val post = entry.post
     val record = runCatching { post.record.decodeRecord<Post>() }.getOrNull()
     val text = record?.text.orEmpty()
+    val facets = record?.facets?.toListOrNull()
     val createdAt = record?.createdAt ?: post.indexedAt
     val thumbUrl = extractFirstImageThumb(post)
     val quotedRecord = extractQuotedRecord(post)
@@ -209,7 +213,8 @@ private fun PostRow(
         }
         if (text.isNotBlank()) {
             Spacer(Modifier.height(4.dp))
-            Text(text, style = MaterialTheme.typography.bodyLarge)
+            val annotated = rememberBlueskyAnnotatedString(text, facets)
+            Text(annotated, style = MaterialTheme.typography.bodyLarge)
         }
         if (quotedRecord != null) {
             QuotedRecordCard(quotedRecord)
@@ -328,6 +333,7 @@ private fun RepostHeader(reason: FeedViewPostReasonUnion?) {
 private fun QuotedRecordCard(record: RecordViewRecord) {
     val quoted = runCatching { record.value.decodeRecord<Post>() }.getOrNull()
     val quotedText = quoted?.text.orEmpty()
+    val quotedFacets = quoted?.facets?.toListOrNull()
     val quotedThumb = extractFirstImageThumbFromEmbeds(record.embeds)
 
     Spacer(Modifier.height(8.dp))
@@ -345,7 +351,8 @@ private fun QuotedRecordCard(record: RecordViewRecord) {
         )
         if (quotedText.isNotBlank()) {
             Spacer(Modifier.height(4.dp))
-            Text(quotedText, style = MaterialTheme.typography.bodyMedium)
+            val quotedAnnotated = rememberBlueskyAnnotatedString(quotedText, quotedFacets)
+            Text(quotedAnnotated, style = MaterialTheme.typography.bodyMedium)
         }
         if (quotedThumb != null) {
             Spacer(Modifier.height(8.dp))
@@ -406,6 +413,7 @@ private fun ParentContextRow(
             val parent = info.view
             val parentRecord = runCatching { parent.record.decodeRecord<Post>() }.getOrNull()
             val excerpt = parentRecord?.text.orEmpty()
+            val excerptFacets = parentRecord?.facets?.toListOrNull()
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -421,7 +429,7 @@ private fun ParentContextRow(
                 if (excerpt.isNotBlank()) {
                     Spacer(Modifier.height(2.dp))
                     Text(
-                        excerpt,
+                        rememberBlueskyAnnotatedString(excerpt, excerptFacets),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 2,
@@ -439,4 +447,9 @@ private fun ParentContextRow(
             )
         }
     }
+}
+
+private fun AtField<List<Facet>>.toListOrNull(): List<Facet>? = when (this) {
+    is AtField.Defined -> value
+    AtField.Missing, AtField.Null -> null
 }
