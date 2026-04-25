@@ -21,7 +21,9 @@ ready to drop into a Ktor client.
 | `:generator` | JVM-only code generator. Parses the lexicon JSON corpus, resolves refs, tags mutation/read usage contexts, runs a verification pass (INV-1..4 + pair-keyed collision overrides), then emits idiomatic Kotlin via KotlinPoet: records, sealed-equivalent open unions, request/response pairs for queries and procedures, and `<Namespace>Service` classes wrapping `XrpcClient`. |
 | `:models` | KMP library that picks up the generator's output at build time via `:generator:generateModels`. This is what downstream consumers depend on. |
 | `:oauth` | JVM library implementing AT Protocol OAuth 2.0 for public clients: handle/DID/PDS/auth-server discovery, PAR with PKCE (S256) + DPoP (EC P-256), browser-based authorization, token exchange, and transparent refresh with DPoP-bound rotation. See [`oauth/README.md`](oauth/README.md). |
-| `:samples:android` | **Reference consumer.** A minimal Compose app that authenticates via OAuth 2.0 + DPoP and renders a Bluesky timeline. Dogfoods the generated API surface and the OAuth module end-to-end. See [`samples/android/README.md`](samples/android/README.md). |
+| `:compose` | Android library with Jetpack Compose helpers for rendering Bluesky post text + `app.bsky.richtext.facet` annotations as a correctly-styled `AnnotatedString`. Bullet-proof UTF-8 byte → UTF-16 char mapping. **No Material dependency** — bring your own design system. See [`compose/README.md`](compose/README.md). |
+| `:compose-material3` | Optional add-on with a one-line `@Composable rememberBlueskyAnnotatedString` that defaults link styling to `MaterialTheme.colorScheme.primary`. Layered on top of `:compose`. See [`compose-material3/README.md`](compose-material3/README.md). |
+| `:samples:android` | **Reference consumer.** A minimal Compose app that authenticates via OAuth 2.0 + DPoP and renders a Bluesky timeline using `:compose-material3` for facet rendering. Dogfoods the generated API surface, the OAuth module, and the Compose helpers end-to-end. See [`samples/android/README.md`](samples/android/README.md). |
 
 ## Sample app
 
@@ -73,6 +75,8 @@ dependencies {
     implementation("io.github.kikin81.atproto:runtime:<version>")
     implementation("io.github.kikin81.atproto:models:<version>")
     implementation("io.github.kikin81.atproto:oauth:<version>") // OAuth 2.0 + DPoP
+    implementation("io.github.kikin81.atproto:compose:<version>") // Android: facet → AnnotatedString
+    implementation("io.github.kikin81.atproto:compose-material3:<version>") // Android: Material 3 default
 }
 ```
 

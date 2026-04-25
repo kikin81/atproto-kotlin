@@ -36,6 +36,12 @@ See each module's documentation for details:
   unions, and `*Service` classes.
 - **oauth** — OAuth 2.0 with PAR + PKCE + DPoP for public
   clients (Android / JVM).
+- **compose** — Jetpack Compose helpers for rendering Bluesky
+  post text + facet annotations as an `AnnotatedString`. No
+  Material dependency.
+- **compose-material3** — `rememberBlueskyAnnotatedString`
+  composable with Material 3 defaults. Optional add-on layered
+  on top of `compose`.
 
 For LLM agents consuming this library, fetch task-oriented skills from
 [`skills/`](https://github.com/kikin81/atproto-kotlin/tree/main/skills)

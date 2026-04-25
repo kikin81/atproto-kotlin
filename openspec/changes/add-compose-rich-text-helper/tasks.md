@@ -75,21 +75,21 @@
 - [x] 7.2 Locate the sample's post-rendering `@Composable` (the feed-item composable that renders post text) and replace its facet handling with a call to `rememberBlueskyAnnotatedString`
 - [x] 7.3 Render the result via `Text(annotatedString, ...)` so `LinkAnnotation.Url` clicks open the OS browser by default
 - [ ] 7.4 Optional: in a second sample screen or a side-by-side block, show Tier 2 usage with a custom `styleMapper` that reads a non-Material brand color, demonstrating the artifact-split's value
-- [ ] 7.5 Manually verify on emulator: post text renders correctly, mention/link/tag styling applies, link tap opens browser, emoji-before-mention regression is not present
-- [ ] 7.6 Update the sample's README section for post rendering to point at the helper
+- [x] 7.5 Manually verify on emulator: post text renders correctly, mention/link/tag styling applies, link tap opens browser, emoji-before-mention regression is not present
+- [ ] 7.6 ~~Update the sample's README section for post rendering to point at the helper.~~ DEFERRED — the sample README doesn't currently have a "post rendering" section to update. Root README's modules table now mentions the sample uses `:compose-material3` for facet rendering.
 
 ## 8. Documentation and release wiring
 
-- [ ] 8.1 Add `compose/README.md` with the API tier overview, dependency table, minimum Compose UI version, and example snippets for each tier
-- [ ] 8.2 Add `compose-material3/README.md` (short — points back to `:compose` for the API and shows the one-line Material3 usage)
-- [ ] 8.3 Verify `./gradlew :dokkaGeneratePublicationHtml` aggregates both new modules into the published API docs site
-- [ ] 8.4 Update root `README.md`'s "Modules" or "Maven Central" section to list both new artifact coordinates
-- [ ] 8.5 Update `MODULE.md` (root) Dokka aggregation list if it enumerates modules
+- [x] 8.1 Add `compose/README.md` with the API tier overview, dependency table, minimum Compose UI version, and example snippets for each tier
+- [x] 8.2 Add `compose-material3/README.md` (short — points back to `:compose` for the API and shows the one-line Material3 usage)
+- [x] 8.3 Verify `./gradlew :dokkaGeneratePublicationHtml` aggregates both new modules into the published API docs site
+- [x] 8.4 Update root `README.md`'s "Modules" or "Maven Central" section to list both new artifact coordinates
+- [x] 8.5 Update `MODULE.md` (root) Dokka aggregation list if it enumerates modules
 
 ## 9. Final verification
 
-- [ ] 9.1 `./gradlew build` (full build + tests + spotless) passes locally
-- [ ] 9.2 `./gradlew :compose:test :compose-material3:test` passes (canonical regression cases all green)
-- [ ] 9.3 `./gradlew :samples:android:installDebug` builds and runs on an emulator with the sample feed rendering through the new helper
-- [ ] 9.4 Confirm the `:compose` POM published locally (`./gradlew publishToMavenLocal`) does NOT list `androidx.compose.material3:material3` as a transitive dependency
+- [x] 9.1 `./gradlew build` (full build + tests + spotless) passes locally
+- [x] 9.2 `./gradlew :compose:test :compose-material3:test` passes (canonical regression cases all green)
+- [x] 9.3 `./gradlew :samples:android:installDebug` builds and runs on an emulator with the sample feed rendering through the new helper
+- [x] 9.4 Confirm the `:compose` POM published locally (`./gradlew publishToMavenLocal`) does NOT list `androidx.compose.material3:material3` as a transitive dependency
 - [ ] 9.5 Open PR with conventional-commit `feat(compose): facet → AnnotatedString helper for Bluesky post text` referencing GitHub issue #20; ensure semantic-release will cut a minor version bump on merge
