@@ -34,8 +34,10 @@ import io.github.kikin81.atproto.compose.internal.Utf8CharBoundaryTable
  * [buildBlueskyAnnotatedString] skips unknowns silently.
  *
  * **Sort order guarantee.** [onFacet] is invoked in `byteStart`
- * ascending order, with ties broken by feature index within a single
- * facet. This lets callers stream output (e.g. `appendInlineContent`)
+ * ascending order. Ties between facets at the same `byteStart` preserve
+ * their original order in the input list (stable sort). Ties between
+ * features inside a single facet preserve their `features` array
+ * order. This lets callers stream output (e.g. `appendInlineContent`)
  * without sorting themselves.
  *
  * The [slice] parameter on [onFacet] is `text.substring(startChar,
