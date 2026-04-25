@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "server",
+  "dolt_database": "kikinlex",
+  "project_id": "c137427a-f1bd-43eb-b1b1-246b87cd7a7a"
+}

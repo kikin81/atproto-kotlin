@@ -16,3 +16,8 @@ generator/lexicons/
 
 # Per-user assistant / IDE config
 .gemini/
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+*.db
+.beads-credential-key
