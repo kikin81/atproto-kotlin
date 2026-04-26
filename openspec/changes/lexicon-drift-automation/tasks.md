@@ -1,12 +1,12 @@
 ## 1. Pin the npm dependency
 
 - [ ] 1.1 Read current resolved version from
-      `at-protocol-generator/package-lock.json` (presently `0.0.24`)
+      `generator/package-lock.json` (presently `0.0.24`)
 - [ ] 1.2 Replace `"@atproto/lex": "*"` with the exact version in
-      `at-protocol-generator/package.json`
-- [ ] 1.3 Run `npm ci` locally in `at-protocol-generator/` to confirm
+      `generator/package.json`
+- [ ] 1.3 Run `npm ci` locally in `generator/` to confirm
       lockfile is still consistent
-- [ ] 1.4 Verify `./gradlew :at-protocol-generator:generateModels` still
+- [ ] 1.4 Verify `./gradlew :generator:generateModels` still
       succeeds with the tightened pin
 
 ## 2. Scheduled workflow
@@ -16,10 +16,10 @@
 - [ ] 2.2 Add job: checkout with `token: ${{ secrets.RELEASE_PAT }}`,
       setup Node 22, setup JDK 17, setup Android SDK, setup Gradle
 - [ ] 2.3 Add step: `npm install @atproto/lex@latest --save-exact` in
-      `at-protocol-generator/`
+      `generator/`
 - [ ] 2.4 Add step: `npx lex install` (no `--ci`) to refresh lexicon
       corpus and CID pins
-- [ ] 2.5 Add step: `./gradlew :at-protocol-generator:generateModels`
+- [ ] 2.5 Add step: `./gradlew :generator:generateModels`
       to validate the new corpus compiles
 - [ ] 2.6 Add diff-detection step that sets an output
       `changes=true|false` based on whether `package.json`,

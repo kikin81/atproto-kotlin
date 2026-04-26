@@ -8,7 +8,7 @@ maintainer manually running `npx lex install` locally, noticing changes in
 1. **Invisible drift.** Between manual bumps, the models published to Maven
    Central diverge silently from the upstream lexicon corpus. Users report
    missing fields or types before the maintainer notices.
-2. **Fragile version declaration.** `at-protocol-generator/package.json`
+2. **Fragile version declaration.** `generator/package.json`
    declares `"@atproto/lex": "*"`. Reproducibility is accidentally maintained
    by `package-lock.json` alone — any `npm install` (instead of `npm ci`)
    would silently pick up a newer major. CI runs `npm ci` so we're safe
@@ -26,7 +26,7 @@ generator output diff before merging.
   1. Runs `npm update @atproto/lex` to pick up new npm releases
   2. Runs `npx lex install` (no `--ci`) to refresh `lexicons.json` against
      upstream CIDs
-  3. Runs `./gradlew :at-protocol-generator:generateModels`
+  3. Runs `./gradlew :generator:generateModels`
   4. If any of `package.json`, `package-lock.json`, `lexicons.json`, or
      generated sources changed, opens a PR titled
      `chore(lexicons): bump corpus to @atproto/lex@<version>`
@@ -49,7 +49,7 @@ generator output diff before merging.
 ## Impact
 
 - **New file**: `.github/workflows/lexicon-bump.yaml` (scheduled workflow).
-- **Modified file**: `at-protocol-generator/package.json` — exact pin for
+- **Modified file**: `generator/package.json` — exact pin for
   `@atproto/lex` instead of `"*"`.
 - **Modified file**: `CONTRIBUTING.md` — short section on lexicon updates.
 - **No runtime or generator code changes.** The generator already handles

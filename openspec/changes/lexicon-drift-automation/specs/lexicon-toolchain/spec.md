@@ -43,7 +43,7 @@ The workflow SHALL also be runnable manually via `workflow_dispatch`.
 
 ### Requirement: The @atproto/lex npm dependency SHALL be pinned to an exact version
 
-The `at-protocol-generator/package.json` SHALL declare
+The `generator/package.json` SHALL declare
 `@atproto/lex` with an exact version (no `*`, no `^`, no `~`). Version
 bumps SHALL flow exclusively through the scheduled lexicon-bump
 workflow or explicit manual PRs — never as a side effect of an
@@ -51,7 +51,7 @@ unintended `npm install`.
 
 #### Scenario: Fresh npm install picks up the exact pinned version
 
-- **GIVEN** `at-protocol-generator/package.json` declares
+- **GIVEN** `generator/package.json` declares
   `"@atproto/lex": "0.0.24"`
 - **WHEN** a contributor runs `npm install` from a clean clone
 - **THEN** the installed version of `@atproto/lex` is `0.0.24` (not a

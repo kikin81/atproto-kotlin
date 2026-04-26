@@ -25,7 +25,7 @@ that cadence, and any faster pollutes the PR queue.
 2. **Set up Node 22 + JDK 17** (matches existing workflows).
 3. **Bump the npm dependency**:
    ```bash
-   cd at-protocol-generator
+   cd generator
    npm update @atproto/lex
    ```
    This respects the semver range in `package.json`. After this change
@@ -38,13 +38,13 @@ that cadence, and any faster pollutes the PR queue.
 4. **Refresh the pinned corpus**: `npx lex install` (without `--ci`). This
    rewrites `lexicons.json` with the newest CIDs and re-downloads the
    corpus into `lexicons/` (gitignored).
-5. **Regenerate models**: `./gradlew :at-protocol-generator:generateModels`.
+5. **Regenerate models**: `./gradlew :generator:generateModels`.
 6. **Detect changes**:
    ```bash
-   git add at-protocol-generator/package.json \
-           at-protocol-generator/package-lock.json \
-           at-protocol-generator/lexicons.json \
-           at-protocol-models/build/generated/source/lexicon/
+   git add generator/package.json \
+           generator/package-lock.json \
+           generator/lexicons.json \
+           models/build/generated/source/lexicon/
    if git diff --cached --quiet; then
      echo "no_changes=true" >> "$GITHUB_OUTPUT"
    fi
@@ -83,7 +83,7 @@ Bumps `@atproto/lex` from `<old>` to `<new>`.
 - [ ] Skim the generator golden-file diff if any generator logic was
       affected
 - [ ] Verify no new lexicon references are missing Kotlin types (compile
-      failure in `:at-protocol-models`)
+      failure in `:models`)
 
 ### Release impact
 
@@ -163,7 +163,7 @@ output added, removed, or broke existing types.
 - **Consolidating CI lexicon fetches** (the 2x–3x `lex install --ci`
   duplication noted in analysis). That's a separate optimization — this
   change is about drift detection, not CI efficiency.
-- **Releasing `:at-protocol-models` with a version string derived from
+- **Releasing `:models` with a version string derived from
   `@atproto/lex`.** The existing spec already gestures at this but the
   release pipeline doesn't implement it; treat as out of scope here.
 - **Committing generated sources.** Generator output stays in `build/`
