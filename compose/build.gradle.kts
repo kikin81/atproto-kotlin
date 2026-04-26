@@ -37,7 +37,7 @@ dependencies {
     api(platform(libs.compose.bom))
     api(libs.compose.ui.text)
 
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:${libs.versions.kotlin.get()}")
+    testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.kotlinx.coroutines.test)
 }
 

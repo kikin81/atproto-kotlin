@@ -40,7 +40,7 @@ dependencies {
     api(libs.compose.material3)
     implementation(libs.compose.runtime)
 
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:${libs.versions.kotlin.get()}")
+    testImplementation(libs.kotlin.test.junit)
 }
 
 mavenPublishing {
