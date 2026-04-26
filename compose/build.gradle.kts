@@ -9,7 +9,11 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        minSdk = 28
+        // Matches the upstream baseline of modern Jetpack Compose / AndroidX
+        // (bumped from API 21 to API 23 around Compose 1.6 / BOM 2024.02).
+        // Source uses only pure Kotlin stdlib + Compose UI APIs — no
+        // platform calls require API > 23.
+        minSdk = 23
     }
 
     compileOptions {
