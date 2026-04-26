@@ -9,6 +9,7 @@ ready to drop into a Ktor client.
 
 [![CI](https://github.com/kikin81/atproto-kotlin/actions/workflows/ci.yaml/badge.svg)](https://github.com/kikin81/atproto-kotlin/actions/workflows/ci.yaml)
 [![Release](https://github.com/kikin81/atproto-kotlin/actions/workflows/release.yaml/badge.svg)](https://github.com/kikin81/atproto-kotlin/actions/workflows/release.yaml)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.kikin81.atproto/runtime?label=Maven%20Central&color=blue)](https://central.sonatype.com/artifact/io.github.kikin81.atproto/runtime)
 [![Latest release](https://img.shields.io/github/v/release/kikin81/atproto-kotlin?label=release&color=blue)](https://github.com/kikin81/atproto-kotlin/releases/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![API Docs](https://img.shields.io/badge/docs-API_Reference-blue)](https://kikin81.github.io/atproto-kotlin/api/)
@@ -24,6 +25,27 @@ ready to drop into a Ktor client.
 | `:compose` | Android library with Jetpack Compose helpers for rendering Bluesky post text + `app.bsky.richtext.facet` annotations as a correctly-styled `AnnotatedString`. Bullet-proof UTF-8 byte → UTF-16 char mapping. **No Material dependency** — bring your own design system. See [`compose/README.md`](compose/README.md). |
 | `:compose-material3` | Optional add-on with a one-line `@Composable rememberBlueskyAnnotatedString` that defaults link styling to `MaterialTheme.colorScheme.primary`. Layered on top of `:compose`. See [`compose-material3/README.md`](compose-material3/README.md). |
 | `:samples:android` | **Reference consumer.** A minimal Compose app that authenticates via OAuth 2.0 + DPoP and renders a Bluesky timeline using `:compose-material3` for facet rendering. Dogfoods the generated API surface, the OAuth module, and the Compose helpers end-to-end. See [`samples/android/README.md`](samples/android/README.md). |
+
+### Codegen pipeline
+
+The `:generator` module's seven stages, end to end:
+
+```mermaid
+flowchart LR
+    A[Lexicon JSON<br/>corpus] --> B[Parse<br/>→ IR]
+    B --> C[Resolve<br/>refs]
+    C --> D[Context-tag<br/>Mut / Read / Both]
+    D --> E[Name<br/>FqNames]
+    E --> F[Verify<br/>INV-1..4]
+    F --> G[Plan<br/>unions + splits]
+    G --> H[Emit<br/>KotlinPoet]
+    H --> I[:models<br/>generated source]
+```
+
+Each stage is a separate pass with its own tests. The verification pass
+enforces invariants (no name collisions, no unresolved refs) before any
+KotlinPoet emission, so generator errors fail fast with actionable
+messages instead of producing broken Kotlin downstream.
 
 ## Sample app
 
@@ -146,12 +168,15 @@ version on `feat:` / `fix:` / `BREAKING CHANGE`:
 - `BREAKING CHANGE:` footer → major bump
 - `chore:` / `ci:` / `docs:` / `test:` / `refactor:` → no release
 
-The release workflow runs a single **release** job: semantic-release
+The release workflow runs gate jobs (`lint`, `test`, `build`) that
+mirror CI, and only then runs the **release** job: semantic-release
 analyzes commits, bumps `gradle.properties`, creates a git tag + GitHub
 release, then runs `./gradlew publish` via the
 `gradle-semantic-release-plugin` to upload artifacts to **both** GitHub
 Packages and Maven Central (via the
 [vanniktech maven-publish plugin](https://vanniktech.github.io/gradle-maven-publish-plugin/)).
+A final docs job rebuilds the Dokka API reference and pushes it to
+GitHub Pages.
 
 Central uploads auto-promote to `repo1.maven.org` — no manual step
 needed. Artifacts are typically available within 15–30 minutes of a
@@ -168,6 +193,23 @@ promoted into permanent main specs at `openspec/specs/<capability>/`.
 
 Run `openspec list` to see active + archived changes, or
 `openspec status --change <name>` for artifact-level progress.
+
+## Contributing
+
+PRs welcome. Read [`CONTRIBUTING.md`](CONTRIBUTING.md) for the quick-start
+build, the per-module verification commands, and the Conventional Commits
+expectations (since `feat:` / `fix:` on `main` cuts a release).
+
+For non-trivial changes, open an issue first — GitHub auto-applies a
+[bug report](.github/ISSUE_TEMPLATE/bug_report.md) or
+[feature request](.github/ISSUE_TEMPLATE/feature_request.md) template
+when you click **New issue**. Pull requests likewise pre-populate from
+[`PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) — fill in
+the affected-module checklist and the "How it was verified" section.
+
+Larger architectural work goes through the
+[OpenSpec](#openspec) workflow described above; `CONTRIBUTING.md`
+explains when that's required.
 
 ## License
 
