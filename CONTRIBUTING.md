@@ -29,7 +29,7 @@ Gradle 9.3.1 ships via the wrapper — no separate install needed.
 |---|---|---|
 | `:runtime` | **Yes** | Value classes, `AtField`, `OpenUnionSerializer`, `XrpcClient`, `AuthProvider`. Edit freely. |
 | `:generator` | **Yes** | The Lexicon parser, IR, and KotlinPoet emitters. Edit freely, but see "Regenerating models" below. |
-| `:models` | **No — generated** | Do not edit files under `models/build/generated/…`. To change generated output, edit the generator. |
+| `:models` | **No — generated** | Do not edit files under `models/build/generated/…`. To change generated output, edit the generator. The pinned lexicon corpus is bumped automatically — see [Lexicon updates](#lexicon-updates). |
 | `:oauth` | **Yes** | OAuth 2.0 + PAR + PKCE + DPoP. Edit freely. |
 | `:samples:android` | **Yes** | Reference Compose consumer. Great place to verify end-to-end changes. |
 
@@ -97,6 +97,28 @@ unformatted code. If you didn't install the hooks, run:
 before committing. No wildcard imports. No max line length. Compose
 `@Composable` function naming is disabled (lowercase-friendly helper names
 are fine).
+
+## Lexicon updates
+
+Upstream AT Protocol lexicons are bumped automatically. A scheduled
+[`lexicon-bump`](.github/workflows/lexicon-bump.yaml) workflow runs
+weekly (Mondays 14:00 UTC) and opens a PR titled
+`chore(lexicons): bump @atproto/lex to <v>` whenever upstream has
+drifted from the pinned version. The PR includes the updated
+`generator/package.json`, `generator/package-lock.json`, and
+`generator/lexicons.json`, plus a CID-level summary of what changed.
+
+To trigger an ad-hoc bump, run the `Lexicon bump` workflow manually
+via the **Actions** tab on GitHub (`workflow_dispatch`).
+
+Successive runs reuse a stable `chore/lexicon-bump` branch, so a
+newer upstream release will update the existing PR rather than
+opening a second one.
+
+Merging the PR cuts a release whose semver bump depends on whether
+the regenerated models added, removed, or renamed types — humans
+classify by editing the PR title to `feat:` or `feat!:` before
+merging if a breaking change landed.
 
 ## Larger architectural changes (OpenSpec)
 

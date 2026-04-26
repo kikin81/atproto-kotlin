@@ -1,45 +1,46 @@
 ## 1. Pin the npm dependency
 
-- [ ] 1.1 Read current resolved version from
+- [x] 1.1 Read current resolved version from
       `generator/package-lock.json` (presently `0.0.24`)
-- [ ] 1.2 Replace `"@atproto/lex": "*"` with the exact version in
+- [x] 1.2 Replace `"@atproto/lex": "*"` with the exact version in
       `generator/package.json`
-- [ ] 1.3 Run `npm ci` locally in `generator/` to confirm
+- [x] 1.3 Run `npm ci` locally in `generator/` to confirm
       lockfile is still consistent
-- [ ] 1.4 Verify `./gradlew :generator:generateModels` still
+- [x] 1.4 Verify `./gradlew :generator:generateModels` still
       succeeds with the tightened pin
 
 ## 2. Scheduled workflow
 
-- [ ] 2.1 Create `.github/workflows/lexicon-bump.yaml` with triggers
+- [x] 2.1 Create `.github/workflows/lexicon-bump.yaml` with triggers
       `schedule: cron "0 14 * * 1"` and `workflow_dispatch: {}`
-- [ ] 2.2 Add job: checkout with `token: ${{ secrets.RELEASE_PAT }}`,
+- [x] 2.2 Add job: checkout with `token: ${{ secrets.RELEASE_PAT }}`,
       setup Node 22, setup JDK 17, setup Android SDK, setup Gradle
-- [ ] 2.3 Add step: `npm install @atproto/lex@latest --save-exact` in
+- [x] 2.3 Add step: `npm install @atproto/lex@latest --save-exact` in
       `generator/`
-- [ ] 2.4 Add step: `npx lex install` (no `--ci`) to refresh lexicon
+- [x] 2.4 Add step: `npx lex install` (no `--ci`) to refresh lexicon
       corpus and CID pins
-- [ ] 2.5 Add step: `./gradlew :generator:generateModels`
+- [x] 2.5 Add step: `./gradlew :generator:generateModels`
       to validate the new corpus compiles
-- [ ] 2.6 Add diff-detection step that sets an output
+- [x] 2.6 Add diff-detection step that sets an output
       `changes=true|false` based on whether `package.json`,
       `package-lock.json`, or `lexicons.json` have staged changes
-- [ ] 2.7 Add conditional step: when `changes=true`, extract old and
+- [x] 2.7 Add conditional step: when `changes=true`, extract old and
       new `@atproto/lex` versions and build the PR body (Added /
       Removed / Updated CIDs, reviewer checklist, release impact note)
-- [ ] 2.8 Add step: `peter-evans/create-pull-request@v7` with stable
+- [x] 2.8 Add step: `peter-evans/create-pull-request@v7` with stable
       branch `chore/lexicon-bump`, title
       `chore(lexicons): bump @atproto/lex to <version>`, labels
       `lexicon-bump` and `dependencies`
-- [ ] 2.9 Verify workflow YAML passes the existing
-      `open-turo/actions-jvm/lint` check
+- [x] 2.9 Verify workflow YAML passes the existing
+      `open-turo/actions-jvm/lint` check (verified locally with
+      `actionlint` — exit 0, clean)
 
 ## 3. Documentation
 
-- [ ] 3.1 Add a "Lexicon updates" subsection to `CONTRIBUTING.md`
+- [x] 3.1 Add a "Lexicon updates" subsection to `CONTRIBUTING.md`
       explaining the automated bump flow and how to trigger a manual
       run via the Actions tab
-- [ ] 3.2 Update the module table note in `CONTRIBUTING.md` or
+- [x] 3.2 Update the module table note in `CONTRIBUTING.md` or
       `README.md` to reference the automated workflow
 
 ## 4. Manual verification

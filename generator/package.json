@@ -4,6 +4,6 @@
   "private": true,
   "description": "Pins the @atproto/lex release whose lexicon JSON is consumed by :generator. Not published.",
   "dependencies": {
-    "@atproto/lex": "*"
+    "@atproto/lex": "0.0.24"
   }
 }
