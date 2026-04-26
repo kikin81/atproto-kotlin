@@ -63,14 +63,17 @@ class DpopAuthProvider(
     /**
      * Called by [XrpcClient] on HTTP 401. Recovers every recoverable cause in
      * one call so the single retry that [XrpcClient] performs always carries
-     * fresh state:
+     * fresh state. Control flow:
      *
-     * 1. Stores a new `DPoP-Nonce` if the server rotated it.
+     * 1. If the server rotated `DPoP-Nonce`, store and persist it eagerly.
+     *    Persisting before any refresh attempt means a refresh that throws
+     *    (e.g. transient network failure) won't lose the rotated nonce.
      * 2. If the bound access token is a JWT whose `exp` is past (or within a
      *    small skew window) — i.e. the next request would 401 with
-     *    `invalid_token` regardless of nonce — refreshes proactively.
-     * 3. Otherwise falls through to refresh (the original "no nonce signal"
-     *    path: same nonce, opaque token, etc).
+     *    `invalid_token` regardless of nonce — refresh proactively.
+     * 3. If only the nonce was recoverable (opaque/non-expired token, new
+     *    nonce already persisted in step 1), return `true`.
+     * 4. Otherwise (no nonce signal: same nonce, no nonce header) refresh.
      */
     override suspend fun onUnauthorized(responseHeaders: Map<String, String>): Boolean {
         val newNonce = responseHeaders["DPoP-Nonce"] ?: responseHeaders["dpop-nonce"]
@@ -80,18 +83,14 @@ class DpopAuthProvider(
         val nonceChanged = newNonce != null && newNonce != pdsNonce
         if (nonceChanged) {
             pdsNonce = newNonce
-            // Defer persistNonces(): if refresh runs below, refreshTokens()
-            // saves the new pdsNonce alongside the new tokens in one write.
+            persistNonces()
         }
 
         if (isAccessTokenExpired()) {
             return refreshMutex.withLock { refreshTokens() }
         }
 
-        if (nonceChanged) {
-            persistNonces()
-            return true
-        }
+        if (nonceChanged) return true
 
         return refreshMutex.withLock { refreshTokens() }
     }
@@ -117,7 +116,7 @@ class DpopAuthProvider(
                 exp <= now + skewSeconds
             }
         }
-    } catch (_: Throwable) {
+    } catch (_: Exception) {
         false
     }
 

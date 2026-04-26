@@ -12,6 +12,7 @@ import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
@@ -162,6 +163,48 @@ class DpopAuthProviderTest {
 
         assertTrue(recovered)
         assertEquals(1, tokenCalls)
+    }
+
+    @Test
+    fun onUnauthorizedPersistsNewNonceEvenWhenRefreshFails() = runTest {
+        // If the access token is expired AND the server rotates the nonce in
+        // the same 401, refreshTokens() may still throw on a network failure.
+        // The new nonce must already be persisted so the next cold start
+        // doesn't have to re-discover it (Copilot review on PR #34, comment
+        // 2). Per refreshTokens(), a network-layer exception throws
+        // OAuthSessionExpiredException without calling sessionStore.clear(),
+        // so persisting the nonce is safe.
+        val refreshClient = HttpClient(
+            MockEngine { _ ->
+                throw java.io.IOException("simulated network failure")
+            },
+        )
+
+        val signer = DpopSigner.generate()
+        val exported = signer.exportKeyPair()
+        val expiredToken = makeJwtWithExp((System.currentTimeMillis() / 1000) - 3600)
+        val store = InMemorySessionStore()
+        val session = OAuthSession(
+            accessToken = expiredToken,
+            refreshToken = "rt",
+            did = "did:plc:x",
+            handle = "x.test",
+            pdsUrl = "https://pds.test",
+            tokenEndpoint = "https://auth.test/token",
+            clientId = "https://app.test/meta.json",
+            dpopPrivateKey = exported.privateKeyEncoded,
+            dpopPublicKey = exported.publicKeyEncoded,
+            pdsNonce = "old-nonce",
+        )
+        store.session = session
+        val provider = DpopAuthProvider(session, signer, store, refreshClient)
+
+        assertFailsWith<OAuthSessionExpiredException> {
+            provider.onUnauthorized(mapOf("DPoP-Nonce" to "fresh-nonce"))
+        }
+
+        // Refresh threw, but the rotated nonce must already be persisted.
+        assertEquals("fresh-nonce", store.session?.pdsNonce)
     }
 
     @OptIn(ExperimentalEncodingApi::class)
