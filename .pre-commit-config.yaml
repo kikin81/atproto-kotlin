@@ -29,7 +29,17 @@ repos:
       - id: check-merge-conflict
       - id: check-added-large-files
         args: ["--maxkb=500"]
+        # api/*.api dumps from kotlinx-binary-compatibility-validator scale
+        # with the published API surface. :models in particular tracks every
+        # generated lexicon type, so its dump is intentionally large (~900 KB).
+        exclude: '^[^/]+/api/.*\.api$'
       - id: end-of-file-fixer
+        # apiDump from kotlinx-binary-compatibility-validator emits one
+        # trailing blank line after the final closing brace. This hook
+        # collapses that to a single newline, after which the next
+        # apiCheck regenerates the blank and fails — so .api files have
+        # to opt out of the normalization.
+        exclude: '^[^/]+/api/.*\.api$'
       - id: trailing-whitespace
       - id: mixed-line-ending
         args: ["--fix=lf"]

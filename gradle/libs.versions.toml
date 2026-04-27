@@ -9,6 +9,7 @@ spotless = "8.4.0"
 ktlint = "1.4.1"
 dokka = "2.2.0"
 vanniktech-maven-publish = "0.36.0"
+binary-compatibility-validator = "0.18.0"
 
 # Android sample
 agp = "9.2.1"
@@ -72,3 +73,4 @@ vanniktech-maven-publish = { id = "com.vanniktech.maven.publish", version.ref = 
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+binary-compatibility-validator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "binary-compatibility-validator" }

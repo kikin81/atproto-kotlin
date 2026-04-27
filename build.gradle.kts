@@ -11,6 +11,27 @@ plugins {
     alias(libs.plugins.vanniktech.maven.publish) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.hilt) apply false
+    alias(libs.plugins.binary.compatibility.validator)
+}
+
+// kotlinx binary-compatibility-validator dumps each published module's
+// public API to api/<module>.api text files. CI runs `apiCheck` (wired
+// into the `check` lifecycle) and fails on any unexpected diff. To
+// intentionally change public API, run `./gradlew apiDump` and commit
+// the regenerated api/*.api files alongside the code change.
+//
+// :generator and :samples:android are excluded — neither is consumed
+// by downstream code, so their public surface is internal.
+//
+// klib validation is disabled because iOS targets are conditionally
+// declared only on macOS hosts (see runtime/build.gradle.kts) and
+// Linux CI publishes JVM-only. When iOS publishing lands, flip this
+// flag to validate iOS klibs alongside JVM.
+apiValidation {
+    ignoredProjects += listOf("generator", "android")
+    klib {
+        enabled = false
+    }
 }
 
 dependencies {

@@ -78,6 +78,14 @@ jobs:
       - name: Android sample unit tests
         run: ./gradlew :samples:android:testDebugUnitTest
 
+      # Track public API surface for :runtime, :models, :oauth via the
+      # kotlinx-binary-compatibility-validator plugin. Fails if any
+      # change to public symbols isn't accompanied by an updated
+      # <module>/api/<module>.api dump (for example, `runtime/api/runtime.api`;
+      # regenerate with `./gradlew apiDump`).
+      - name: Public API surface check
+        run: ./gradlew apiCheck
+
   build:
     name: Build
     runs-on: ubuntu-latest

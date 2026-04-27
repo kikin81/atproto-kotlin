@@ -98,6 +98,32 @@ before committing. No wildcard imports. No max line length. Compose
 `@Composable` function naming is disabled (lowercase-friendly helper names
 are fine).
 
+## Public API surface
+
+The `:runtime`, `:models`, and `:oauth` modules track every public symbol
+via [kotlinx-binary-compatibility-validator](https://github.com/Kotlin/binary-compatibility-validator).
+Each module owns its dump under `<module>/api/<module>.api` (for example,
+`runtime/api/runtime.api`, `models/api/models.api`, `oauth/api/oauth.api`)
+and these text files are under version control; CI runs `./gradlew apiCheck`
+and fails on any unexpected diff.
+
+If your change intentionally adds, removes, or modifies a public symbol,
+regenerate the dumps and commit them alongside the code:
+
+```bash
+./gradlew apiDump
+git add runtime/api oauth/api models/api
+```
+
+The diff in `api/*.api` becomes a clear review signal — reviewers can
+see exactly what entered or left the public surface without spelunking
+through the source.
+
+`:compose` and `:compose-material3` aren't tracked yet (Android library
+modules need explicit per-module wiring; tracked separately). `:generator`
+and `:samples:android` are intentionally excluded — neither is consumed
+externally, so their public surface is internal.
+
 ## Lexicon updates
 
 Upstream AT Protocol lexicons are bumped automatically. A scheduled

@@ -1,0 +1,156 @@
+public final class io/github/kikin81/atproto/oauth/AtOAuth {
+	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/oauth/OAuthSessionStore;Lio/ktor/client/HttpClient;Lkotlinx/serialization/json/Json;)V
+	public synthetic fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/oauth/OAuthSessionStore;Lio/ktor/client/HttpClient;Lkotlinx/serialization/json/Json;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun beginLogin (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun completeLogin (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun createClient (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun logout (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class io/github/kikin81/atproto/oauth/AuthServerMetadata {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun component6 ()Ljava/lang/String;
+	public final fun component7 ()Ljava/lang/String;
+	public final fun component8 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lio/github/kikin81/atproto/oauth/AuthServerMetadata;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/oauth/AuthServerMetadata;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/oauth/AuthServerMetadata;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAuthorizationEndpoint ()Ljava/lang/String;
+	public final fun getDid ()Ljava/lang/String;
+	public final fun getHandle ()Ljava/lang/String;
+	public final fun getIssuer ()Ljava/lang/String;
+	public final fun getParEndpoint ()Ljava/lang/String;
+	public final fun getPdsUrl ()Ljava/lang/String;
+	public final fun getRevocationEndpoint ()Ljava/lang/String;
+	public final fun getTokenEndpoint ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/kikin81/atproto/oauth/DiscoveryChain {
+	public fun <init> (Lio/ktor/client/HttpClient;Lkotlinx/serialization/json/Json;)V
+	public synthetic fun <init> (Lio/ktor/client/HttpClient;Lkotlinx/serialization/json/Json;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun resolve (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class io/github/kikin81/atproto/oauth/DpopAuthProvider : io/github/kikin81/atproto/runtime/AuthProvider {
+	public fun <init> (Lio/github/kikin81/atproto/oauth/OAuthSession;Lio/github/kikin81/atproto/oauth/DpopSigner;Lio/github/kikin81/atproto/oauth/OAuthSessionStore;Lio/ktor/client/HttpClient;Lkotlinx/serialization/json/Json;)V
+	public synthetic fun <init> (Lio/github/kikin81/atproto/oauth/OAuthSession;Lio/github/kikin81/atproto/oauth/DpopSigner;Lio/github/kikin81/atproto/oauth/OAuthSessionStore;Lio/ktor/client/HttpClient;Lkotlinx/serialization/json/Json;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun authHeaders (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun onUnauthorized (Ljava/util/Map;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class io/github/kikin81/atproto/oauth/DpopSigner {
+	public static final field Companion Lio/github/kikin81/atproto/oauth/DpopSigner$Companion;
+	public synthetic fun <init> (Ljava/security/KeyPair;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun calibrateClockFromHeader (Ljava/lang/String;)V
+	public final fun exportKeyPair ()Lio/github/kikin81/atproto/oauth/DpopSigner$ExportedKeyPair;
+	public final fun getClockOffsetSeconds ()J
+	public final fun getPublicKey ()Ljava/security/interfaces/ECPublicKey;
+	public final fun setClockOffsetSeconds (J)V
+	public final fun sign (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+	public static synthetic fun sign$default (Lio/github/kikin81/atproto/oauth/DpopSigner;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ljava/lang/String;
+}
+
+public final class io/github/kikin81/atproto/oauth/DpopSigner$Companion {
+	public final fun accessTokenHash (Ljava/lang/String;)Ljava/lang/String;
+	public final fun fromExported (Lio/github/kikin81/atproto/oauth/DpopSigner$ExportedKeyPair;)Lio/github/kikin81/atproto/oauth/DpopSigner;
+	public final fun generate ()Lio/github/kikin81/atproto/oauth/DpopSigner;
+	public final fun jwkThumbprint (Ljava/security/interfaces/ECPublicKey;)Ljava/lang/String;
+}
+
+public final class io/github/kikin81/atproto/oauth/DpopSigner$ExportedKeyPair {
+	public fun <init> ([B[B)V
+	public final fun component1 ()[B
+	public final fun component2 ()[B
+	public final fun copy ([B[B)Lio/github/kikin81/atproto/oauth/DpopSigner$ExportedKeyPair;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/oauth/DpopSigner$ExportedKeyPair;[B[BILjava/lang/Object;)Lio/github/kikin81/atproto/oauth/DpopSigner$ExportedKeyPair;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getPrivateKeyEncoded ()[B
+	public final fun getPublicKeyEncoded ()[B
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/kikin81/atproto/oauth/OAuthAccountMismatchException : java/lang/RuntimeException {
+	public fun <init> (Ljava/lang/String;)V
+}
+
+public final class io/github/kikin81/atproto/oauth/OAuthDiscoveryException : java/lang/RuntimeException {
+	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public final class io/github/kikin81/atproto/oauth/OAuthException : java/lang/RuntimeException {
+	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public final class io/github/kikin81/atproto/oauth/OAuthSession {
+	public static final field Companion Lio/github/kikin81/atproto/oauth/OAuthSession$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;[B[BLjava/lang/String;JLjava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;[B[BLjava/lang/String;JLjava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component10 ()[B
+	public final fun component11 ()Ljava/lang/String;
+	public final fun component12 ()J
+	public final fun component13 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun component6 ()Ljava/lang/String;
+	public final fun component7 ()Ljava/lang/String;
+	public final fun component8 ()Ljava/lang/String;
+	public final fun component9 ()[B
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;[B[BLjava/lang/String;JLjava/lang/String;)Lio/github/kikin81/atproto/oauth/OAuthSession;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/oauth/OAuthSession;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;[B[BLjava/lang/String;JLjava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/oauth/OAuthSession;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAccessToken ()Ljava/lang/String;
+	public final fun getAuthServerNonce ()Ljava/lang/String;
+	public final fun getClientId ()Ljava/lang/String;
+	public final fun getClockOffsetSeconds ()J
+	public final fun getDid ()Ljava/lang/String;
+	public final fun getDpopPrivateKey ()[B
+	public final fun getDpopPublicKey ()[B
+	public final fun getHandle ()Ljava/lang/String;
+	public final fun getPdsNonce ()Ljava/lang/String;
+	public final fun getPdsUrl ()Ljava/lang/String;
+	public final fun getRefreshToken ()Ljava/lang/String;
+	public final fun getRevocationEndpoint ()Ljava/lang/String;
+	public final fun getTokenEndpoint ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/oauth/OAuthSession$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/oauth/OAuthSession$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/oauth/OAuthSession;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/oauth/OAuthSession;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/oauth/OAuthSession$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/oauth/OAuthSessionExpiredException : java/lang/RuntimeException {
+	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public abstract interface class io/github/kikin81/atproto/oauth/OAuthSessionStore {
+	public abstract fun clear (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun load (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun save (Lio/github/kikin81/atproto/oauth/OAuthSession;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
