@@ -120,6 +120,25 @@ the regenerated models added, removed, or renamed types — humans
 classify by editing the PR title to `feat:` or `feat!:` before
 merging if a breaking change landed.
 
+## Other dependency updates (Renovate)
+
+JVM, npm (excluding `@atproto/lex`), Gradle, and GitHub Actions
+dependencies are bumped automatically by [Renovate](https://docs.renovatebot.com/),
+configured at [`.github/renovate.json`](.github/renovate.json).
+The config groups Kotlin/KSP/Compose-compiler under `kotlin-ecosystem`,
+Compose UI/Foundation/Animation/Material/Runtime under `compose-ui`,
+and all `io.ktor:*` artifacts under `ktor` so each release lands as
+one PR instead of many. Minor and patch Gradle dependency updates
+auto-merge once CI is green; major bumps wait for a human.
+
+`@atproto/lex` is deliberately excluded from Renovate — the
+[`lexicon-bump`](.github/workflows/lexicon-bump.yaml) workflow above
+owns it because a Renovate-only npm bump would leave
+`generator/lexicons.json` out of sync and fail `npx lex install --ci`.
+
+The Renovate dashboard issue (auto-created by the bot) is the source
+of truth for queued and ignored updates.
+
 ## Larger architectural changes (OpenSpec)
 
 For significant structural work — new modules, generator rewrites, changes

@@ -1,0 +1,57 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": [
+        "config:recommended",
+        "github>open-turo/renovate-config#v1.18.0",
+        "github>open-turo/renovate-config:jvm#v1.18.0"
+    ],
+    "dependencyDashboard": true,
+    "prHourlyLimit": 0,
+    "labels": ["dependencies"],
+    "rebaseWhen": "conflicted",
+    "packageRules": [
+        {
+            "description": "Group Kotlin, KSP, and Compose compiler. Exclude kotlinx — it moves on a different cadence than the language itself and grouping causes unnecessary version locks.",
+            "matchPackagePatterns": [
+                "org.jetbrains.kotlin",
+                "com.google.devtools.ksp",
+                "androidx.compose.compiler",
+                "org.jetbrains.kotlin.plugin.compose"
+            ],
+            "excludePackagePatterns": ["org.jetbrains.kotlinx"],
+            "groupName": "kotlin-ecosystem"
+        },
+        {
+            "description": "Group Compose UI / Foundation / Animation / Material / Runtime libraries — they release together and almost always need to move in lockstep.",
+            "matchPackagePatterns": [
+                "^androidx\\.compose\\.ui",
+                "^androidx\\.compose\\.foundation",
+                "^androidx\\.compose\\.animation",
+                "^androidx\\.compose\\.material",
+                "^androidx\\.compose\\.runtime"
+            ],
+            "groupName": "compose-ui"
+        },
+        {
+            "description": "Group Ktor client/server submodules — :runtime, :oauth, and :samples:android all depend on Ktor and the submodules release in lockstep, so grouping avoids 5+ duplicate PRs per Ktor release.",
+            "matchPackagePrefixes": ["io.ktor:"],
+            "groupName": "ktor"
+        },
+        {
+            "description": "Owned by .github/workflows/lexicon-bump.yaml. That workflow performs the full npm bump + npx lex install + :models regeneration in one PR; a Renovate-only npm bump would land lexicons.json out of sync and fail `npx lex install --ci` in CI.",
+            "matchPackageNames": ["@atproto/lex"],
+            "enabled": false
+        },
+        {
+            "description": "Provide direct links to Gradle release notes in PRs.",
+            "matchPackageNames": ["gradle"],
+            "prBodyNotes": "[Changelog](https://docs.gradle.org/{{{newVersion}}}/release-notes.html)"
+        },
+        {
+            "matchManagers": ["gradle"],
+            "matchUpdateTypes": ["minor", "patch"],
+            "automerge": true,
+            "platformAutomerge": true
+        }
+    ]
+}
