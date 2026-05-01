@@ -7,8 +7,8 @@ records, sealed-equivalent open unions with `$type` dispatch, typed value
 classes for every string format, and `suspend fun` XRPC service interfaces
 ready to drop into a Ktor client.
 
-[![CI](https://github.com/kikin81/atproto-kotlin/actions/workflows/ci.yaml/badge.svg)](https://github.com/kikin81/atproto-kotlin/actions/workflows/ci.yaml)
-[![Release](https://github.com/kikin81/atproto-kotlin/actions/workflows/release.yaml/badge.svg)](https://github.com/kikin81/atproto-kotlin/actions/workflows/release.yaml)
+[![CI](https://github.com/kikin81/atproto-kotlin/actions/workflows/ci.yaml/badge.svg?branch=main&event=push)](https://github.com/kikin81/atproto-kotlin/actions/workflows/ci.yaml?query=branch%3Amain)
+[![Release](https://github.com/kikin81/atproto-kotlin/actions/workflows/release.yaml/badge.svg?branch=main&event=push)](https://github.com/kikin81/atproto-kotlin/actions/workflows/release.yaml?query=branch%3Amain)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.kikin81.atproto/runtime?label=Maven%20Central&color=blue)](https://central.sonatype.com/artifact/io.github.kikin81.atproto/runtime)
 [![Latest release](https://img.shields.io/github/v/release/kikin81/atproto-kotlin?label=release&color=blue)](https://github.com/kikin81/atproto-kotlin/releases/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)

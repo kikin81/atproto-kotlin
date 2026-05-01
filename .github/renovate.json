@@ -11,6 +11,13 @@
     "rebaseWhen": "conflicted",
     "packageRules": [
         {
+            "description": "Ungroup non-major deps that aren't covered by an explicit group below. Overrides the inherited 'all non-major' catch-all (from open-turo/renovate-config:jvm) so each ungrouped package gets its own PR for easier review and bisection. Must come first because Renovate applies packageRules in order — later rules win, so explicit groups below re-apply on top of this null.",
+            "matchUpdateTypes": ["minor", "patch"],
+            "matchPackagePatterns": [".*"],
+            "groupName": null,
+            "groupSlug": null
+        },
+        {
             "description": "Group Kotlin, KSP, and Compose compiler. Exclude kotlinx — it moves on a different cadence than the language itself and grouping causes unnecessary version locks. Patterns are anchored and dots escaped because Renovate treats matchPackagePatterns as regex.",
             "matchPackagePatterns": [
                 "^org\\.jetbrains\\.kotlin($|[.:])",
