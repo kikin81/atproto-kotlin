@@ -54,8 +54,9 @@ public fun AtUri.parseOrNull(): AtUriParts? {
     val fragment = if (hashIdx >= 0) body.substring(hashIdx + 1) else null
 
     val rawSegments = pathPart.split('/')
-    // Tolerate one trailing slash after the last non-empty segment.
-    val segments = if (rawSegments.size > 1 && rawSegments.last().isEmpty()) {
+    // Tolerate one trailing slash only for `at://repo/` and `at://repo/collection/`.
+    // A trailing slash after rkey (size 4) is rejected as structurally invalid.
+    val segments = if (rawSegments.size in 2..3 && rawSegments.last().isEmpty()) {
         rawSegments.dropLast(1)
     } else {
         rawSegments

@@ -119,9 +119,23 @@ class AtUriParserTest {
     }
 
     @Test
-    fun parse_emptyCollectionWithTrailingRkey_throws() {
+    fun parse_doubleTrailingSlash_throws() {
         assertFailsWith<IllegalArgumentException> {
             AtUri("at://did:plc:abc//").parse()
+        }
+    }
+
+    @Test
+    fun parse_trailingSlashAfterRkey_throws() {
+        assertFailsWith<IllegalArgumentException> {
+            AtUri("at://did:plc:abc/app.bsky.feed.post/3l/").parse()
+        }
+    }
+
+    @Test
+    fun parse_doubleTrailingSlashAfterCollection_throws() {
+        assertFailsWith<IllegalArgumentException> {
+            AtUri("at://did:plc:abc/app.bsky.feed.post//").parse()
         }
     }
 
