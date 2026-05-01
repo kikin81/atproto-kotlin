@@ -5,6 +5,14 @@ on:
   push:
     branches: [main]
 
+# Serialize release runs so the docs auto-commit step doesn't race other runs'
+# pushes to main. Renovate's split-bundle config can land several PRs in quick
+# succession, and each one triggers this workflow — without serialization the
+# stefanzweifel/git-auto-commit-action push fails non-fast-forward.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 permissions:
   contents: write
   pull-requests: write
@@ -126,10 +134,15 @@ jobs:
       new-release-published: ${{ steps.release.outputs.new-release-published }}
       new-release-version: ${{ steps.release.outputs.new-release-version }}
     steps:
+      # Pin to the live main HEAD rather than the triggering SHA. With the
+      # concurrency group above, a queued run only starts after the previous
+      # run has pushed its release + docs commits — ref: main ensures we
+      # check those commits out so the docs push fast-forwards.
       - name: Checkout
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          ref: main
           token: ${{ secrets.RELEASE_PAT }}
 
       - name: Set up Node.js
