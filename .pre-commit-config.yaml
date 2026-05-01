@@ -2,11 +2,15 @@
 # Run across the whole repo with: `pre-commit run --all-files`
 
 # Paths that pre-commit should never touch. The generator's installed lexicon
-# corpus, the generated Kotlin sources, node_modules, and gradle build dirs
-# are all machine-managed and shouldn't be rewritten by formatters.
+# corpus and its manifest, the generated Kotlin sources, node_modules, and
+# gradle build dirs are all machine-managed and shouldn't be rewritten by
+# formatters. lexicons.json in particular is emitted by `npx lex install`
+# (run by .github/workflows/lexicon-bump.yaml); its format is owned upstream
+# by @atproto/lex and validated downstream by :generator:generateModels.
 exclude: |
   (?x)^(
     generator/lexicons/.*|
+    generator/lexicons\.json|
     generator/node_modules/.*|
     generator/package-lock\.json|
     models/build/.*|
