@@ -1,0 +1,24 @@
+{
+  "lexicon": 1,
+  "id": "example.uploadBlob",
+  "description": "Procedure with a non-JSON input.encoding (wildcard) — exercises the raw-bytes service emission path.",
+  "defs": {
+    "main": {
+      "type": "procedure",
+      "description": "Upload a blob and receive its CID reference.",
+      "input": {
+        "encoding": "*/*"
+      },
+      "output": {
+        "encoding": "application/json",
+        "schema": {
+          "type": "object",
+          "required": ["blob"],
+          "properties": {
+            "blob": { "type": "blob" }
+          }
+        }
+      }
+    }
+  }
+}

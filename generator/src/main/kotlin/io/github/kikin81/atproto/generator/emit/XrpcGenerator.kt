@@ -101,6 +101,11 @@ public class XrpcGenerator(
                         deprecatedMessage = def.deprecatedMessage,
                     ),
                 )
+                EmissionPlan.classifyProcedureInput(def) is ProcedureInputShape.RawBytes -> {
+                    // Raw-bytes procedures (e.g. uploadBlob's `*/*` encoding):
+                    // the service method takes (ByteArray, ContentType) directly,
+                    // so no Request class is needed.
+                }
                 else -> System.err.println(
                     "[warn] procedure $key has request role but no input/params; skipping Request",
                 )

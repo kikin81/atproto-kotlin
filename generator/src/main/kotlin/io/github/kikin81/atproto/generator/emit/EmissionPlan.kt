@@ -22,6 +22,43 @@ import io.github.kikin81.atproto.generator.resolved.UsageContext
 import io.github.kikin81.atproto.generator.verify.FqName
 
 /**
+ * Classifies a [ProcedureDef]'s body shape so emission can route to the
+ * appropriate `XrpcClient.procedure(...)` overload.
+ *
+ * - [Json]: `input.schema` is an object — the wire body is a JSON-serialized
+ *   instance of the generated Request class. Default for procedures.
+ * - [ParamsOnly]: no `input` at all, but `parameters` is set — params land in
+ *   the URL query string and there is no body.
+ * - [None]: neither `input` nor `parameters` — rare (e.g. `deleteSession`).
+ * - [RawBytes]: `input` is present, `input.schema` is absent, AND
+ *   `input.encoding` is not `application/json` — emit a raw-bytes signature
+ *   that delegates to the [io.github.kikin81.atproto.runtime.XrpcClient]
+ *   `ByteArray` overload. Used by `com.atproto.repo.uploadBlob` (`&#42;/&#42;`).
+ */
+public sealed interface ProcedureInputShape {
+    public data object Json : ProcedureInputShape
+    public data object ParamsOnly : ProcedureInputShape
+    public data object None : ProcedureInputShape
+    public data class RawBytes(
+        public val encoding: String,
+        public val defaultContentType: KtorContentTypeRef?,
+    ) : ProcedureInputShape
+}
+
+/**
+ * Reference to the Ktor `io.ktor.http.ContentType` value used as the default
+ * for a `RawBytes` shape. `null` (encoded as a missing default at the call
+ * site) means the wildcard `&#42;/&#42;` case where the caller must supply.
+ */
+public sealed interface KtorContentTypeRef {
+    /** A named member like `ContentType.Image.PNG`. */
+    public data class Constant(public val category: String, public val name: String) : KtorContentTypeRef
+
+    /** Falls back to `ContentType.parse("<encoding>")` for unrecognized MIME strings. */
+    public data class Parsed(public val encoding: String) : KtorContentTypeRef
+}
+
+/**
  * One synthesized sealed-interface union arising from a `union` field on a
  * named definition. Owner is the class that contains the field.
  */
@@ -50,6 +87,47 @@ public class EmissionPlan(
     public fun inputFqName(key: DefKey): FqName? = classes[key]?.firstOrNull { it.role == NameRole.Input }?.fqName
 
     public companion object {
+
+        /**
+         * Classifies a [ProcedureDef]'s body shape per the rules documented on
+         * [ProcedureInputShape]. The only branch that consults
+         * `input.encoding` is [ProcedureInputShape.RawBytes]; all other shapes
+         * are unaffected by encoding.
+         */
+        public fun classifyProcedureInput(def: ProcedureDef): ProcedureInputShape {
+            val input = def.input
+            return when {
+                input == null -> if (def.parameters != null) ProcedureInputShape.ParamsOnly else ProcedureInputShape.None
+                input.schema != null -> ProcedureInputShape.Json
+                input.encoding == "application/json" -> ProcedureInputShape.Json
+                else -> ProcedureInputShape.RawBytes(
+                    encoding = input.encoding,
+                    defaultContentType = defaultContentTypeFor(input.encoding),
+                )
+            }
+        }
+
+        /**
+         * Maps a lexicon `input.encoding` value to a Kotlin reference to a Ktor
+         * `ContentType` constant when one is known, falling back to a parsed
+         * lookup for unrecognized MIME strings, and returning `null` for the
+         * wildcard `&#42;/&#42;` (which has no sensible default).
+         */
+        private fun defaultContentTypeFor(encoding: String): KtorContentTypeRef? = when (encoding) {
+            "*/*" -> null
+            "application/octet-stream" -> KtorContentTypeRef.Constant("Application", "OctetStream")
+            "image/png" -> KtorContentTypeRef.Constant("Image", "PNG")
+            "image/jpeg" -> KtorContentTypeRef.Constant("Image", "JPEG")
+            "image/gif" -> KtorContentTypeRef.Constant("Image", "GIF")
+            "image/svg+xml" -> KtorContentTypeRef.Constant("Image", "SVG")
+            "video/mp4" -> KtorContentTypeRef.Constant("Video", "MP4")
+            "video/mpeg" -> KtorContentTypeRef.Constant("Video", "MPEG")
+            "audio/mpeg" -> KtorContentTypeRef.Constant("Audio", "MPEG")
+            "text/plain" -> KtorContentTypeRef.Constant("Text", "Plain")
+            "text/html" -> KtorContentTypeRef.Constant("Text", "Html")
+            else -> KtorContentTypeRef.Parsed(encoding)
+        }
+
         public fun build(
             symbols: SymbolTable,
             naming: NamingMatrix,

@@ -200,62 +200,115 @@ public class ServiceGenerator(
             fn.addAnnotation(deprecatedAnnotation(def.deprecatedMessage))
         }
 
-        val inputSchema = def.input?.schema
-        val hasInputBody = inputSchema is ObjectType
+        val responseSerializer = response?.let { responseSerializerExpr(it.fqName) }
 
-        if (hasInputBody && request != null) {
-            val requestCn = ClassName(request.fqName.pkg, request.fqName.simpleName)
-            val param = ParameterSpec.builder("request", requestCn)
-            val obj = inputSchema as ObjectType
-            if (obj.required.isNullOrEmpty()) {
-                param.defaultValue("%T()", requestCn)
+        when (val shape = EmissionPlan.classifyProcedureInput(def)) {
+            is ProcedureInputShape.Json -> {
+                val inputSchema = def.input?.schema as? ObjectType
+                if (inputSchema != null && request != null) {
+                    val requestCn = ClassName(request.fqName.pkg, request.fqName.simpleName)
+                    val param = ParameterSpec.builder("request", requestCn)
+                    if (inputSchema.required.isNullOrEmpty()) {
+                        param.defaultValue("%T()", requestCn)
+                    }
+                    fn.addParameter(param.build())
+                    fn.addCode(
+                        buildCall(
+                            kind = "procedure",
+                            nsid = defKey.nsid.raw,
+                            paramsExpr = CodeBlock.of("%T", NO_XRPC_PARAMS),
+                            paramsSerializerExpr = CodeBlock.of("%T.serializer()", NO_XRPC_PARAMS),
+                            inputExpr = CodeBlock.of("request"),
+                            inputSerializerExpr = CodeBlock.of("%T.serializer()", requestCn),
+                            responseSerializerExpr = responseSerializer,
+                        ),
+                    )
+                } else {
+                    // Edge: classifier said Json (encoding is application/json or
+                    // schema present) but no schema/Request — fall back to no-body.
+                    fn.addCode(noInputCall(defKey, responseSerializer))
+                }
             }
-            fn.addParameter(param.build())
-            fn.addCode(
-                buildCall(
-                    kind = "procedure",
-                    nsid = defKey.nsid.raw,
-                    paramsExpr = CodeBlock.of("%T", NO_XRPC_PARAMS),
-                    paramsSerializerExpr = CodeBlock.of("%T.serializer()", NO_XRPC_PARAMS),
-                    inputExpr = CodeBlock.of("request"),
-                    inputSerializerExpr = CodeBlock.of("%T.serializer()", requestCn),
-                    responseSerializerExpr = response?.let { responseSerializerExpr(it.fqName) },
-                ),
-            )
-        } else if (request != null && def.parameters != null) {
-            // Procedure with URL params only (no JSON body).
-            val requestCn = ClassName(request.fqName.pkg, request.fqName.simpleName)
-            val param = ParameterSpec.builder("request", requestCn)
-            if (paramsHasNoRequiredArgs(def.parameters)) {
-                param.defaultValue("%T()", requestCn)
+            is ProcedureInputShape.ParamsOnly -> {
+                if (request != null && def.parameters != null) {
+                    val requestCn = ClassName(request.fqName.pkg, request.fqName.simpleName)
+                    val param = ParameterSpec.builder("request", requestCn)
+                    if (paramsHasNoRequiredArgs(def.parameters)) {
+                        param.defaultValue("%T()", requestCn)
+                    }
+                    fn.addParameter(param.build())
+                    fn.addCode(
+                        buildCall(
+                            kind = "procedure",
+                            nsid = defKey.nsid.raw,
+                            paramsExpr = CodeBlock.of("request"),
+                            paramsSerializerExpr = CodeBlock.of("%T.serializer()", requestCn),
+                            inputExpr = null,
+                            inputSerializerExpr = null,
+                            responseSerializerExpr = responseSerializer,
+                        ),
+                    )
+                } else {
+                    fn.addCode(noInputCall(defKey, responseSerializer))
+                }
             }
-            fn.addParameter(param.build())
-            fn.addCode(
-                buildCall(
-                    kind = "procedure",
-                    nsid = defKey.nsid.raw,
-                    paramsExpr = CodeBlock.of("request"),
-                    paramsSerializerExpr = CodeBlock.of("%T.serializer()", requestCn),
-                    inputExpr = null,
-                    inputSerializerExpr = null,
-                    responseSerializerExpr = response?.let { responseSerializerExpr(it.fqName) },
-                ),
-            )
-        } else {
-            // Procedure with neither params nor input body — rare (e.g. deleteSession).
-            fn.addCode(
-                buildCall(
-                    kind = "procedure",
-                    nsid = defKey.nsid.raw,
-                    paramsExpr = CodeBlock.of("%T", NO_XRPC_PARAMS),
-                    paramsSerializerExpr = CodeBlock.of("%T.serializer()", NO_XRPC_PARAMS),
-                    inputExpr = null,
-                    inputSerializerExpr = null,
-                    responseSerializerExpr = response?.let { responseSerializerExpr(it.fqName) },
-                ),
-            )
+            is ProcedureInputShape.RawBytes -> {
+                fn.addParameter(ParameterSpec.builder("input", BYTE_ARRAY).build())
+                val contentTypeParam = ParameterSpec.builder("inputContentType", KTOR_CONTENT_TYPE)
+                shape.defaultContentType?.let {
+                    contentTypeParam.defaultValue(contentTypeDefaultExpr(it))
+                }
+                fn.addParameter(contentTypeParam.build())
+                fn.addCode(
+                    buildRawBytesCall(
+                        nsid = defKey.nsid.raw,
+                        responseSerializerExpr = responseSerializer,
+                    ),
+                )
+            }
+            is ProcedureInputShape.None -> fn.addCode(noInputCall(defKey, responseSerializer))
         }
         return fn.build()
+    }
+
+    private fun noInputCall(defKey: DefKey, responseSerializer: CodeBlock?): CodeBlock = buildCall(
+        kind = "procedure",
+        nsid = defKey.nsid.raw,
+        paramsExpr = CodeBlock.of("%T", NO_XRPC_PARAMS),
+        paramsSerializerExpr = CodeBlock.of("%T.serializer()", NO_XRPC_PARAMS),
+        inputExpr = null,
+        inputSerializerExpr = null,
+        responseSerializerExpr = responseSerializer,
+    )
+
+    private fun contentTypeDefaultExpr(ref: KtorContentTypeRef): CodeBlock = when (ref) {
+        is KtorContentTypeRef.Constant -> CodeBlock.of(
+            "%T.%N.%N",
+            KTOR_CONTENT_TYPE,
+            ref.category,
+            ref.name,
+        )
+        is KtorContentTypeRef.Parsed -> CodeBlock.of("%T.parse(%S)", KTOR_CONTENT_TYPE, ref.encoding)
+    }
+
+    private fun buildRawBytesCall(
+        nsid: String,
+        responseSerializerExpr: CodeBlock?,
+    ): CodeBlock {
+        val rsExpr = responseSerializerExpr ?: CodeBlock.of("%T", UNIT_RESPONSE_SERIALIZER)
+        return CodeBlock.of(
+            "return client.procedure(\n" +
+                "    nsid = %S,\n" +
+                "    params = %T,\n" +
+                "    paramsSerializer = %T.serializer(),\n" +
+                "    input = input,\n" +
+                "    inputContentType = inputContentType,\n" +
+                "    responseSerializer = %L,\n)\n",
+            nsid,
+            NO_XRPC_PARAMS,
+            NO_XRPC_PARAMS,
+            rsExpr,
+        )
     }
 
     private fun responseSerializerExpr(fqName: FqName): CodeBlock {
@@ -401,6 +454,8 @@ public class ServiceGenerator(
         val LIST = ClassName("kotlin.collections", "List")
         val PAGINATE = MemberName(RUNTIME_PKG, "paginate")
         val PAGINATE_PAGES = MemberName(RUNTIME_PKG, "paginatePages")
+        val BYTE_ARRAY = ClassName("kotlin", "ByteArray")
+        val KTOR_CONTENT_TYPE = ClassName("io.ktor.http", "ContentType")
 
         val defKeyComparator: Comparator<DefKey> = compareBy({ it.nsid.raw }, { it.name })
     }

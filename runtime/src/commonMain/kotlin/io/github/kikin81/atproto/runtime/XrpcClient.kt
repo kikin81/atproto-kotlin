@@ -1,6 +1,7 @@
 package io.github.kikin81.atproto.runtime
 
 import io.ktor.client.HttpClient
+import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
@@ -78,27 +79,16 @@ public class XrpcClient(
         encoding: String = ContentType.Application.Json.toString(),
         errorMapper: XrpcErrorMapper = DefaultXrpcErrorMapper,
         auth: AuthProvider? = null,
-    ): R {
-        val provider = auth ?: authProvider
-        val response = httpClient.post("$baseUrl/xrpc/$nsid") {
-            appendQueryParams(params, paramsSerializer)
-            applyAuth(provider)
-            contentType(ContentType.parse(encoding))
-            setBody(json.encodeToString(inputSerializer, input))
-        }
-        if (response.status == HttpStatusCode.Unauthorized) {
-            val headers = response.headers.entries().associate { it.key to it.value.first() }
-            if (provider.onUnauthorized(headers)) {
-                val retry = httpClient.post("$baseUrl/xrpc/$nsid") {
-                    appendQueryParams(params, paramsSerializer)
-                    applyAuth(provider)
-                    contentType(ContentType.parse(encoding))
-                    setBody(json.encodeToString(inputSerializer, input))
-                }
-                return handle(retry, responseSerializer, errorMapper)
-            }
-        }
-        return handle(response, responseSerializer, errorMapper)
+    ): R = executeProcedure(
+        nsid = nsid,
+        params = params,
+        paramsSerializer = paramsSerializer,
+        responseSerializer = responseSerializer,
+        errorMapper = errorMapper,
+        auth = auth,
+    ) {
+        contentType(ContentType.parse(encoding))
+        setBody(json.encodeToString(inputSerializer, input))
     }
 
     /**
@@ -111,11 +101,61 @@ public class XrpcClient(
         responseSerializer: KSerializer<R>,
         errorMapper: XrpcErrorMapper = DefaultXrpcErrorMapper,
         auth: AuthProvider? = null,
+    ): R = executeProcedure(
+        nsid = nsid,
+        params = params,
+        paramsSerializer = paramsSerializer,
+        responseSerializer = responseSerializer,
+        errorMapper = errorMapper,
+        auth = auth,
+        body = {},
+    )
+
+    /**
+     * Overload for procedures whose lexicon declares a non-JSON `input.encoding`
+     * (e.g. `image/jpeg`, `video/mp4`, or the wildcard `&#42;/&#42;` used by
+     * `com.atproto.repo.uploadBlob`). The bytes are posted verbatim with the
+     * supplied [inputContentType]. Auth, DPoP, 401 retry, and error mapping
+     * behave identically to the JSON-body overload.
+     *
+     * The full body is held in memory; for very large uploads (e.g. video) a
+     * future `ByteReadChannel` overload may be added.
+     */
+    public suspend fun <P, R> procedure(
+        nsid: String,
+        params: P,
+        paramsSerializer: KSerializer<P>,
+        input: ByteArray,
+        inputContentType: ContentType,
+        responseSerializer: KSerializer<R>,
+        errorMapper: XrpcErrorMapper = DefaultXrpcErrorMapper,
+        auth: AuthProvider? = null,
+    ): R = executeProcedure(
+        nsid = nsid,
+        params = params,
+        paramsSerializer = paramsSerializer,
+        responseSerializer = responseSerializer,
+        errorMapper = errorMapper,
+        auth = auth,
+    ) {
+        contentType(inputContentType)
+        setBody(input)
+    }
+
+    private suspend fun <P, R> executeProcedure(
+        nsid: String,
+        params: P,
+        paramsSerializer: KSerializer<P>,
+        responseSerializer: KSerializer<R>,
+        errorMapper: XrpcErrorMapper,
+        auth: AuthProvider?,
+        body: HttpRequestBuilder.() -> Unit,
     ): R {
         val provider = auth ?: authProvider
         val response = httpClient.post("$baseUrl/xrpc/$nsid") {
             appendQueryParams(params, paramsSerializer)
             applyAuth(provider)
+            body()
         }
         if (response.status == HttpStatusCode.Unauthorized) {
             val headers = response.headers.entries().associate { it.key to it.value.first() }
@@ -123,6 +163,7 @@ public class XrpcClient(
                 val retry = httpClient.post("$baseUrl/xrpc/$nsid") {
                     appendQueryParams(params, paramsSerializer)
                     applyAuth(provider)
+                    body()
                 }
                 return handle(retry, responseSerializer, errorMapper)
             }
@@ -130,7 +171,7 @@ public class XrpcClient(
         return handle(response, responseSerializer, errorMapper)
     }
 
-    private fun <P> io.ktor.client.request.HttpRequestBuilder.appendQueryParams(
+    private fun <P> HttpRequestBuilder.appendQueryParams(
         params: P,
         serializer: KSerializer<P>,
     ) {
@@ -153,7 +194,7 @@ public class XrpcClient(
         }
     }
 
-    private fun io.ktor.client.request.HttpRequestBuilder.appendArrayItem(
+    private fun HttpRequestBuilder.appendArrayItem(
         key: String,
         item: JsonElement,
     ) {
@@ -166,7 +207,7 @@ public class XrpcClient(
         }
     }
 
-    private suspend fun io.ktor.client.request.HttpRequestBuilder.applyAuth(provider: AuthProvider) {
+    private suspend fun HttpRequestBuilder.applyAuth(provider: AuthProvider) {
         // Build the target URL without query string for the DPoP `htu` claim.
         // Per the DPoP spec, `htu` is scheme + host + path (no query/fragment).
         val targetUrl = url.buildString().substringBefore('?')
