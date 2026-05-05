@@ -410,6 +410,58 @@ class CodeGeneratorTest {
     }
 
     @Test
+    fun `record def emits @SerialName with bare lexicon NSID`() {
+        // Regression for #76: open-union members were serializing $type as the
+        // Kotlin FQCN because @SerialName was missing. Records (lexicon `record`
+        // type) must be annotated with the bare NSID (no #main suffix).
+        val files = generate(strongRefJson, simplePostJson)
+        val post = files.first { it.name == "Post" }
+        val postStr = post.toString()
+        assertTrue(
+            "@SerialName(\"app.bsky.feed.post\")" in postStr,
+            "expected @SerialName(\"app.bsky.feed.post\") on record class:\n$postStr",
+        )
+    }
+
+    @Test
+    fun `object def main emits @SerialName with bare lexicon NSID`() {
+        // The #main object def — used as a union member in the embed shape —
+        // must serialize its $type as the bare NSID, never the Kotlin FQCN.
+        val files = generate(unionJson)
+        val post = files.first { it.name == "Post" }
+        val postStr = post.toString()
+        assertTrue(
+            "@SerialName(\"app.bsky.embed.post\")" in postStr,
+            "expected @SerialName(\"app.bsky.embed.post\") on #main object class:\n$postStr",
+        )
+    }
+
+    @Test
+    fun `object sub-def emits @SerialName with nsid#name form`() {
+        // Sub-definitions (e.g. `app.bsky.embed.post#images`) participate in
+        // open unions, so their $type must round-trip back to the same form.
+        val files = generate(unionJson)
+        val images = files.first { it.name == "PostImages" }
+        val imagesStr = images.toString()
+        assertTrue(
+            "@SerialName(\"app.bsky.embed.post#images\")" in imagesStr,
+            "expected @SerialName(\"app.bsky.embed.post#images\") on sub-def class:\n$imagesStr",
+        )
+    }
+
+    @Test
+    fun `xrpc Request and Response classes do not emit @SerialName`() {
+        // Synthesized XRPC types have no canonical lexicon definition — they
+        // are not union members and are never serialized with a $type
+        // discriminator, so annotating them would be misleading.
+        val files = generate(getTimelineJson)
+        val req = files.first { it.name == "GetTimelineRequest" }
+        val resp = files.first { it.name == "GetTimelineResponse" }
+        assertTrue("@SerialName" !in req.toString(), "request must not carry @SerialName:\n$req")
+        assertTrue("@SerialName" !in resp.toString(), "response must not carry @SerialName:\n$resp")
+    }
+
+    @Test
     fun `datetime format uses runtime Datetime value class`() {
         val files = generate(strongRefJson, simplePostJson)
         val post = files.first { it.name == "Post" }

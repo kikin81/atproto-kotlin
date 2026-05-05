@@ -117,6 +117,26 @@ class OpenUnionTest {
     }
 
     @Test
+    fun knownType_encodeUsesSerialName_notKotlinFqcn() {
+        // Regression for #76: without @SerialName, kotlinx-serialization defaults
+        // descriptor.serialName to the Kotlin FQCN, which makes
+        // OpenUnionSerializer emit `$type: "io.github.kikin81.atproto.runtime.FakeMedia.Images"`.
+        // Bluesky's appview dispatches embed renderers by lexicon NSID, so the
+        // FQCN form silently drops the embed at render time. This test asserts
+        // the wire output is the NSID and explicitly NOT a Kotlin FQCN-looking
+        // value.
+        val value: FakeMedia = FakeMedia.Video(duration = 12)
+        val encoded = json.encodeToString(FakeMediaSerializer, value)
+        val parsed = json.parseToJsonElement(encoded).jsonObject
+        val typeOnWire = parsed[DOLLAR_TYPE]!!.jsonPrimitive.content
+        assertEquals("app.bsky.embed.video", typeOnWire)
+        assertTrue(
+            "FakeMedia" !in typeOnWire,
+            "wire \$type leaked Kotlin class identity: $typeOnWire",
+        )
+    }
+
+    @Test
     fun normalizeDollarType_stripsMainSuffix() {
         assertEquals("com.example.foo", normalizeDollarType("com.example.foo#main"))
     }

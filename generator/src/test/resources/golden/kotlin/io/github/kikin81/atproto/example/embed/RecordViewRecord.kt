@@ -10,10 +10,12 @@ import kotlin.OptIn
 import kotlin.collections.List
 import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject
 
 @Serializable
+@SerialName("example.embed.record#viewRecord")
 @OptIn(ExperimentalSerializationApi::class)
 public data class RecordViewRecord(
   public val author: ProfileViewBasic,

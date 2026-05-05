@@ -78,6 +78,7 @@ public class ModelGenerator(
             description = def.description,
             deprecated = def.deprecated,
             deprecatedMessage = def.deprecatedMessage,
+            serialName = key.toString(),
         )
         return listOf(type)
     }
@@ -94,11 +95,12 @@ public class ModelGenerator(
         val input = plan.inputFqName(key)
         val ctx = contexts[key]
         val supertypes = plan.unionMembership[key] ?: emptySet()
+        val nsid = key.toString()
 
         return if (input != null) {
             listOf(
-                buildClass(primary, key.nsid, required, properties, Shape.ReadShape, supertypes, description, deprecated, deprecatedMessage),
-                buildClass(input, key.nsid, required, properties, Shape.MutationShape, emptySet(), description, deprecated, deprecatedMessage),
+                buildClass(primary, key.nsid, required, properties, Shape.ReadShape, supertypes, description, deprecated, deprecatedMessage, serialName = nsid),
+                buildClass(input, key.nsid, required, properties, Shape.MutationShape, emptySet(), description, deprecated, deprecatedMessage, serialName = nsid),
             )
         } else {
             val shape = when (ctx) {
@@ -106,7 +108,7 @@ public class ModelGenerator(
                 UsageContext.Both -> Shape.MutationShape
                 UsageContext.Read, null -> Shape.ReadShape
             }
-            listOf(buildClass(primary, key.nsid, required, properties, shape, supertypes, description, deprecated, deprecatedMessage))
+            listOf(buildClass(primary, key.nsid, required, properties, shape, supertypes, description, deprecated, deprecatedMessage, serialName = nsid))
         }
     }
 
@@ -120,11 +122,26 @@ public class ModelGenerator(
         description: String? = null,
         deprecated: Boolean = false,
         deprecatedMessage: String? = null,
+        serialName: String? = null,
     ): TypeSpec {
         val sortedPropsPreview = properties.toSortedMap()
         val builder = TypeSpec.classBuilder(fqName.simpleName)
             .addModifiers(KModifier.PUBLIC)
             .addAnnotation(SERIALIZABLE)
+        // The wire `$type` discriminator on open-union members must be the
+        // lexicon NSID, not the Kotlin FQCN that kotlinx-serialization defaults
+        // to. Annotating every emitted lexicon-backed class with `@SerialName`
+        // makes `descriptor.serialName` return the NSID, which the runtime's
+        // `OpenUnionSerializer` reads on encode. Synthesized XRPC request and
+        // response types do not have a canonical NSID and are never union
+        // members, so they pass `serialName = null` and get no annotation.
+        if (serialName != null) {
+            builder.addAnnotation(
+                AnnotationSpec.builder(SERIAL_NAME)
+                    .addMember("%S", serialName)
+                    .build(),
+            )
+        }
         if (sortedPropsPreview.isNotEmpty()) {
             builder.addModifiers(KModifier.DATA)
         }

@@ -8,9 +8,11 @@ import kotlin.OptIn
 import kotlin.String
 import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
+@SerialName("example.split#shared")
 @OptIn(ExperimentalSerializationApi::class)
 public data class SplitSharedInput(
   public val id: Did,
