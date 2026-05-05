@@ -41,3 +41,19 @@ The system SHALL detect non-JSON procedure inputs using the rule: `ProcedureDef.
 
 - **WHEN** the generator processes a procedure with no `input` at all
 - **THEN** the emission shape is unchanged — a no-arg service method is generated as today
+
+### Requirement: Codegen SHALL halt when a procedure combines raw-bytes input with URL parameters
+
+The system SHALL NOT emit a service method for any procedure whose `ProcedureDef.input` declares a non-JSON `encoding` (i.e. classifies as raw bytes per the previous requirement) AND whose `ProcedureDef.parameters` is non-null. Instead, the generator SHALL halt codegen by raising a `VerificationFailure` whose message names the offending lexicon ID and instructs the user to file an upstream issue with the lexicon attached. This invariant exists to prevent a silent param-drop bug analogous to the missing-input bug this change fixes — designing an API surface for "raw bytes plus URL params" without a real lexicon to design against would necessarily be guesswork. The classification is implemented as a dedicated `ProcedureInputShape.UnsupportedRawBytesWithParams(encoding, lexiconId)` variant so the codegen's exhaustive `when` is forced to handle the case explicitly.
+
+#### Scenario: Raw-bytes plus params lexicon halts codegen
+
+- **GIVEN** a synthetic `ProcedureDef` whose `input.encoding` is `*/*`, whose `input.schema` is absent, and whose `parameters` is non-null
+- **WHEN** `EmissionPlan.classifyProcedureInput` is invoked with the lexicon ID `com.example.uploadWithParams`
+- **THEN** the result is a `ProcedureInputShape.UnsupportedRawBytesWithParams` carrying `encoding = "*/*"` and `lexiconId = "com.example.uploadWithParams"`
+- **AND** the subsequent `ServiceGenerator` pass throws `VerificationFailure` whose message contains the lexicon ID
+
+#### Scenario: No corpus lexicon currently triggers this
+
+- **WHEN** the full installed AT Protocol lexicon corpus (under `generator/lexicons/`) is generated end-to-end
+- **THEN** no `VerificationFailure` is raised — confirming the invariant guards a hypothetical case at the time this requirement is introduced, not an actual one

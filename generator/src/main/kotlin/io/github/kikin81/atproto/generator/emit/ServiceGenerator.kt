@@ -21,6 +21,7 @@ import io.github.kikin81.atproto.generator.naming.NameRole
 import io.github.kikin81.atproto.generator.resolved.DefKey
 import io.github.kikin81.atproto.generator.resolved.SymbolTable
 import io.github.kikin81.atproto.generator.verify.FqName
+import io.github.kikin81.atproto.generator.verify.VerificationFailure
 
 /**
  * Emits one XRPC service class per package that contains at least one
@@ -202,7 +203,7 @@ public class ServiceGenerator(
 
         val responseSerializer = response?.let { responseSerializerExpr(it.fqName) }
 
-        when (val shape = EmissionPlan.classifyProcedureInput(def)) {
+        when (val shape = EmissionPlan.classifyProcedureInput(def, defKey.nsid.raw)) {
             is ProcedureInputShape.Json -> {
                 val inputSchema = def.input?.schema as? ObjectType
                 if (inputSchema != null && request != null) {
@@ -267,6 +268,14 @@ public class ServiceGenerator(
                 )
             }
             is ProcedureInputShape.None -> fn.addCode(noInputCall(defKey, responseSerializer))
+            is ProcedureInputShape.UnsupportedRawBytesWithParams -> throw VerificationFailure(
+                "Unsupported procedure shape: lexicon '${shape.lexiconId}' declares input.encoding " +
+                    "'${shape.encoding}' (raw bytes) AND def.parameters (URL params). The SDK does not " +
+                    "currently emit a service method shape for this combination — no AT Protocol lexicon " +
+                    "in the supported corpus exercises it. If you have hit this in a real lexicon, please " +
+                    "file an issue at https://github.com/kikin81/atproto-kotlin/issues with the lexicon " +
+                    "JSON attached so the API surface can be designed against a concrete use case.",
+            )
         }
         return fn.build()
     }

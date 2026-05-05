@@ -101,7 +101,7 @@ public class XrpcGenerator(
                         deprecatedMessage = def.deprecatedMessage,
                     ),
                 )
-                EmissionPlan.classifyProcedureInput(def) is ProcedureInputShape.RawBytes -> {
+                EmissionPlan.classifyProcedureInput(def, key.nsid.raw) is ProcedureInputShape.RawBytes -> {
                     // Raw-bytes procedures (e.g. uploadBlob's `*/*` encoding):
                     // the service method takes (ByteArray, ContentType) directly,
                     // so no Request class is needed.
