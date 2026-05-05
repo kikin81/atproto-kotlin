@@ -11,7 +11,7 @@ dokka = "2.2.0"
 vanniktech-maven-publish = "0.36.0"
 
 # Android sample
-agp = "9.1.1"
+agp = "9.2.1"
 ksp = "2.3.7"
 hilt = "2.59.2"
 androidx-activity-compose = "1.13.0"
