@@ -23,8 +23,7 @@ public class ExampleService(
   /**
    * Upload a PNG avatar.
    */
-  public suspend fun uploadAvatar(input: ByteArray, inputContentType: ContentType =
-      ContentType.Image.PNG): UploadAvatarResponse = client.procedure(
+  public suspend fun uploadAvatar(input: ByteArray, inputContentType: ContentType = ContentType.Image.PNG): UploadAvatarResponse = client.procedure(
       nsid = "example.uploadAvatar",
       params = NoXrpcParams,
       paramsSerializer = NoXrpcParams.serializer(),
@@ -36,8 +35,7 @@ public class ExampleService(
   /**
    * Upload a blob and receive its CID reference.
    */
-  public suspend fun uploadBlob(input: ByteArray, inputContentType: ContentType): UploadBlobResponse
-      = client.procedure(
+  public suspend fun uploadBlob(input: ByteArray, inputContentType: ContentType): UploadBlobResponse = client.procedure(
       nsid = "example.uploadBlob",
       params = NoXrpcParams,
       paramsSerializer = NoXrpcParams.serializer(),

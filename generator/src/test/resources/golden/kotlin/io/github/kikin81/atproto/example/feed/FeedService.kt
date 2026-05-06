@@ -13,8 +13,7 @@ public class FeedService(
   /**
    * Get a paginated timeline.
    */
-  public suspend fun getTimeline(request: GetTimelineRequest = GetTimelineRequest()):
-      GetTimelineResponse = client.query(
+  public suspend fun getTimeline(request: GetTimelineRequest = GetTimelineRequest()): GetTimelineResponse = client.query(
       nsid = "example.feed.getTimeline",
       params = request,
       paramsSerializer = GetTimelineRequest.serializer(),
@@ -25,8 +24,7 @@ public class FeedService(
 /**
  * Get a paginated timeline.
  */
-public fun FeedService.timelineFlow(request: GetTimelineRequest = GetTimelineRequest()):
-    Flow<StrongRef> = paginate(
+public fun FeedService.timelineFlow(request: GetTimelineRequest = GetTimelineRequest()): Flow<StrongRef> = paginate(
     fetch = { cursor -> getTimeline(request.copy(cursor = cursor)) },
     getCursor = { it.cursor },
     getItems = { it.feed },
@@ -35,8 +33,7 @@ public fun FeedService.timelineFlow(request: GetTimelineRequest = GetTimelineReq
 /**
  * Get a paginated timeline.
  */
-public fun FeedService.timelinePageFlow(request: GetTimelineRequest = GetTimelineRequest()):
-    Flow<List<StrongRef>> = paginatePages(
+public fun FeedService.timelinePageFlow(request: GetTimelineRequest = GetTimelineRequest()): Flow<List<StrongRef>> = paginatePages(
     fetch = { cursor -> getTimeline(request.copy(cursor = cursor)) },
     getCursor = { it.cursor },
     getItems = { it.feed },
