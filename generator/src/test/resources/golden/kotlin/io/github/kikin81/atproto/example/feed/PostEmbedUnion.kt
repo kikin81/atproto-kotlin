@@ -21,30 +21,23 @@ public interface PostEmbedUnion : OpenUnionMember {
       UnknownOpenUnionMember
 }
 
-public object PostEmbedUnionUnknownSerializer :
-    UnknownMemberSerializer<PostEmbedUnion.Unknown>("io.github.kikin81.atproto.example.feed.PostEmbedUnion.Unknown")
-    {
-  public override fun construct(type: String, raw: JsonObject): PostEmbedUnion.Unknown =
-      PostEmbedUnion.Unknown(type, raw)
+public object PostEmbedUnionUnknownSerializer : UnknownMemberSerializer<PostEmbedUnion.Unknown>("io.github.kikin81.atproto.example.feed.PostEmbedUnion.Unknown") {
+  public override fun construct(type: String, raw: JsonObject): PostEmbedUnion.Unknown = PostEmbedUnion.Unknown(type, raw)
 }
 
-public object PostEmbedUnionSerializer : OpenUnionSerializer<PostEmbedUnion>(PostEmbedUnion::class)
-    {
-  public override fun selectKnownDeserializer(type: String): KSerializer<out PostEmbedUnion>? = when
-      (type) {
+public object PostEmbedUnionSerializer : OpenUnionSerializer<PostEmbedUnion>(PostEmbedUnion::class) {
+  public override fun selectKnownDeserializer(type: String): KSerializer<out PostEmbedUnion>? = when (type) {
     "example.embed.images" -> Images.serializer()
     "example.embed.recordWithMedia#view" -> RecordWithMediaView.serializer()
     else -> null
   }
 
-  public override fun selectKnownSerializer(`value`: PostEmbedUnion):
-      KSerializer<out PostEmbedUnion>? = when (value) {
+  public override fun selectKnownSerializer(`value`: PostEmbedUnion): KSerializer<out PostEmbedUnion>? = when (value) {
     is Images -> Images.serializer()
     is RecordWithMediaView -> RecordWithMediaView.serializer()
     is PostEmbedUnion.Unknown -> null
     else -> null
   }
 
-  public override fun unknownSerializer(): KSerializer<out PostEmbedUnion> =
-      PostEmbedUnionUnknownSerializer
+  public override fun unknownSerializer(): KSerializer<out PostEmbedUnion> = PostEmbedUnionUnknownSerializer
 }
