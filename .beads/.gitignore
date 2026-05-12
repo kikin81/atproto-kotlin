@@ -56,6 +56,12 @@ dolt-server.activity
 # Backup data (auto-exported JSONL, local-only)
 backup/
 
+# Issue export — Dolt remote (doltremoteapi.dolthub.com/kikin/atproto-kotlin)
+# is the source of truth. The local JSONL is a runtime export used by the bd
+# CLI; tracking it in git produces merge conflicts on concurrent issue updates
+# without adding history that Dolt doesn't already provide.
+issues.jsonl
+
 # Per-project environment file (Dolt connection config, GH#2520)
 .env
 
