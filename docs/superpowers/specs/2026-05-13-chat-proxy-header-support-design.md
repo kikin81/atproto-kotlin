@@ -1,7 +1,7 @@
 # Chat / Service-Routed Namespace Proxy Header Support
 
 **Date:** 2026-05-13
-**Status:** Draft — pending implementation
+**Status:** Implemented — see PR [#88](https://github.com/kikin81/atproto-kotlin/pull/88) (cuts v6.0.0)
 **Tracks:** [GitHub issue #86](https://github.com/kikin81/atproto-kotlin/issues/86)
 
 ## Problem
@@ -34,7 +34,13 @@ chat appview.
 - Solution generalizes to other service-routed namespaces (notifications and
   any future appview).
 - Sandbox / self-hosted / test deployments can override the proxy DID.
-- Backward-compatible — additive only.
+- Source-compatible for Kotlin callers (all new parameters default).
+  Binary-incompatible — JVM signatures of `XrpcClient.query`/`procedure`
+  and the generated `ConvoService` constructor change, so consumers must
+  recompile against v6.0.0. Tradeoff documented in
+  `docs/breaking-changes/v6.md`. Preserving ABI via parallel overloads
+  was considered and rejected as it would double the public surface
+  without behavioral benefit.
 
 ## Non-Goals
 
