@@ -48,11 +48,13 @@ public class XrpcClient(
         responseSerializer: KSerializer<R>,
         errorMapper: XrpcErrorMapper = DefaultXrpcErrorMapper,
         auth: AuthProvider? = null,
+        proxy: String? = null,
     ): R {
         val provider = auth ?: authProvider
         val response = httpClient.get("$baseUrl/xrpc/$nsid") {
             appendQueryParams(params, paramsSerializer)
             applyAuth(provider)
+            applyProxy(proxy)
         }
         // DPoP nonce retry: if 401 + DPoP-Nonce, let the auth provider
         // update its nonce and retry once.
@@ -62,6 +64,7 @@ public class XrpcClient(
                 val retry = httpClient.get("$baseUrl/xrpc/$nsid") {
                     appendQueryParams(params, paramsSerializer)
                     applyAuth(provider)
+                    applyProxy(proxy)
                 }
                 return handle(retry, responseSerializer, errorMapper)
             }
@@ -79,6 +82,7 @@ public class XrpcClient(
         encoding: String = ContentType.Application.Json.toString(),
         errorMapper: XrpcErrorMapper = DefaultXrpcErrorMapper,
         auth: AuthProvider? = null,
+        proxy: String? = null,
     ): R = executeProcedure(
         nsid = nsid,
         params = params,
@@ -86,6 +90,7 @@ public class XrpcClient(
         responseSerializer = responseSerializer,
         errorMapper = errorMapper,
         auth = auth,
+        proxy = proxy,
     ) {
         contentType(ContentType.parse(encoding))
         setBody(json.encodeToString(inputSerializer, input))
@@ -101,6 +106,7 @@ public class XrpcClient(
         responseSerializer: KSerializer<R>,
         errorMapper: XrpcErrorMapper = DefaultXrpcErrorMapper,
         auth: AuthProvider? = null,
+        proxy: String? = null,
     ): R = executeProcedure(
         nsid = nsid,
         params = params,
@@ -108,6 +114,7 @@ public class XrpcClient(
         responseSerializer = responseSerializer,
         errorMapper = errorMapper,
         auth = auth,
+        proxy = proxy,
         body = {},
     )
 
@@ -130,6 +137,7 @@ public class XrpcClient(
         responseSerializer: KSerializer<R>,
         errorMapper: XrpcErrorMapper = DefaultXrpcErrorMapper,
         auth: AuthProvider? = null,
+        proxy: String? = null,
     ): R = executeProcedure(
         nsid = nsid,
         params = params,
@@ -137,6 +145,7 @@ public class XrpcClient(
         responseSerializer = responseSerializer,
         errorMapper = errorMapper,
         auth = auth,
+        proxy = proxy,
     ) {
         contentType(inputContentType)
         setBody(input)
@@ -149,12 +158,14 @@ public class XrpcClient(
         responseSerializer: KSerializer<R>,
         errorMapper: XrpcErrorMapper,
         auth: AuthProvider?,
+        proxy: String?,
         body: HttpRequestBuilder.() -> Unit,
     ): R {
         val provider = auth ?: authProvider
         val response = httpClient.post("$baseUrl/xrpc/$nsid") {
             appendQueryParams(params, paramsSerializer)
             applyAuth(provider)
+            applyProxy(proxy)
             body()
         }
         if (response.status == HttpStatusCode.Unauthorized) {
@@ -163,6 +174,7 @@ public class XrpcClient(
                 val retry = httpClient.post("$baseUrl/xrpc/$nsid") {
                     appendQueryParams(params, paramsSerializer)
                     applyAuth(provider)
+                    applyProxy(proxy)
                     body()
                 }
                 return handle(retry, responseSerializer, errorMapper)
@@ -214,6 +226,12 @@ public class XrpcClient(
         val headers = provider.authHeaders(method.value, targetUrl)
         for ((name, value) in headers) {
             header(name, value)
+        }
+    }
+
+    private fun HttpRequestBuilder.applyProxy(proxy: String?) {
+        if (proxy != null) {
+            header("atproto-proxy", proxy)
         }
     }
 

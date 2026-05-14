@@ -1,0 +1,32 @@
+{
+  "lexicon": 1,
+  "id": "chat.bsky.convo.listConvos",
+  "description": "Lists conversations on the chat appview. Exercises the atproto-proxy emission for chat.bsky.* namespaces.",
+  "defs": {
+    "main": {
+      "type": "query",
+      "description": "List conversations.",
+      "parameters": {
+        "type": "params",
+        "properties": {
+          "limit": { "type": "integer" },
+          "cursor": { "type": "string" }
+        }
+      },
+      "output": {
+        "encoding": "application/json",
+        "schema": {
+          "type": "object",
+          "required": ["convos"],
+          "properties": {
+            "cursor": { "type": "string" },
+            "convos": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

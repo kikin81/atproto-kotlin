@@ -6844,7 +6844,8 @@ public final class io/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasicKin
 }
 
 public final class io/github/kikin81/atproto/chat/bsky/convo/ConvoService {
-	public fun <init> (Lio/github/kikin81/atproto/runtime/XrpcClient;)V
+	public fun <init> (Lio/github/kikin81/atproto/runtime/XrpcClient;Ljava/lang/String;)V
+	public synthetic fun <init> (Lio/github/kikin81/atproto/runtime/XrpcClient;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun getMessages (Lio/github/kikin81/atproto/chat/bsky/convo/GetMessagesRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun listConvos (Lio/github/kikin81/atproto/chat/bsky/convo/ListConvosRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun listConvos$default (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/ListConvosRequest;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
