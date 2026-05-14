@@ -59,8 +59,12 @@ jobs:
 
       - name: Run drift detection
         id: detect
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # GITHUB_TOKEN intentionally NOT exposed here. The detector makes
+        # one HTTPS request per run against a public bluesky-social/atproto
+        # endpoint; unauthenticated GitHub API allows 60/hr per runner IP,
+        # which is comfortably above our weekly cadence. Keeping the token
+        # scoped to the gh-issue-management steps below means the JVM
+        # process can't leak a credential it doesn't have.
         run: ./gradlew :generator:detectLexiconDrift --quiet --no-configuration-cache
 
       - name: Find existing drift issue
