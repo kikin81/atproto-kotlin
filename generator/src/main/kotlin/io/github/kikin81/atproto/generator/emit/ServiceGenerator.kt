@@ -100,12 +100,18 @@ public class ServiceGenerator(
 
     private fun buildServiceClass(fqName: FqName, defKeys: List<DefKey>): TypeSpec {
         val clientType = ClassName(RUNTIME_PKG, "XrpcClient")
-        val ctor = FunSpec.constructorBuilder()
-            .addParameter(
-                ParameterSpec.builder("client", clientType)
+        val proxyDid = resolveProxyForPackage(fqName.pkg, defKeys)
+
+        val ctorBuilder = FunSpec.constructorBuilder()
+            .addParameter(ParameterSpec.builder("client", clientType).build())
+        if (proxyDid != null) {
+            ctorBuilder.addParameter(
+                ParameterSpec.builder("proxy", STRING_NULLABLE)
+                    .defaultValue("%S", proxyDid)
                     .build(),
             )
-            .build()
+        }
+        val ctor = ctorBuilder.build()
 
         val builder = TypeSpec.classBuilder(fqName.simpleName)
             .addModifiers(KModifier.PUBLIC)
@@ -116,13 +122,21 @@ public class ServiceGenerator(
                     .initializer("client")
                     .build(),
             )
+        if (proxyDid != null) {
+            builder.addProperty(
+                PropertySpec.builder("proxy", STRING_NULLABLE)
+                    .addModifiers(KModifier.PRIVATE)
+                    .initializer("proxy")
+                    .build(),
+            )
+        }
 
         for (defKey in defKeys) {
             val def = symbols.get(defKey)
             val methodName = defKey.nsid.raw.substringAfterLast('.')
             val fn = when (def) {
-                is QueryDef -> buildQueryMethod(defKey, def, methodName)
-                is ProcedureDef -> buildProcedureMethod(defKey, def, methodName)
+                is QueryDef -> buildQueryMethod(defKey, def, methodName, proxyDid != null)
+                is ProcedureDef -> buildProcedureMethod(defKey, def, methodName, proxyDid != null)
                 else -> null
             }
             fn?.let { builder.addFunction(it) }
@@ -130,10 +144,32 @@ public class ServiceGenerator(
         return builder.build()
     }
 
+    /**
+     * Determines the proxy DID for a service package by checking each NSID
+     * against [ProxyMapping]. Returns null if no defs are proxied. Throws
+     * [VerificationFailure] if the package mixes proxied and non-proxied
+     * NSIDs, or if multiple distinct proxy DIDs are required — neither
+     * case is supported by the current SDK shape.
+     */
+    private fun resolveProxyForPackage(pkg: String, defKeys: List<DefKey>): String? {
+        val proxies = defKeys.map { ProxyMapping.proxyFor(it.nsid.raw) }.distinct()
+        return when {
+            proxies.size == 1 -> proxies.single() // null or the single proxy
+            proxies.toSet() == setOf(null) -> null
+            else -> throw VerificationFailure(
+                "Service package '$pkg' contains a mix of proxied and non-proxied NSIDs " +
+                    "(or multiple distinct proxy DIDs): $proxies. The SDK currently emits " +
+                    "one service per package and cannot stamp different proxies on different " +
+                    "methods. Adjust ProxyMapping or split the namespace.",
+            )
+        }
+    }
+
     private fun buildQueryMethod(
         defKey: DefKey,
         def: QueryDef,
         methodName: String,
+        emitProxy: Boolean,
     ): FunSpec {
         val request = plan.classes[defKey]?.firstOrNull { it.role == NameRole.Request }
         val response = plan.classes[defKey]?.firstOrNull { it.role == NameRole.Response }
@@ -164,6 +200,7 @@ public class ServiceGenerator(
                     inputExpr = null,
                     inputSerializerExpr = null,
                     responseSerializerExpr = response?.let { responseSerializerExpr(it.fqName) },
+                    emitProxy = emitProxy,
                 ),
             )
         } else {
@@ -177,6 +214,7 @@ public class ServiceGenerator(
                     inputExpr = null,
                     inputSerializerExpr = null,
                     responseSerializerExpr = response?.let { responseSerializerExpr(it.fqName) },
+                    emitProxy = emitProxy,
                 ),
             )
         }
@@ -187,6 +225,7 @@ public class ServiceGenerator(
         defKey: DefKey,
         def: ProcedureDef,
         methodName: String,
+        emitProxy: Boolean,
     ): FunSpec {
         val request = plan.classes[defKey]?.firstOrNull { it.role == NameRole.Request }
         val response = plan.classes[defKey]?.firstOrNull { it.role == NameRole.Response }
@@ -222,12 +261,13 @@ public class ServiceGenerator(
                             inputExpr = CodeBlock.of("request"),
                             inputSerializerExpr = CodeBlock.of("%T.serializer()", requestCn),
                             responseSerializerExpr = responseSerializer,
+                            emitProxy = emitProxy,
                         ),
                     )
                 } else {
                     // Edge: classifier said Json (encoding is application/json or
                     // schema present) but no schema/Request — fall back to no-body.
-                    fn.addCode(noInputCall(defKey, responseSerializer))
+                    fn.addCode(noInputCall(defKey, responseSerializer, emitProxy))
                 }
             }
             is ProcedureInputShape.ParamsOnly -> {
@@ -247,10 +287,11 @@ public class ServiceGenerator(
                             inputExpr = null,
                             inputSerializerExpr = null,
                             responseSerializerExpr = responseSerializer,
+                            emitProxy = emitProxy,
                         ),
                     )
                 } else {
-                    fn.addCode(noInputCall(defKey, responseSerializer))
+                    fn.addCode(noInputCall(defKey, responseSerializer, emitProxy))
                 }
             }
             is ProcedureInputShape.RawBytes -> {
@@ -264,10 +305,11 @@ public class ServiceGenerator(
                     buildRawBytesCall(
                         nsid = defKey.nsid.raw,
                         responseSerializerExpr = responseSerializer,
+                        emitProxy = emitProxy,
                     ),
                 )
             }
-            is ProcedureInputShape.None -> fn.addCode(noInputCall(defKey, responseSerializer))
+            is ProcedureInputShape.None -> fn.addCode(noInputCall(defKey, responseSerializer, emitProxy))
             is ProcedureInputShape.UnsupportedRawBytesWithParams -> throw VerificationFailure(
                 "Unsupported procedure shape: lexicon '${shape.lexiconId}' declares input.encoding " +
                     "'${shape.encoding}' (raw bytes) AND def.parameters (URL params). The SDK does not " +
@@ -280,7 +322,11 @@ public class ServiceGenerator(
         return fn.build()
     }
 
-    private fun noInputCall(defKey: DefKey, responseSerializer: CodeBlock?): CodeBlock = buildCall(
+    private fun noInputCall(
+        defKey: DefKey,
+        responseSerializer: CodeBlock?,
+        emitProxy: Boolean,
+    ): CodeBlock = buildCall(
         kind = "procedure",
         nsid = defKey.nsid.raw,
         paramsExpr = CodeBlock.of("%T", NO_XRPC_PARAMS),
@@ -288,6 +334,7 @@ public class ServiceGenerator(
         inputExpr = null,
         inputSerializerExpr = null,
         responseSerializerExpr = responseSerializer,
+        emitProxy = emitProxy,
     )
 
     private fun contentTypeDefaultExpr(ref: KtorContentTypeRef): CodeBlock = when (ref) {
@@ -303,8 +350,10 @@ public class ServiceGenerator(
     private fun buildRawBytesCall(
         nsid: String,
         responseSerializerExpr: CodeBlock?,
+        emitProxy: Boolean,
     ): CodeBlock {
         val rsExpr = responseSerializerExpr ?: CodeBlock.of("%T", UNIT_RESPONSE_SERIALIZER)
+        val proxyLine = if (emitProxy) "    proxy = proxy,\n" else ""
         return CodeBlock.of(
             "return client.procedure(\n" +
                 "    nsid = %S,\n" +
@@ -312,7 +361,9 @@ public class ServiceGenerator(
                 "    paramsSerializer = %T.serializer(),\n" +
                 "    input = input,\n" +
                 "    inputContentType = inputContentType,\n" +
-                "    responseSerializer = %L,\n)\n",
+                "    responseSerializer = %L,\n" +
+                proxyLine +
+                ")\n",
             nsid,
             NO_XRPC_PARAMS,
             NO_XRPC_PARAMS,
@@ -339,6 +390,7 @@ public class ServiceGenerator(
         inputExpr: CodeBlock?,
         inputSerializerExpr: CodeBlock?,
         responseSerializerExpr: CodeBlock?,
+        emitProxy: Boolean,
     ): CodeBlock {
         // For rare "no output" procedures/queries, delegate to the runtime's
         // stable `UnitResponseSerializer` so the generated method can still
@@ -354,7 +406,11 @@ public class ServiceGenerator(
                 append("    input = %L,\n")
                 append("    inputSerializer = %L,\n")
             }
-            append("    responseSerializer = %L,\n)\n")
+            append("    responseSerializer = %L,\n")
+            if (emitProxy) {
+                append("    proxy = proxy,\n")
+            }
+            append(")\n")
         }.let { template ->
             if (inputExpr != null) {
                 CodeBlock.of(
@@ -457,6 +513,7 @@ public class ServiceGenerator(
 
     private companion object {
         val UNIT_CLASS_NAME = ClassName("kotlin", "Unit")
+        val STRING_NULLABLE = ClassName("kotlin", "String").copy(nullable = true)
         val NO_XRPC_PARAMS = ClassName(RUNTIME_PKG, "NoXrpcParams")
         val UNIT_RESPONSE_SERIALIZER = ClassName(RUNTIME_PKG, "UnitResponseSerializer")
         val FLOW = ClassName("kotlinx.coroutines.flow", "Flow")
