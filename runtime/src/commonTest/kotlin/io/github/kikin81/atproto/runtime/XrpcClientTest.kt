@@ -309,6 +309,132 @@ class XrpcClientTest {
     }
 
     @Test
+    fun query_attaches_atproto_proxy_header_when_set() = runTest {
+        val (client, engine) = makeClient { ok("""{"feed":[]}""") }
+
+        client.query(
+            nsid = "chat.bsky.convo.listConvos",
+            params = TimelineParams(),
+            paramsSerializer = TimelineParams.serializer(),
+            responseSerializer = TimelineResponse.serializer(),
+            proxy = "did:web:api.bsky.chat#bsky_chat",
+        )
+
+        assertEquals(
+            "did:web:api.bsky.chat#bsky_chat",
+            engine.requestHistory.single().headers["atproto-proxy"],
+        )
+    }
+
+    @Test
+    fun query_omits_atproto_proxy_header_when_null() = runTest {
+        val (client, engine) = makeClient { ok("""{"feed":[]}""") }
+
+        client.query(
+            nsid = "app.bsky.feed.getTimeline",
+            params = TimelineParams(),
+            paramsSerializer = TimelineParams.serializer(),
+            responseSerializer = TimelineResponse.serializer(),
+        )
+
+        assertNull(engine.requestHistory.single().headers["atproto-proxy"])
+    }
+
+    @Test
+    fun procedure_json_attaches_atproto_proxy_header_when_set() = runTest {
+        val (client, engine) = makeClient {
+            ok("""{"accessJwt":"tok","did":"did:plc:abc"}""")
+        }
+
+        client.procedure(
+            nsid = "chat.bsky.convo.deleteMessageForSelf",
+            params = Unit,
+            paramsSerializer = Unit.serializer(),
+            input = CreateSessionInput(identifier = "alice", password = "pw"),
+            inputSerializer = CreateSessionInput.serializer(),
+            responseSerializer = CreateSessionOutput.serializer(),
+            proxy = "did:web:api.bsky.chat#bsky_chat",
+        )
+
+        assertEquals(
+            "did:web:api.bsky.chat#bsky_chat",
+            engine.requestHistory.single().headers["atproto-proxy"],
+        )
+    }
+
+    @Test
+    fun procedure_no_input_attaches_atproto_proxy_header_when_set() = runTest {
+        val (client, engine) = makeClient {
+            ok("""{"accessJwt":"tok","did":"did:plc:abc"}""")
+        }
+
+        client.procedure(
+            nsid = "com.atproto.server.deleteSession",
+            params = Unit,
+            paramsSerializer = Unit.serializer(),
+            responseSerializer = CreateSessionOutput.serializer(),
+            proxy = "did:web:api.bsky.chat#bsky_chat",
+        )
+
+        assertEquals(
+            "did:web:api.bsky.chat#bsky_chat",
+            engine.requestHistory.single().headers["atproto-proxy"],
+        )
+    }
+
+    @Test
+    fun procedure_raw_bytes_attaches_atproto_proxy_header_when_set() = runTest {
+        val (client, engine) = makeClient {
+            ok("""{"blob":"bafy"}""")
+        }
+
+        client.procedure(
+            nsid = "chat.bsky.convo.uploadAttachment",
+            params = Unit,
+            paramsSerializer = Unit.serializer(),
+            input = byteArrayOf(1, 2, 3),
+            inputContentType = ContentType.Image.PNG,
+            responseSerializer = UploadBlobResponse.serializer(),
+            proxy = "did:web:api.bsky.chat#bsky_chat",
+        )
+
+        assertEquals(
+            "did:web:api.bsky.chat#bsky_chat",
+            engine.requestHistory.single().headers["atproto-proxy"],
+        )
+    }
+
+    @Test
+    fun proxy_header_survives_401_retry() = runTest {
+        val auth = RefreshingAuth(initial = "stale-token", refreshed = "fresh-token")
+        var calls = 0
+        val (client, engine) = makeClient(auth = auth) {
+            calls++
+            if (calls == 1) {
+                respond(ByteReadChannel("""{"error":"AuthExpired"}"""), HttpStatusCode.Unauthorized, jsonHeaders)
+            } else {
+                ok("""{"feed":[]}""")
+            }
+        }
+
+        client.query(
+            nsid = "chat.bsky.convo.listConvos",
+            params = TimelineParams(),
+            paramsSerializer = TimelineParams.serializer(),
+            responseSerializer = TimelineResponse.serializer(),
+            proxy = "did:web:api.bsky.chat#bsky_chat",
+        )
+
+        assertEquals(2, engine.requestHistory.size)
+        for (req in engine.requestHistory) {
+            assertEquals(
+                "did:web:api.bsky.chat#bsky_chat",
+                req.headers["atproto-proxy"],
+            )
+        }
+    }
+
+    @Test
     fun unknown_error_falls_through_to_unknown() = runTest {
         val (client, _) = makeClient {
             respond(
