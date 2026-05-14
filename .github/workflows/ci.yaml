@@ -126,3 +126,9 @@ jobs:
 
       - name: Build Android sample APK
         run: ./gradlew :samples:android:assembleDebug
+
+      # Catches Android Lint regressions (Instantiatable, NewApi, accessibility,
+      # etc.) on :samples:android. Kept here rather than in the Lint job because
+      # this job has the Android SDK + lexicon corpus already set up.
+      - name: Android sample lint
+        run: ./gradlew :samples:android:lintDebug
