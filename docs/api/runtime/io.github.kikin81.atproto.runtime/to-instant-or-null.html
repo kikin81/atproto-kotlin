@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
-    <title>normalizeDollarType</title>
+    <title>toInstantOrNull</title>
 <link href="../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../";</script>
     <script>document.documentElement.classList.replace("no-js", "js");</script>
     <script>const storage = localStorage.getItem("dokka-dark-mode")
@@ -89,12 +89,12 @@
         </nav>
         <div id="resizer" class="resizer" data-item-type="BAR"></div>
         <div id="main" data-item-type="SECTION" role="main">
-<div class="main-content" data-page-type="member" id="content" pageids="runtime::io.github.kikin81.atproto.runtime//normalizeDollarType/#kotlin.String/PointingToDeclaration//-1312573867">
-  <div class="breadcrumbs"><a href="../index.html">runtime</a><span class="delimiter">/</span><a href="index.html">io.github.kikin81.atproto.runtime</a><span class="delimiter">/</span><span class="current">normalizeDollarType</span></div>
+<div class="main-content" data-page-type="member" id="content" pageids="runtime::io.github.kikin81.atproto.runtime//toInstantOrNull/io.github.kikin81.atproto.runtime.Datetime#/PointingToDeclaration//-1312573867">
+  <div class="breadcrumbs"><a href="../index.html">runtime</a><span class="delimiter">/</span><a href="index.html">io.github.kikin81.atproto.runtime</a><span class="delimiter">/</span><span class="current">toInstantOrNull</span></div>
   <div class="cover ">
-    <h1 class="cover"><span>normalize</span><wbr><span>Dollar</span><wbr><span><span>Type</span></span></h1>
+    <h1 class="cover"><span>to</span><wbr><span>Instant</span><wbr><span>Or</span><wbr><span><span>Null</span></span></h1>
   </div>
-  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":runtime/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="normalize-dollar-type.html"><span class="token function">normalizeDollarType</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">type<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div><p class="paragraph">Normalize a <code class="lang-kotlin">$type</code> discriminator value for equality matching.</p><p class="paragraph">Per the AT Protocol data model spec, a <code class="lang-kotlin">$type</code> of <code class="lang-kotlin">com.example.foo</code> and <code class="lang-kotlin">com.example.foo#main</code> refer to the same definition — the <code class="lang-kotlin">#main</code> fragment is implicit and MAY be omitted. Generators always match against the bare form, so incoming values with a <code class="lang-kotlin">#main</code> suffix are stripped.</p><p class="paragraph">Other fragments (e.g. <code class="lang-kotlin">com.example.foo#bar</code>) are preserved as-is.</p></div></div>
+  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":runtime/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="-datetime/index.html">Datetime</a><span class="token punctuation">.</span><a href="to-instant-or-null.html"><span class="token function">toInstantOrNull</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="kotlinx.datetime/Instant///PointingToDeclaration/">Instant</span><span class="token operator">?</span></div><p class="paragraph">Parse this AT Protocol <a href="-datetime/index.html">Datetime</a> as a <span data-unresolved-link="kotlinx.datetime/Instant///PointingToDeclaration/">kotlinx.datetime.Instant</span>, returning <code class="lang-kotlin">null</code> on malformed input instead of throwing.</p><p class="paragraph">Prefer this when reading <a href="-datetime/index.html">Datetime</a> values that may have been constructed locally or sourced from an untrusted producer. For server-emitted records prefer <a href="to-instant.html">toInstant</a>, which surfaces malformed data as a programming error.</p></div></div>
 </div>
     <div class="footer">
         <div class="footer--container">
