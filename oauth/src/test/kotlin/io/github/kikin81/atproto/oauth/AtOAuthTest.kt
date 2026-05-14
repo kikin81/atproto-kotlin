@@ -2,7 +2,9 @@ package io.github.kikin81.atproto.oauth
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.MockRequestHandleScope
 import io.ktor.client.engine.mock.respond
+import io.ktor.client.request.HttpResponseData
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
@@ -30,38 +32,47 @@ class AtOAuthTest {
         }
     }
 
+    /**
+     * Returns the canned discovery response for the `did:plc:testuser` / alice.test
+     * fixture if [url] matches one of the AT Protocol discovery URLs, else null.
+     * Shared by mock builders so the discovery flow stays in one place.
+     */
+    private fun MockRequestHandleScope.respondToDiscovery(url: String): HttpResponseData? = when {
+        url.contains("/.well-known/atproto-did") ->
+            respond(ByteReadChannel("did:plc:testuser"), HttpStatusCode.OK)
+
+        url.contains("plc.directory/did:plc:testuser") ->
+            respond(
+                ByteReadChannel(
+                    """{"id":"did:plc:testuser","alsoKnownAs":["at://alice.test"],"service":[{"id":"#atproto_pds","type":"AtprotoPersonalDataServer","serviceEndpoint":"https://pds.test"}]}""",
+                ),
+                HttpStatusCode.OK,
+                jsonHeaders,
+            )
+
+        url.contains("/.well-known/oauth-protected-resource") ->
+            respond(
+                ByteReadChannel("""{"authorization_servers":["https://auth.test"]}"""),
+                HttpStatusCode.OK,
+                jsonHeaders,
+            )
+
+        url.contains("/.well-known/oauth-authorization-server") ->
+            respond(
+                ByteReadChannel(
+                    """{"issuer":"https://auth.test","authorization_endpoint":"https://auth.test/authorize","token_endpoint":"https://auth.test/token","pushed_authorization_request_endpoint":"https://auth.test/par"}""",
+                ),
+                HttpStatusCode.OK,
+                jsonHeaders,
+            )
+
+        else -> null
+    }
+
     private fun fullFlowMockClient(): HttpClient = HttpClient(
         MockEngine { request ->
             val url = request.url.toString()
-            when {
-                url.contains("/.well-known/atproto-did") ->
-                    respond(ByteReadChannel("did:plc:testuser"), HttpStatusCode.OK)
-
-                url.contains("plc.directory/did:plc:testuser") ->
-                    respond(
-                        ByteReadChannel(
-                            """{"id":"did:plc:testuser","alsoKnownAs":["at://alice.test"],"service":[{"id":"#atproto_pds","type":"AtprotoPersonalDataServer","serviceEndpoint":"https://pds.test"}]}""",
-                        ),
-                        HttpStatusCode.OK,
-                        jsonHeaders,
-                    )
-
-                url.contains("/.well-known/oauth-protected-resource") ->
-                    respond(
-                        ByteReadChannel("""{"authorization_servers":["https://auth.test"]}"""),
-                        HttpStatusCode.OK,
-                        jsonHeaders,
-                    )
-
-                url.contains("/.well-known/oauth-authorization-server") ->
-                    respond(
-                        ByteReadChannel(
-                            """{"issuer":"https://auth.test","authorization_endpoint":"https://auth.test/authorize","token_endpoint":"https://auth.test/token","pushed_authorization_request_endpoint":"https://auth.test/par"}""",
-                        ),
-                        HttpStatusCode.OK,
-                        jsonHeaders,
-                    )
-
+            respondToDiscovery(url) ?: when {
                 // PAR: first call returns use_dpop_nonce, second succeeds
                 url.contains("/par") -> {
                     val hasDpopHeader = request.headers["DPoP"] != null
@@ -100,35 +111,7 @@ class AtOAuthTest {
     private fun parCapturingClient(capture: (String) -> Unit): HttpClient = HttpClient(
         MockEngine { request ->
             val url = request.url.toString()
-            when {
-                url.contains("/.well-known/atproto-did") ->
-                    respond(ByteReadChannel("did:plc:testuser"), HttpStatusCode.OK)
-
-                url.contains("plc.directory/did:plc:testuser") ->
-                    respond(
-                        ByteReadChannel(
-                            """{"id":"did:plc:testuser","alsoKnownAs":["at://alice.test"],"service":[{"id":"#atproto_pds","type":"AtprotoPersonalDataServer","serviceEndpoint":"https://pds.test"}]}""",
-                        ),
-                        HttpStatusCode.OK,
-                        jsonHeaders,
-                    )
-
-                url.contains("/.well-known/oauth-protected-resource") ->
-                    respond(
-                        ByteReadChannel("""{"authorization_servers":["https://auth.test"]}"""),
-                        HttpStatusCode.OK,
-                        jsonHeaders,
-                    )
-
-                url.contains("/.well-known/oauth-authorization-server") ->
-                    respond(
-                        ByteReadChannel(
-                            """{"issuer":"https://auth.test","authorization_endpoint":"https://auth.test/authorize","token_endpoint":"https://auth.test/token","pushed_authorization_request_endpoint":"https://auth.test/par"}""",
-                        ),
-                        HttpStatusCode.OK,
-                        jsonHeaders,
-                    )
-
+            respondToDiscovery(url) ?: when {
                 url.contains("/par") -> {
                     val body = (request.body as io.ktor.http.content.OutgoingContent.ByteArrayContent).bytes().decodeToString()
                     capture(body)

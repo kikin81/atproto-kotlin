@@ -54,8 +54,8 @@ import kotlin.io.encoding.ExperimentalEncodingApi
  * )
  * ```
  *
- * @param scope Space-delimited OAuth scope string sent in the PAR. Must be a
- *   subset of the `scope` advertised by the hosted client metadata document.
+ * The value must be a subset of the `scope` field declared in the hosted
+ * client metadata document.
  */
 class AtOAuth(
     private val clientMetadataUrl: String,
