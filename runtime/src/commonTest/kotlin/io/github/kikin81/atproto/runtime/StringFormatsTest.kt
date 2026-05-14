@@ -1,9 +1,12 @@
 package io.github.kikin81.atproto.runtime
 
+import kotlinx.datetime.Instant
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertNull
 
 class StringFormatsTest {
 
@@ -45,4 +48,48 @@ class StringFormatsTest {
     @Test fun language_roundTrip() = assertRoundTrip(Language.serializer(), Language("en-US"), "\"en-US\"")
 
     @Test fun uri_roundTrip() = assertRoundTrip(Uri.serializer(), Uri("https://example.com/thing"), "\"https://example.com/thing\"")
+
+    @Test fun datetime_toInstant_parsesZuluLiteral() {
+        val parsed = Datetime("2026-04-13T12:34:56Z").toInstant()
+        assertEquals(Instant.parse("2026-04-13T12:34:56Z"), parsed)
+    }
+
+    @Test fun datetime_toInstant_parsesFractionalSeconds() {
+        val parsed = Datetime("2026-04-13T12:34:56.789Z").toInstant()
+        assertEquals(Instant.parse("2026-04-13T12:34:56.789Z"), parsed)
+    }
+
+    @Test fun datetime_toInstant_parsesOffsetTimezone() {
+        // RFC 3339 accepts a numeric offset in place of 'Z' — same instant,
+        // different on-the-wire form.
+        val parsed = Datetime("2026-04-13T05:34:56-07:00").toInstant()
+        assertEquals(Instant.parse("2026-04-13T12:34:56Z"), parsed)
+    }
+
+    @Test fun datetime_toInstant_throwsOnMalformedInput() {
+        assertFailsWith<IllegalArgumentException> {
+            Datetime("not a timestamp").toInstant()
+        }
+    }
+
+    @Test fun datetime_toInstantOrNull_returnsParsedOnValidInput() {
+        val parsed = Datetime("2026-04-13T12:34:56.789Z").toInstantOrNull()
+        assertEquals(Instant.parse("2026-04-13T12:34:56.789Z"), parsed)
+    }
+
+    @Test fun datetime_toInstantOrNull_returnsNullOnMalformedInput() {
+        assertNull(Datetime("not a timestamp").toInstantOrNull())
+        assertNull(Datetime("").toInstantOrNull())
+        // Missing required timezone — RFC 3339 violation.
+        assertNull(Datetime("2026-04-13T12:34:56").toInstantOrNull())
+    }
+
+    @Test fun datetime_toInstant_roundTripsViaInstantToString() {
+        // Datetime → Instant → wire string → Datetime preserves the instant
+        // (formatting may normalize, but the moment in time is the same).
+        val original = Datetime("2026-04-13T12:34:56.000Z")
+        val instant = original.toInstant()
+        val reconstructed = Datetime(instant.toString()).toInstant()
+        assertEquals(instant, reconstructed)
+    }
 }
