@@ -1,0 +1,113 @@
+name: Lexicon drift detection
+
+# Surfaces upstream NSIDs that exist in bluesky-social/atproto's lexicon
+# corpus but are not yet in our generator/lexicons.json manifest, plus
+# manifest NSIDs no longer present upstream (deprecations or renames).
+#
+# Complements .github/workflows/lexicon-bump.yaml. That workflow refreshes
+# CIDs for already-manifested NSIDs (corpus drift). This workflow detects
+# brand-new upstream namespaces that lex install --update will never
+# discover, so a maintainer can decide which to opt into.
+#
+# Maintains a single tracking issue labeled `lexicon-drift`:
+#   - drift detected with no open issue -> create one
+#   - drift detected with an open issue -> edit body in place
+#   - no drift detected with an open issue -> auto-close with comment
+
+on:
+  schedule:
+    # 13:00 UTC Mondays — one hour before lexicon-bump (14:00 UTC), so a
+    # fresh drift report is available when the bump PR (if any) opens.
+    - cron: "0 13 * * 1"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: lexicon-drift-detect
+  cancel-in-progress: false
+
+jobs:
+  detect:
+    name: Detect lexicon drift
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: zulu
+          java-version-file: .java-version
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Ensure lexicon-drift label exists
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh label create lexicon-drift \
+            --color B60205 \
+            --description "Upstream lexicons exist but are not in our manifest" \
+            --force
+
+      - name: Run drift detection
+        id: detect
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew :generator:detectLexiconDrift --quiet --no-configuration-cache
+
+      - name: Find existing drift issue
+        id: find
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          existing=$(gh issue list \
+            --label lexicon-drift \
+            --state open \
+            --json number \
+            --jq '.[0].number // empty')
+          echo "issue_number=${existing}" >> "$GITHUB_OUTPUT"
+
+      - name: Open or update tracking issue
+        if: steps.detect.outputs.has_drift == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BODY: ${{ steps.detect.outputs.body }}
+          NEW_COUNT: ${{ steps.detect.outputs.new_count }}
+          REMOVED_COUNT: ${{ steps.detect.outputs.removed_count }}
+          EXISTING: ${{ steps.find.outputs.issue_number }}
+        run: |
+          set -euo pipefail
+          title="Lexicon drift: ${NEW_COUNT} new upstream NSID(s), ${REMOVED_COUNT} missing-from-upstream"
+          tmp=$(mktemp)
+          printf '%s' "$BODY" > "$tmp"
+          if [ -n "$EXISTING" ]; then
+            gh issue edit "$EXISTING" \
+              --title "$title" \
+              --body-file "$tmp"
+            echo "Updated existing drift issue #${EXISTING}"
+          else
+            gh issue create \
+              --title "$title" \
+              --body-file "$tmp" \
+              --label lexicon-drift
+            echo "Created new drift tracking issue"
+          fi
+
+      - name: Auto-close drift issue when manifest catches up
+        if: steps.detect.outputs.has_drift == 'false' && steps.find.outputs.issue_number != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EXISTING: ${{ steps.find.outputs.issue_number }}
+        run: |
+          set -euo pipefail
+          gh issue close "$EXISTING" \
+            --reason completed \
+            --comment "No drift detected on $(date -u +%Y-%m-%d). Closing automatically; will reopen if upstream diverges again."
