@@ -100,7 +100,7 @@ public class ServiceGenerator(
 
     private fun buildServiceClass(fqName: FqName, defKeys: List<DefKey>): TypeSpec {
         val clientType = ClassName(RUNTIME_PKG, "XrpcClient")
-        val proxyDid = resolveProxyForPackage(fqName.pkg, defKeys)
+        val proxyDid = resolveProxyForPackage(fqName.pkg, defKeys.map { it.nsid.raw })
 
         val ctorBuilder = FunSpec.constructorBuilder()
             .addParameter(ParameterSpec.builder("client", clientType).build())
@@ -146,21 +146,29 @@ public class ServiceGenerator(
 
     /**
      * Determines the proxy DID for a service package by checking each NSID
-     * against [ProxyMapping]. Returns null if no defs are proxied. Throws
-     * [VerificationFailure] if the package mixes proxied and non-proxied
-     * NSIDs, or if multiple distinct proxy DIDs are required — neither
-     * case is supported by the current SDK shape.
+     * against [ProxyMapping]. Returns null if no NSID is proxied. Returns
+     * the single proxy DID if every NSID maps to the same proxy. Throws
+     * [VerificationFailure] if NSIDs in the package map to different
+     * proxies (or a mix of proxied + non-proxied) — the SDK emits one
+     * service per package and cannot stamp different proxies on different
+     * methods.
      */
-    private fun resolveProxyForPackage(pkg: String, defKeys: List<DefKey>): String? {
-        val proxies = defKeys.map { ProxyMapping.proxyFor(it.nsid.raw) }.distinct()
-        return when {
-            proxies.size == 1 -> proxies.single() // null or the single proxy
-            proxies.toSet() == setOf(null) -> null
+    internal fun resolveProxyForPackage(pkg: String, nsids: List<String>): String? {
+        if (nsids.isEmpty()) return null
+        val grouped: Map<String?, List<String>> = nsids.groupBy { ProxyMapping.proxyFor(it) }
+        return when (grouped.size) {
+            1 -> grouped.keys.single()
             else -> throw VerificationFailure(
-                "Service package '$pkg' contains a mix of proxied and non-proxied NSIDs " +
-                    "(or multiple distinct proxy DIDs): $proxies. The SDK currently emits " +
-                    "one service per package and cannot stamp different proxies on different " +
-                    "methods. Adjust ProxyMapping or split the namespace.",
+                buildString {
+                    append("Service package '").append(pkg).append("' mixes proxy DIDs:\n")
+                    grouped.entries.sortedBy { it.key ?: "" }.forEach { (proxy, keys) ->
+                        append("  ").append(proxy ?: "<no proxy>").append(" -> ").append(keys).append('\n')
+                    }
+                    append(
+                        "The SDK emits one service per package and cannot stamp different " +
+                            "proxies on different methods. Adjust ProxyMapping or split the namespace.",
+                    )
+                },
             )
         }
     }
