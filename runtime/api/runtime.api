@@ -460,6 +460,11 @@ public final class io/github/kikin81/atproto/runtime/RecordKey$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class io/github/kikin81/atproto/runtime/StringFormatsKt {
+	public static final fun toInstant-Xa6jipg (Ljava/lang/String;)Lkotlinx/datetime/Instant;
+	public static final fun toInstantOrNull-Xa6jipg (Ljava/lang/String;)Lkotlinx/datetime/Instant;
+}
+
 public final class io/github/kikin81/atproto/runtime/Tid {
 	public static final field Companion Lio/github/kikin81/atproto/runtime/Tid$Companion;
 	public static final synthetic fun box-impl (Ljava/lang/String;)Lio/github/kikin81/atproto/runtime/Tid;

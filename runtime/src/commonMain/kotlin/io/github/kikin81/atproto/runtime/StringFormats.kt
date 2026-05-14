@@ -1,5 +1,6 @@
 package io.github.kikin81.atproto.runtime
 
+import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 import kotlin.jvm.JvmInline
 
@@ -57,6 +58,34 @@ public value class Tid(public val raw: String)
 @JvmInline
 @Serializable
 public value class Datetime(public val raw: String)
+
+/**
+ * Parse this AT Protocol [Datetime] as a [kotlinx.datetime.Instant].
+ *
+ * The AT Protocol spec requires `datetime` values to be valid RFC 3339
+ * timestamps with timezone, so this rarely throws for server-emitted
+ * records. Throws [IllegalArgumentException] (via [Instant.parse]) if
+ * `raw` is malformed — typically because the value was constructed
+ * locally rather than received over the wire.
+ *
+ * @see toInstantOrNull for the non-throwing variant.
+ */
+public fun Datetime.toInstant(): Instant = Instant.parse(raw)
+
+/**
+ * Parse this AT Protocol [Datetime] as a [kotlinx.datetime.Instant],
+ * returning `null` on malformed input instead of throwing.
+ *
+ * Prefer this when reading [Datetime] values that may have been
+ * constructed locally or sourced from an untrusted producer. For
+ * server-emitted records prefer [toInstant], which surfaces malformed
+ * data as a programming error.
+ */
+public fun Datetime.toInstantOrNull(): Instant? = try {
+    Instant.parse(raw)
+} catch (_: IllegalArgumentException) {
+    null
+}
 
 /** A BCP-47 language tag. Format: `language`. */
 @JvmInline
