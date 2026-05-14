@@ -37,12 +37,32 @@ import kotlin.io.encoding.ExperimentalEncodingApi
  * val client = oauth.createClient()
  * FeedService(client).getTimeline()
  * ```
+ *
+ * ## Requesting additional scopes
+ *
+ * To request umbrella scopes beyond the default `atproto transition:generic`
+ * (e.g. `transition:chat.bsky` for Bluesky chat, `transition:email` for
+ * email), pass them via [scope]. The value must be a subset of the `scope`
+ * field declared in the hosted `client-metadata.json` document.
+ *
+ * ```kotlin
+ * val oauth = AtOAuth(
+ *     clientMetadataUrl = "...",
+ *     sessionStore = ...,
+ *     httpClient = ...,
+ *     scope = "atproto transition:generic transition:chat.bsky",
+ * )
+ * ```
+ *
+ * @param scope Space-delimited OAuth scope string sent in the PAR. Must be a
+ *   subset of the `scope` advertised by the hosted client metadata document.
  */
 class AtOAuth(
     private val clientMetadataUrl: String,
     private val sessionStore: OAuthSessionStore,
     private val httpClient: HttpClient,
     private val json: Json = Json { ignoreUnknownKeys = true },
+    private val scope: String = "atproto transition:generic",
 ) {
     // Transient state during the login flow (between beginLogin and completeLogin)
     private var pendingState: PendingAuthState? = null
@@ -291,7 +311,7 @@ class AtOAuth(
         append("client_id", clientMetadataUrl)
         append("response_type", "code")
         append("redirect_uri", redirectUri)
-        append("scope", "atproto transition:generic")
+        append("scope", scope)
         append("state", state)
         append("code_challenge", codeChallenge)
         append("code_challenge_method", "S256")

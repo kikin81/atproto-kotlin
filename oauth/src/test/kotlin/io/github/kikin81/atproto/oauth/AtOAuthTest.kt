@@ -93,6 +93,90 @@ class AtOAuthTest {
         },
     )
 
+    /**
+     * Builds a mock that captures the PAR form body. Used by scope-propagation
+     * tests to assert the requested scope hits the wire verbatim.
+     */
+    private fun parCapturingClient(capture: (String) -> Unit): HttpClient = HttpClient(
+        MockEngine { request ->
+            val url = request.url.toString()
+            when {
+                url.contains("/.well-known/atproto-did") ->
+                    respond(ByteReadChannel("did:plc:testuser"), HttpStatusCode.OK)
+
+                url.contains("plc.directory/did:plc:testuser") ->
+                    respond(
+                        ByteReadChannel(
+                            """{"id":"did:plc:testuser","alsoKnownAs":["at://alice.test"],"service":[{"id":"#atproto_pds","type":"AtprotoPersonalDataServer","serviceEndpoint":"https://pds.test"}]}""",
+                        ),
+                        HttpStatusCode.OK,
+                        jsonHeaders,
+                    )
+
+                url.contains("/.well-known/oauth-protected-resource") ->
+                    respond(
+                        ByteReadChannel("""{"authorization_servers":["https://auth.test"]}"""),
+                        HttpStatusCode.OK,
+                        jsonHeaders,
+                    )
+
+                url.contains("/.well-known/oauth-authorization-server") ->
+                    respond(
+                        ByteReadChannel(
+                            """{"issuer":"https://auth.test","authorization_endpoint":"https://auth.test/authorize","token_endpoint":"https://auth.test/token","pushed_authorization_request_endpoint":"https://auth.test/par"}""",
+                        ),
+                        HttpStatusCode.OK,
+                        jsonHeaders,
+                    )
+
+                url.contains("/par") -> {
+                    val body = (request.body as io.ktor.http.content.OutgoingContent.ByteArrayContent).bytes().decodeToString()
+                    capture(body)
+                    respond(
+                        ByteReadChannel("""{"request_uri":"urn:test","expires_in":60}"""),
+                        HttpStatusCode.OK,
+                        jsonHeaders,
+                    )
+                }
+
+                else -> respond(ByteReadChannel(""), HttpStatusCode.NotFound)
+            }
+        },
+    )
+
+    @Test
+    fun parSendsDefaultScopeWhenNotOverridden() = runTest {
+        val store = InMemorySessionStore()
+        var parBody: String? = null
+        val oauth = AtOAuth(
+            clientMetadataUrl = "https://app.test/oauth/client-metadata.json",
+            sessionStore = store,
+            httpClient = parCapturingClient { parBody = it },
+        )
+        oauth.beginLogin("alice.test")
+
+        val body = parBody
+        assertNotNull(body)
+        assertContains(body, "scope=atproto+transition%3Ageneric")
+    }
+
+    @Test
+    fun parSendsCustomScopeWhenProvided() = runTest {
+        val store = InMemorySessionStore()
+        var parBody: String? = null
+        val oauth = AtOAuth(
+            clientMetadataUrl = "https://app.test/oauth/client-metadata.json",
+            sessionStore = store,
+            httpClient = parCapturingClient { parBody = it },
+            scope = "atproto transition:generic transition:chat.bsky",
+        )
+        oauth.beginLogin("alice.test")
+
+        val body = parBody
+        assertNotNull(body)
+        assertContains(body, "scope=atproto+transition%3Ageneric+transition%3Achat.bsky")
+    }
+
     @Test
     fun beginLoginReturnsAuthorizationUrl() = runTest {
         val store = InMemorySessionStore()
