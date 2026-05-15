@@ -7,7 +7,7 @@ upstream Lexicon JSON corpus and emits idiomatic Kotlin: data classes, open
 unions, typed value classes, XRPC service interfaces, and KDoc documentation.
 
 **Repo:** https://github.com/kikin81/atproto-kotlin
-**Maven Central:** `io.github.kikin81.atproto:{runtime,models,oauth}`
+**Maven Central:** `io.github.kikin81.atproto:{runtime,models,oauth,compose,compose-material3}`
 **API Docs:** https://kikin81.github.io/atproto-kotlin/api/
 
 ## Modules
@@ -18,6 +18,8 @@ unions, typed value classes, XRPC service interfaces, and KDoc documentation.
 | `:generator` | JVM-only | No | Lexicon parser, IR, ref resolver, KotlinPoet emitters |
 | `:models` | KMP (JVM + iOS) | Yes | Generated models, services, unions from Lexicon corpus |
 | `:oauth` | JVM-only | Yes | AT Protocol OAuth 2.0 (PAR + PKCE + DPoP) for public clients |
+| `:compose` | Android library | Yes | Bluesky facet → `AnnotatedString` helpers (Compose UI, no Material) |
+| `:compose-material3` | Android library | Yes | Material3 `remember`-based wrapper for `BlueskyAnnotatedString` |
 | `:samples:android` | Android | No | Reference Compose app with OAuth login + timeline feed |
 
 ## Build prerequisites
@@ -95,6 +97,8 @@ Generated source lands in `models/build/generated/source/lexicon/commonMain/`.
 
 - `.github/workflows/ci.yaml`: lint + test + build on every push/PR
 - `.github/workflows/release.yaml`: gate jobs -> semantic-release -> publish -> API docs to GitHub Pages
+- `.github/workflows/lexicon-drift-detect.yaml`: scheduled check for upstream Lexicon changes
+- `.github/workflows/lexicon-bump.yaml`: opens a PR that pins refreshed Lexicon CIDs
 - GitHub Pages serves `docs/` (includes `oauth/client-metadata.json` and `api/` Dokka docs)
 
 ## OpenSpec workflow
