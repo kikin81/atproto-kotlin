@@ -133,6 +133,7 @@ class AtOAuthTest {
         var parBody: String? = null
         val oauth = AtOAuth(
             clientMetadataUrl = "https://app.test/oauth/client-metadata.json",
+            redirectUri = "app.example:/oauth-redirect",
             sessionStore = store,
             httpClient = parCapturingClient { parBody = it },
         )
@@ -149,6 +150,7 @@ class AtOAuthTest {
         var parBody: String? = null
         val oauth = AtOAuth(
             clientMetadataUrl = "https://app.test/oauth/client-metadata.json",
+            redirectUri = "app.example:/oauth-redirect",
             sessionStore = store,
             httpClient = parCapturingClient { parBody = it },
             scope = "atproto transition:generic transition:chat.bsky",
@@ -161,10 +163,45 @@ class AtOAuthTest {
     }
 
     @Test
+    fun parRequestUsesProvidedRedirectUri() = runTest {
+        val store = InMemorySessionStore()
+        var parBody: String? = null
+        val oauth = AtOAuth(
+            clientMetadataUrl = "https://app.test/oauth/client-metadata.json",
+            redirectUri = "app.example:/oauth-redirect",
+            sessionStore = store,
+            httpClient = parCapturingClient { parBody = it },
+        )
+        oauth.beginLogin("alice.test")
+
+        val body = parBody
+        assertNotNull(body)
+        assertContains(body, "redirect_uri=app.example%3A%2Foauth-redirect")
+    }
+
+    @Test
+    fun redirectUriIsPassedThroughUntransformed() = runTest {
+        val store = InMemorySessionStore()
+        var parBody: String? = null
+        val oauth = AtOAuth(
+            clientMetadataUrl = "https://app.test/oauth/client-metadata.json",
+            redirectUri = "a",
+            sessionStore = store,
+            httpClient = parCapturingClient { parBody = it },
+        )
+        oauth.beginLogin("alice.test")
+
+        val body = parBody
+        assertNotNull(body)
+        assertContains(body, "redirect_uri=a&")
+    }
+
+    @Test
     fun beginLoginReturnsAuthorizationUrl() = runTest {
         val store = InMemorySessionStore()
         val oauth = AtOAuth(
             clientMetadataUrl = "https://app.test/oauth/client-metadata.json",
+            redirectUri = "app.example:/oauth-redirect",
             sessionStore = store,
             httpClient = fullFlowMockClient(),
         )
@@ -179,6 +216,7 @@ class AtOAuthTest {
         val store = InMemorySessionStore()
         val oauth = AtOAuth(
             clientMetadataUrl = "https://app.test/oauth/client-metadata.json",
+            redirectUri = "app.example:/oauth-redirect",
             sessionStore = store,
             httpClient = fullFlowMockClient(),
         )
@@ -186,7 +224,7 @@ class AtOAuthTest {
 
         // Simulate the browser redirect
         oauth.completeLogin(
-            "io.github.kikin81:/oauth-redirect?code=auth_code_123&state=${extractState(oauth)}&iss=https://auth.test",
+            "app.example:/oauth-redirect?code=auth_code_123&state=${extractState(oauth)}&iss=https://auth.test",
         )
 
         val session = store.session
@@ -203,6 +241,7 @@ class AtOAuthTest {
         val store = InMemorySessionStore()
         val oauth = AtOAuth(
             clientMetadataUrl = "https://app.test/oauth/client-metadata.json",
+            redirectUri = "app.example:/oauth-redirect",
             sessionStore = store,
             httpClient = fullFlowMockClient(),
         )
@@ -210,7 +249,7 @@ class AtOAuthTest {
 
         assertFailsWith<OAuthException> {
             oauth.completeLogin(
-                "io.github.kikin81:/oauth-redirect?code=abc&state=wrong_state&iss=https://auth.test",
+                "app.example:/oauth-redirect?code=abc&state=wrong_state&iss=https://auth.test",
             )
         }
     }
@@ -220,6 +259,7 @@ class AtOAuthTest {
         val store = InMemorySessionStore()
         val oauth = AtOAuth(
             clientMetadataUrl = "https://app.test/oauth/client-metadata.json",
+            redirectUri = "app.example:/oauth-redirect",
             sessionStore = store,
             httpClient = fullFlowMockClient(),
         )
@@ -227,7 +267,7 @@ class AtOAuthTest {
 
         assertFailsWith<OAuthException> {
             oauth.completeLogin(
-                "io.github.kikin81:/oauth-redirect?code=abc&state=${extractState(oauth)}&iss=https://evil.test",
+                "app.example:/oauth-redirect?code=abc&state=${extractState(oauth)}&iss=https://evil.test",
             )
         }
     }
@@ -281,12 +321,12 @@ class AtOAuthTest {
         )
 
         val store = InMemorySessionStore()
-        val oauth = AtOAuth("https://app.test/meta.json", store, client)
+        val oauth = AtOAuth("https://app.test/meta.json", "app.example:/oauth-redirect", store, client)
         oauth.beginLogin("alice.test")
 
         assertFailsWith<OAuthAccountMismatchException> {
             oauth.completeLogin(
-                "io.github.kikin81:/oauth-redirect?code=abc&state=${extractState(oauth)}&iss=https://auth.test",
+                "app.example:/oauth-redirect?code=abc&state=${extractState(oauth)}&iss=https://auth.test",
             )
         }
     }
@@ -349,7 +389,7 @@ class AtOAuthTest {
             },
         )
 
-        val oauth = AtOAuth("https://app.test/oauth/client-metadata.json", store, client)
+        val oauth = AtOAuth("https://app.test/oauth/client-metadata.json", "app.example:/oauth-redirect", store, client)
 
         // Step 1: beginLogin
         val authUrl = oauth.beginLogin("alice.test")
@@ -357,7 +397,7 @@ class AtOAuthTest {
 
         // Step 2: simulate browser redirect
         oauth.completeLogin(
-            "io.github.kikin81:/oauth-redirect?code=code123&state=${extractState(oauth)}&iss=https://auth.test",
+            "app.example:/oauth-redirect?code=code123&state=${extractState(oauth)}&iss=https://auth.test",
         )
 
         // Step 3: verify session persisted with all fields
@@ -429,7 +469,7 @@ class AtOAuthTest {
             },
         )
 
-        val oauth = AtOAuth("https://app.test/meta.json", store, client)
+        val oauth = AtOAuth("https://app.test/meta.json", "app.example:/oauth-redirect", store, client)
         val xrpcClient = oauth.createClient()
 
         val result = xrpcClient.query(
@@ -473,7 +513,7 @@ class AtOAuthTest {
             },
         )
 
-        val oauth = AtOAuth("https://app.test/meta.json", store, client)
+        val oauth = AtOAuth("https://app.test/meta.json", "app.example:/oauth-redirect", store, client)
         oauth.logout()
 
         assertTrue(revokeCalled, "Token revocation should have been called")
@@ -493,7 +533,12 @@ class AtOAuthTest {
             dpopPrivateKey = byteArrayOf(),
             dpopPublicKey = byteArrayOf(),
         )
-        val oauth = AtOAuth("https://app.test/meta.json", store, HttpClient(MockEngine { respond(ByteReadChannel(""), HttpStatusCode.OK) }))
+        val oauth = AtOAuth(
+            "https://app.test/meta.json",
+            "app.example:/oauth-redirect",
+            store,
+            HttpClient(MockEngine { respond(ByteReadChannel(""), HttpStatusCode.OK) }),
+        )
         oauth.logout()
         assertTrue(store.session == null)
     }

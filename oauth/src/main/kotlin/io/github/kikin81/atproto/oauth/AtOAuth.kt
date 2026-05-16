@@ -25,6 +25,7 @@ import kotlin.io.encoding.ExperimentalEncodingApi
  * ```kotlin
  * val oauth = AtOAuth(
  *     clientMetadataUrl = "https://app.example.com/oauth/client-metadata.json",
+ *     redirectUri = "app.example:/oauth-redirect",
  *     sessionStore = mySessionStore,
  *     httpClient = myKtorClient,
  * )
@@ -48,6 +49,7 @@ import kotlin.io.encoding.ExperimentalEncodingApi
  * ```kotlin
  * val oauth = AtOAuth(
  *     clientMetadataUrl = "...",
+ *     redirectUri = "app.example:/oauth-redirect",
  *     sessionStore = ...,
  *     httpClient = ...,
  *     scope = "atproto transition:generic transition:chat.bsky",
@@ -59,6 +61,7 @@ import kotlin.io.encoding.ExperimentalEncodingApi
  */
 class AtOAuth(
     private val clientMetadataUrl: String,
+    private val redirectUri: String,
     private val sessionStore: OAuthSessionStore,
     private val httpClient: HttpClient,
     private val json: Json = Json { ignoreUnknownKeys = true },
@@ -88,7 +91,6 @@ class AtOAuth(
         val codeVerifier = Pkce.generateVerifier()
         val codeChallenge = Pkce.computeChallenge(codeVerifier)
         val state = generateState()
-        val redirectUri = extractRedirectUri()
 
         val requestUri = pushAuthorizationRequest(
             metadata = metadata,
@@ -373,13 +375,6 @@ class AtOAuth(
         }
 
         return json.decodeFromString(TokenResponse.serializer(), response.bodyAsText())
-    }
-
-    private fun extractRedirectUri(): String {
-        // For now, the redirect URI is derived from the client metadata URL's scheme.
-        // In a real app, this would come from the client metadata JSON.
-        // Placeholder: consumers should override or configure this.
-        return "io.github.kikin81:/oauth-redirect"
     }
 
     @OptIn(ExperimentalEncodingApi::class)
