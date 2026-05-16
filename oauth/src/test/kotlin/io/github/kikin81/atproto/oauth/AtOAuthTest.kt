@@ -127,6 +127,39 @@ class AtOAuthTest {
         },
     )
 
+    /**
+     * Builds a mock that runs the full discovery + PAR + token flow and captures
+     * the token-exchange form body. Used to assert that values threaded from
+     * beginLogin (e.g. redirect_uri) are forwarded unchanged to the token POST.
+     */
+    private fun tokenCapturingClient(capture: (String) -> Unit): HttpClient = HttpClient(
+        MockEngine { request ->
+            val url = request.url.toString()
+            respondToDiscovery(url) ?: when {
+                url.contains("/par") ->
+                    respond(
+                        ByteReadChannel("""{"request_uri":"urn:test:par","expires_in":60}"""),
+                        HttpStatusCode.OK,
+                        jsonHeaders,
+                    )
+
+                url.contains("/token") -> {
+                    val body = (request.body as io.ktor.http.content.OutgoingContent.ByteArrayContent).bytes().decodeToString()
+                    capture(body)
+                    respond(
+                        ByteReadChannel(
+                            """{"access_token":"at","refresh_token":"rt","token_type":"DPoP","sub":"did:plc:testuser"}""",
+                        ),
+                        HttpStatusCode.OK,
+                        jsonHeaders,
+                    )
+                }
+
+                else -> respond(ByteReadChannel(""), HttpStatusCode.NotFound)
+            }
+        },
+    )
+
     @Test
     fun parSendsDefaultScopeWhenNotOverridden() = runTest {
         val store = InMemorySessionStore()
@@ -194,6 +227,26 @@ class AtOAuthTest {
         val body = parBody
         assertNotNull(body)
         assertContains(body, "redirect_uri=a&")
+    }
+
+    @Test
+    fun tokenRequestUsesProvidedRedirectUri() = runTest {
+        val store = InMemorySessionStore()
+        var tokenBody: String? = null
+        val oauth = AtOAuth(
+            clientMetadataUrl = "https://app.test/oauth/client-metadata.json",
+            redirectUri = "app.example:/oauth-redirect",
+            sessionStore = store,
+            httpClient = tokenCapturingClient { tokenBody = it },
+        )
+        oauth.beginLogin("alice.test")
+        oauth.completeLogin(
+            "app.example:/oauth-redirect?code=code_xyz&state=${extractState(oauth)}&iss=https://auth.test",
+        )
+
+        val body = tokenBody
+        assertNotNull(body)
+        assertContains(body, "redirect_uri=app.example%3A%2Foauth-redirect")
     }
 
     @Test

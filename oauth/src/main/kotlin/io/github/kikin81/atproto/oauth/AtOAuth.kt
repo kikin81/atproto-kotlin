@@ -24,7 +24,7 @@ import kotlin.io.encoding.ExperimentalEncodingApi
  *
  * ```kotlin
  * val oauth = AtOAuth(
- *     clientMetadataUrl = "https://app.example.com/oauth/client-metadata.json",
+ *     clientMetadataUrl = "https://example.app/oauth/client-metadata.json",
  *     redirectUri = "app.example:/oauth-redirect",
  *     sessionStore = mySessionStore,
  *     httpClient = myKtorClient,
