@@ -32,6 +32,7 @@ object AppModule {
         httpClient: HttpClient,
     ): AtOAuth = AtOAuth(
         clientMetadataUrl = "https://kikin81.github.io/atproto-kotlin/oauth/client-metadata.json",
+        redirectUri = "io.github.kikin81:/oauth-redirect",
         sessionStore = sessionStore,
         httpClient = httpClient,
     )
