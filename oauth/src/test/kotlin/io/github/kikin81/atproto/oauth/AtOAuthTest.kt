@@ -8,6 +8,7 @@ import io.ktor.client.request.HttpResponseData
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
+import io.ktor.http.parseQueryString
 import io.ktor.utils.io.ByteReadChannel
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.JsonObject
@@ -208,9 +209,7 @@ class AtOAuthTest {
         )
         oauth.beginLogin("alice.test")
 
-        val body = parBody
-        assertNotNull(body)
-        assertContains(body, "redirect_uri=app.example%3A%2Foauth-redirect")
+        assertEquals("app.example:/oauth-redirect", redirectUriParamFrom(parBody))
     }
 
     @Test
@@ -225,9 +224,7 @@ class AtOAuthTest {
         )
         oauth.beginLogin("alice.test")
 
-        val body = parBody
-        assertNotNull(body)
-        assertContains(body, "redirect_uri=a&")
+        assertEquals("a", redirectUriParamFrom(parBody))
     }
 
     @Test
@@ -245,9 +242,7 @@ class AtOAuthTest {
             "app.example:/oauth-redirect?code=code_xyz&state=${extractState(oauth)}&iss=https://auth.test",
         )
 
-        val body = tokenBody
-        assertNotNull(body)
-        assertContains(body, "redirect_uri=app.example%3A%2Foauth-redirect")
+        assertEquals("app.example:/oauth-redirect", redirectUriParamFrom(tokenBody))
     }
 
     @Test
@@ -1001,5 +996,17 @@ class AtOAuthTest {
         val stateField = pending::class.java.getDeclaredField("state")
         stateField.isAccessible = true
         return stateField.get(pending) as String
+    }
+
+    /**
+     * Parses an `application/x-www-form-urlencoded` request body and returns the
+     * decoded `redirect_uri` parameter. Asserting against the decoded value (rather
+     * than substring-matching the raw encoded string) keeps the test resilient to
+     * future parameter-ordering or encoding changes while still pinning the
+     * passthrough contract.
+     */
+    private fun redirectUriParamFrom(body: String?): String? {
+        val captured = assertNotNull(body)
+        return parseQueryString(captured)["redirect_uri"]
     }
 }
