@@ -77,7 +77,7 @@ The same pattern was used for prior namespace additions (e.g. `chat.bsky.*`); th
 ## Migration Plan
 
 1. Append 9 NSIDs to `generator/lexicons.json`.
-2. `cd generator && npx lex install --ci` — pins CIDs. If a single NSID fails, fall back to Decision 5's workaround.
+2. `cd generator && npx lex install` — pins CIDs for the newly added NSIDs. **Note:** the first run must omit `--ci` since `--ci` verifies an already-pinned manifest and errors out when new entries lack CIDs. After the new NSIDs are pinned and committed, subsequent CI verifications can use `npx lex install --ci`. If a single NSID fails on the initial install, fall back to Decision 5's workaround.
 3. `./gradlew :generator:generateModels` — emits new sources into `models/build/generated/source/lexicon/`.
 4. `./gradlew :models:apiDump` — refresh the public API surface file.
 5. Write 2 MockEngine smoke tests in `:models`.

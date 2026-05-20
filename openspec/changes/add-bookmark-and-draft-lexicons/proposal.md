@@ -14,7 +14,7 @@ The downstream `kikin81/nubecita` client wants two next-up retention features us
   - `app.bsky.draft.deleteDraft`
   - `app.bsky.draft.getDrafts`
   - `app.bsky.draft.updateDraft`
-- Run `npx lex install --ci` to fetch the JSON schemas from upstream and pin CIDs.
+- Run `npx lex install` to fetch the JSON schemas from upstream and pin CIDs. The first run must omit `--ci` because that flag verifies an already-pinned manifest; once new NSIDs are pinned, subsequent CI builds can use `npx lex install --ci` for verification.
 - Regenerate via `:generator:generateModels` — emits `BookmarkService`, `DraftService`, and the `BookmarkView` / `Draft` model types under the existing `io.github.kikin81.atproto.app.bsky.{bookmark,draft}` packages.
 - Refresh `:models:apiDump` — additive only (new public classes + accessors).
 - Add 2 MockEngine smoke tests in `:models` proving wire-shape: one query (`BookmarkService.getBookmarks`) and one procedure (`DraftService.createDraft`).
