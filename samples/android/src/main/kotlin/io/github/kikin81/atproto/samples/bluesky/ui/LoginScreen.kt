@@ -13,6 +13,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,6 +30,7 @@ fun LoginScreen(
     errorMessage: String? = null,
     busy: Boolean = false,
     onLogin: (String) -> Unit,
+    onSignup: () -> Unit = {},
 ) {
     var handle by remember { mutableStateOf("") }
 
@@ -87,6 +89,21 @@ fun LoginScreen(
         Spacer(Modifier.height(8.dp))
         Text(
             text = "You'll be redirected to your PDS to authenticate via OAuth.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+
+        Spacer(Modifier.height(24.dp))
+        OutlinedButton(
+            onClick = onSignup,
+            enabled = !busy,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text("Create account on Bluesky")
+        }
+        Spacer(Modifier.height(4.dp))
+        Text(
+            text = "Don't have an account? Create one without leaving this app.",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

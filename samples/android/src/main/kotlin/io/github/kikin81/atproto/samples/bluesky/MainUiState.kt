@@ -17,6 +17,7 @@ sealed interface MainUiState {
 
 sealed interface MainEvent {
     data class Login(val handle: String) : MainEvent
+    data object Signup : MainEvent
     data class CompleteOAuthRedirect(val redirectUri: String) : MainEvent
     data object Logout : MainEvent
 }

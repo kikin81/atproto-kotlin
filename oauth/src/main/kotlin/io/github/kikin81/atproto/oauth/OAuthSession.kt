@@ -11,14 +11,20 @@ import kotlinx.serialization.Serializable
  * X509 public key) rather than as JWK JSON. The consumer's
  * [OAuthSessionStore] implementation is responsible for encrypting these
  * at rest (e.g. via EncryptedSharedPreferences on Android).
+ *
+ * [did], [handle], and [pdsUrl] are nullable to accommodate the signup
+ * flow's brief window between token exchange and identity hydration. Once
+ * hydration completes (or its bounded retry budget exhausts) the session
+ * is re-persisted with whatever values resolved. The login flow always
+ * populates all three eagerly.
  */
 @Serializable
 data class OAuthSession(
     val accessToken: String,
     val refreshToken: String,
-    val did: String,
-    val handle: String,
-    val pdsUrl: String,
+    val did: String?,
+    val handle: String?,
+    val pdsUrl: String?,
     val tokenEndpoint: String,
     val revocationEndpoint: String? = null,
     val clientId: String? = null,
@@ -34,7 +40,7 @@ data class OAuthSession(
         return did == other.did && accessToken == other.accessToken
     }
 
-    override fun hashCode(): Int = did.hashCode() * 31 + accessToken.hashCode()
+    override fun hashCode(): Int = (did?.hashCode() ?: 0) * 31 + accessToken.hashCode()
 }
 
 /**

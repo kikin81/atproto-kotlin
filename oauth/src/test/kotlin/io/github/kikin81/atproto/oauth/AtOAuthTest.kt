@@ -13,6 +13,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.JsonObject
 import kotlin.test.Test
 import kotlin.test.assertContains
+import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
@@ -594,6 +595,305 @@ class AtOAuthTest {
         )
         oauth.logout()
         assertTrue(store.session == null)
+    }
+
+    // ---------- Signup flow tests ----------
+
+    /**
+     * Auth-server metadata advertising prompt=create — the bsky.social shape.
+     */
+    private val bskySocialAuthServerMetadata =
+        """{"issuer":"https://bsky.social","authorization_endpoint":"https://bsky.social/oauth/authorize","token_endpoint":"https://bsky.social/oauth/token","pushed_authorization_request_endpoint":"https://bsky.social/oauth/par","prompt_values_supported":["none","login","consent","select_account","create"]}"""
+
+    @Test
+    fun beginSignupShortCircuitsDiscoveryAndSendsPromptCreate() = runTest {
+        val store = InMemorySessionStore()
+        val requestedUrls = mutableListOf<String>()
+        var parBody: String? = null
+        val client = HttpClient(
+            MockEngine { request ->
+                requestedUrls.add(request.url.toString())
+                when {
+                    request.url.toString().contains("/.well-known/oauth-authorization-server") ->
+                        respond(ByteReadChannel(bskySocialAuthServerMetadata), HttpStatusCode.OK, jsonHeaders)
+
+                    request.url.toString().contains("/par") -> {
+                        parBody = (request.body as io.ktor.http.content.OutgoingContent.ByteArrayContent).bytes().decodeToString()
+                        respond(
+                            ByteReadChannel("""{"request_uri":"urn:ietf:params:oauth:request_uri:signup-test","expires_in":60}"""),
+                            HttpStatusCode.OK,
+                            jsonHeaders,
+                        )
+                    }
+
+                    else -> respond(ByteReadChannel(""), HttpStatusCode.NotFound)
+                }
+            },
+        )
+
+        val oauth = AtOAuth(
+            clientMetadataUrl = "https://app.test/oauth/client-metadata.json",
+            redirectUri = "app.example:/oauth-redirect",
+            sessionStore = store,
+            httpClient = client,
+        )
+        val authUrl = oauth.beginSignup()
+
+        // No PLC, no atproto-did, no oauth-protected-resource fetched
+        val discoveryUrls = requestedUrls.filter { it.contains("/.well-known") }
+        assertEquals(1, discoveryUrls.size, "expected exactly 1 well-known fetch (the auth-server metadata), got: $discoveryUrls")
+        assertTrue(discoveryUrls[0].contains("oauth-authorization-server"))
+
+        // PAR body carries prompt=create and no login_hint
+        val body = parBody
+        assertNotNull(body)
+        assertContains(body, "prompt=create")
+        assertTrue(!body.contains("login_hint"), "PAR body should not contain login_hint, got: $body")
+
+        // Authorization URL points at the known auth server
+        assertContains(authUrl, "https://bsky.social/oauth/authorize")
+    }
+
+    @Test
+    fun completeLoginAfterSignupAcceptsTokenSubAsAuthority() = runTest {
+        val store = InMemorySessionStore()
+        val client = HttpClient(
+            MockEngine { request ->
+                val url = request.url.toString()
+                when {
+                    url.contains("/.well-known/oauth-authorization-server") ->
+                        respond(ByteReadChannel(bskySocialAuthServerMetadata), HttpStatusCode.OK, jsonHeaders)
+
+                    url.contains("/par") ->
+                        respond(
+                            ByteReadChannel("""{"request_uri":"urn:test","expires_in":60}"""),
+                            HttpStatusCode.OK,
+                            jsonHeaders,
+                        )
+
+                    url.contains("/token") ->
+                        respond(
+                            ByteReadChannel(
+                                """{"access_token":"at_signup","refresh_token":"rt_signup","sub":"did:plc:freshlyminted"}""",
+                            ),
+                            HttpStatusCode.OK,
+                            jsonHeaders,
+                        )
+
+                    url.contains("plc.directory/did:plc:freshlyminted") ->
+                        respond(
+                            ByteReadChannel(
+                                """{"id":"did:plc:freshlyminted","alsoKnownAs":["at://newbie.bsky.social"],"service":[{"id":"#atproto_pds","type":"AtprotoPersonalDataServer","serviceEndpoint":"https://newbie-pds.test"}]}""",
+                            ),
+                            HttpStatusCode.OK,
+                            jsonHeaders,
+                        )
+
+                    else -> respond(ByteReadChannel(""), HttpStatusCode.NotFound)
+                }
+            },
+        )
+
+        val oauth = AtOAuth(
+            clientMetadataUrl = "https://app.test/oauth/client-metadata.json",
+            redirectUri = "app.example:/oauth-redirect",
+            sessionStore = store,
+            httpClient = client,
+        )
+        oauth.beginSignup()
+        oauth.completeLogin(
+            "app.example:/oauth-redirect?code=signup_code&state=${extractState(oauth)}&iss=https://bsky.social",
+        )
+
+        val session = store.session
+        assertNotNull(session)
+        // sub from the token response is the authoritative DID — no prior comparison
+        assertEquals("did:plc:freshlyminted", session.did)
+        // handle and pdsUrl hydrated from the DID doc
+        assertEquals("newbie.bsky.social", session.handle)
+        assertEquals("https://newbie-pds.test", session.pdsUrl)
+    }
+
+    @Test
+    fun signupHydrationRetriesAndPersistsNullIdentityWhenBudgetExhausts() = runTest {
+        val store = InMemorySessionStore()
+        var plcCallCount = 0
+        val client = HttpClient(
+            MockEngine { request ->
+                val url = request.url.toString()
+                when {
+                    url.contains("/.well-known/oauth-authorization-server") ->
+                        respond(ByteReadChannel(bskySocialAuthServerMetadata), HttpStatusCode.OK, jsonHeaders)
+
+                    url.contains("/par") ->
+                        respond(
+                            ByteReadChannel("""{"request_uri":"urn:t","expires_in":60}"""),
+                            HttpStatusCode.OK,
+                            jsonHeaders,
+                        )
+
+                    url.contains("/token") ->
+                        respond(
+                            ByteReadChannel(
+                                """{"access_token":"at","refresh_token":"rt","sub":"did:plc:slowpropagation"}""",
+                            ),
+                            HttpStatusCode.OK,
+                            jsonHeaders,
+                        )
+
+                    url.contains("plc.directory") -> {
+                        plcCallCount++
+                        // Always 404 — simulate propagation delay never resolving in-window
+                        respond(ByteReadChannel(""), HttpStatusCode.NotFound)
+                    }
+
+                    else -> respond(ByteReadChannel(""), HttpStatusCode.NotFound)
+                }
+            },
+        )
+
+        val oauth = AtOAuth(
+            clientMetadataUrl = "https://app.test/oauth/client-metadata.json",
+            redirectUri = "app.example:/oauth-redirect",
+            sessionStore = store,
+            httpClient = client,
+        )
+        oauth.beginSignup()
+        oauth.completeLogin(
+            "app.example:/oauth-redirect?code=c&state=${extractState(oauth)}&iss=https://bsky.social",
+        )
+
+        // Retried multiple times before giving up (4 attempts: immediate + 3 backoff slots)
+        assertTrue(plcCallCount >= 2, "expected at least 2 PLC attempts under backoff, got $plcCallCount")
+
+        // Session persisted with DID populated but handle/pds null
+        val session = store.session
+        assertNotNull(session)
+        assertEquals("did:plc:slowpropagation", session.did)
+        assertEquals(null, session.handle)
+        assertEquals(null, session.pdsUrl)
+    }
+
+    @Test
+    fun beginLoginStillRejectsMismatchedSubAfterSignupBranching() = runTest {
+        // Regression: signup-flow branching must NOT disable login-flow's DID mismatch check.
+        val store = InMemorySessionStore()
+        val client = HttpClient(
+            MockEngine { request ->
+                val url = request.url.toString()
+                when {
+                    url.contains("/.well-known/atproto-did") ->
+                        respond(ByteReadChannel("did:plc:expected"), HttpStatusCode.OK)
+
+                    url.contains("plc.directory") ->
+                        respond(
+                            ByteReadChannel(
+                                """{"id":"did:plc:expected","alsoKnownAs":["at://alice.test"],"service":[{"id":"#atproto_pds","type":"AtprotoPersonalDataServer","serviceEndpoint":"https://pds.test"}]}""",
+                            ),
+                            HttpStatusCode.OK,
+                            jsonHeaders,
+                        )
+
+                    url.contains("/.well-known/oauth-protected-resource") ->
+                        respond(ByteReadChannel("""{"authorization_servers":["https://auth.test"]}"""), HttpStatusCode.OK, jsonHeaders)
+
+                    url.contains("/.well-known/oauth-authorization-server") ->
+                        respond(
+                            ByteReadChannel(
+                                """{"issuer":"https://auth.test","authorization_endpoint":"https://auth.test/authorize","token_endpoint":"https://auth.test/token","pushed_authorization_request_endpoint":"https://auth.test/par"}""",
+                            ),
+                            HttpStatusCode.OK,
+                            jsonHeaders,
+                        )
+
+                    url.contains("/par") ->
+                        respond(ByteReadChannel("""{"request_uri":"urn:t","expires_in":60}"""), HttpStatusCode.OK, jsonHeaders)
+
+                    url.contains("/token") ->
+                        respond(
+                            ByteReadChannel("""{"access_token":"at","refresh_token":"rt","sub":"did:plc:WRONG"}"""),
+                            HttpStatusCode.OK,
+                            jsonHeaders,
+                        )
+
+                    else -> respond(ByteReadChannel(""), HttpStatusCode.NotFound)
+                }
+            },
+        )
+
+        val oauth = AtOAuth("https://app.test/m.json", "app.example:/oauth-redirect", store, client)
+        oauth.beginLogin("alice.test")
+        assertFailsWith<OAuthAccountMismatchException> {
+            oauth.completeLogin(
+                "app.example:/oauth-redirect?code=c&state=${extractState(oauth)}&iss=https://auth.test",
+            )
+        }
+    }
+
+    @Test
+    fun beginSignupRejectsServerWithoutPromptCreateSupport() = runTest {
+        val store = InMemorySessionStore()
+        val client = HttpClient(
+            MockEngine { request ->
+                if (request.url.toString().contains("/.well-known/oauth-authorization-server")) {
+                    respond(
+                        ByteReadChannel(
+                            """{"issuer":"https://entryway.test","authorization_endpoint":"https://entryway.test/a","token_endpoint":"https://entryway.test/t","pushed_authorization_request_endpoint":"https://entryway.test/p","prompt_values_supported":["none","login","consent"]}""",
+                        ),
+                        HttpStatusCode.OK,
+                        jsonHeaders,
+                    )
+                } else {
+                    respond(ByteReadChannel(""), HttpStatusCode.NotFound)
+                }
+            },
+        )
+
+        val oauth = AtOAuth("https://app.test/m.json", "app.example:/oauth-redirect", store, client)
+        val ex = assertFailsWith<OAuthSignupNotSupportedException> {
+            oauth.beginSignup(authServer = "entryway.test")
+        }
+        assertContains(ex.advertisedPromptValues, "none")
+        assertTrue(!ex.advertisedPromptValues.contains("create"))
+    }
+
+    @Test
+    fun beginSignupBypassesGateWhenRequirePromptCreateSupportFalse() = runTest {
+        val store = InMemorySessionStore()
+        var parBody: String? = null
+        val client = HttpClient(
+            MockEngine { request ->
+                when {
+                    request.url.toString().contains("/.well-known/oauth-authorization-server") ->
+                        respond(
+                            ByteReadChannel(
+                                """{"issuer":"https://entryway.test","authorization_endpoint":"https://entryway.test/a","token_endpoint":"https://entryway.test/t","pushed_authorization_request_endpoint":"https://entryway.test/p","prompt_values_supported":["none","login"]}""",
+                            ),
+                            HttpStatusCode.OK,
+                            jsonHeaders,
+                        )
+
+                    request.url.toString().contains("/p") -> {
+                        parBody = (request.body as io.ktor.http.content.OutgoingContent.ByteArrayContent).bytes().decodeToString()
+                        respond(
+                            ByteReadChannel("""{"request_uri":"urn:t","expires_in":60}"""),
+                            HttpStatusCode.OK,
+                            jsonHeaders,
+                        )
+                    }
+
+                    else -> respond(ByteReadChannel(""), HttpStatusCode.NotFound)
+                }
+            },
+        )
+
+        val oauth = AtOAuth("https://app.test/m.json", "app.example:/oauth-redirect", store, client)
+        // Must NOT throw despite missing "create" in prompt_values_supported
+        oauth.beginSignup(authServer = "entryway.test", requirePromptCreateSupport = false)
+
+        val body = parBody
+        assertNotNull(body)
+        assertContains(body, "prompt=create")
     }
 
     /**

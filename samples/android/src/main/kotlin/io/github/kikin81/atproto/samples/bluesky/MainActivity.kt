@@ -112,6 +112,7 @@ private fun MainScreen(
                 errorMessage = current.error,
                 busy = current.busy,
                 onLogin = { handle -> viewModel.onEvent(MainEvent.Login(handle)) },
+                onSignup = { viewModel.onEvent(MainEvent.Signup) },
             )
         }
         is MainUiState.LoggedIn -> {

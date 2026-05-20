@@ -5,6 +5,7 @@ import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
+import kotlinx.coroutines.delay
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
@@ -12,6 +13,11 @@ import kotlinx.serialization.json.Json
  * Resolved authorization server metadata — everything the OAuth flow
  * needs to construct PAR requests, authorization URLs, and token
  * exchange calls.
+ *
+ * [did], [handle], and [pdsUrl] are nullable to support the signup flow,
+ * which discovers only the auth-server endpoints up front and hydrates
+ * identity post-token-exchange. The login flow always populates all
+ * three eagerly via [DiscoveryChain.resolve].
  */
 data class AuthServerMetadata(
     val issuer: String,
@@ -19,9 +25,10 @@ data class AuthServerMetadata(
     val tokenEndpoint: String,
     val parEndpoint: String,
     val revocationEndpoint: String?,
-    val pdsUrl: String,
-    val did: String,
-    val handle: String,
+    val pdsUrl: String?,
+    val did: String?,
+    val handle: String?,
+    val promptValuesSupported: List<String> = emptyList(),
 )
 
 /**
@@ -38,6 +45,11 @@ data class AuthServerMetadata(
  *    → extract all OAuth endpoint URLs.
  * 4. **Bidirectional handle verification**: verify the DID document's
  *    `alsoKnownAs` field claims the original handle.
+ *
+ * For signup flows where no handle/DID is known up front, use
+ * [resolveKnownAuthServer] to short-circuit the chain and fetch only the
+ * auth-server metadata; identity is hydrated post-token-exchange via
+ * [hydrateIdentityFromDid].
  */
 class DiscoveryChain(
     private val httpClient: HttpClient,
@@ -76,8 +88,74 @@ class DiscoveryChain(
             pdsUrl = pdsUrl,
             did = did,
             handle = handle,
+            promptValuesSupported = metadata.promptValuesSupported ?: emptyList(),
         )
     }
+
+    /**
+     * Short-circuits the discovery chain for flows where the auth server
+     * is already known (e.g. signup, where the user has no handle/DID yet).
+     * Fetches only the auth-server metadata; [AuthServerMetadata.did],
+     * [AuthServerMetadata.handle], and [AuthServerMetadata.pdsUrl] are
+     * left null — populate them post-token-exchange via
+     * [hydrateIdentityFromDid].
+     *
+     * Accepts either a bare hostname (`"bsky.social"`) or a full URL
+     * (`"https://bsky.social"`); both are normalized to a URL prefix.
+     */
+    suspend fun resolveKnownAuthServer(authServerUrl: String): AuthServerMetadata {
+        val normalized = if (authServerUrl.startsWith("http")) authServerUrl else "https://$authServerUrl"
+        val metadata = fetchAuthServerMetadata(normalized)
+        return AuthServerMetadata(
+            issuer = metadata.issuer ?: normalized,
+            authorizationEndpoint = metadata.authorizationEndpoint
+                ?: throw OAuthDiscoveryException("authorization_endpoint missing from auth server metadata at $normalized"),
+            tokenEndpoint = metadata.tokenEndpoint
+                ?: throw OAuthDiscoveryException("token_endpoint missing from auth server metadata at $normalized"),
+            parEndpoint = metadata.pushedAuthorizationRequestEndpoint
+                ?: throw OAuthDiscoveryException("pushed_authorization_request_endpoint missing from auth server metadata at $normalized"),
+            revocationEndpoint = metadata.revocationEndpoint,
+            pdsUrl = null,
+            did = null,
+            handle = null,
+            promptValuesSupported = metadata.promptValuesSupported ?: emptyList(),
+        )
+    }
+
+    /**
+     * Resolves a DID to a (`handle`, `pdsUrl`) pair using the same logic
+     * the eager chain uses for the second half of `resolve`. Used by the
+     * signup path post-token-exchange, where the token response carries
+     * a freshly-minted `sub` DID that the consumer has no handle for.
+     *
+     * Retries on transient `OAuthDiscoveryException` (typically a PLC
+     * propagation delay) with bounded exponential backoff. Returns `null`
+     * for whichever field could not be resolved when the retry budget
+     * exhausts; the access token remains usable for DID-keyed calls.
+     */
+    internal suspend fun hydrateIdentityFromDid(did: String): HydratedIdentity {
+        var lastError: OAuthDiscoveryException? = null
+        val delaysMs = longArrayOf(0, 100, 400, 1200)
+        for (attemptDelay in delaysMs) {
+            if (attemptDelay > 0) delay(attemptDelay)
+            try {
+                val doc = resolveDid(did)
+                val pdsUrl = doc.service?.firstOrNull { it.id == "#atproto_pds" }?.serviceEndpoint
+                val handle = doc.alsoKnownAs?.firstOrNull { it.startsWith("at://") }?.removePrefix("at://")
+                return HydratedIdentity(handle = handle, pdsUrl = pdsUrl)
+            } catch (e: OAuthDiscoveryException) {
+                lastError = e
+            }
+        }
+        // Budget exhausted: surface what we never got, let caller persist nulls
+        return HydratedIdentity(handle = null, pdsUrl = null, lastError = lastError)
+    }
+
+    internal data class HydratedIdentity(
+        val handle: String?,
+        val pdsUrl: String?,
+        val lastError: OAuthDiscoveryException? = null,
+    )
 
     /**
      * Handle → DID resolution. Tries two methods in order:
@@ -272,11 +350,13 @@ internal data class AuthorizationServerMetadata(
     val revocation_endpoint: String? = null,
     val dpop_signing_alg_values_supported: List<String>? = null,
     val scopes_supported: List<String>? = null,
+    val prompt_values_supported: List<String>? = null,
 ) {
     val authorizationEndpoint: String? get() = authorization_endpoint
     val tokenEndpoint: String? get() = token_endpoint
     val pushedAuthorizationRequestEndpoint: String? get() = pushed_authorization_request_endpoint
     val revocationEndpoint: String? get() = revocation_endpoint
+    val promptValuesSupported: List<String>? get() = prompt_values_supported
 }
 
 @Serializable
