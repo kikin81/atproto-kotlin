@@ -1,16 +1,9 @@
 package io.github.kikin81.atproto.app.bsky.draft
 
-import io.github.kikin81.atproto.runtime.XrpcClient
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.mock.MockEngine
-import io.ktor.client.engine.mock.respond
-import io.ktor.http.HttpHeaders
+import io.github.kikin81.atproto.test.MockXrpcFixture
 import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.content.OutgoingContent
-import io.ktor.http.headersOf
-import io.ktor.utils.io.ByteReadChannel
 import kotlinx.coroutines.test.runTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
@@ -18,29 +11,18 @@ import kotlin.test.assertNotNull
 
 class DraftServiceTest {
 
+    private lateinit var fixture: MockXrpcFixture
+
+    @BeforeTest
+    fun setup() {
+        fixture = MockXrpcFixture()
+    }
+
     @Test
     fun createDraftPostsJsonEncodedInputToCorrectXrpcPath() = runTest {
-        var capturedUrl: String? = null
-        var capturedMethod: HttpMethod? = null
-        var capturedBody: String? = null
-        val client = HttpClient(
-            MockEngine { request ->
-                capturedUrl = request.url.toString()
-                capturedMethod = request.method
-                val body = request.body
-                if (body is OutgoingContent.ByteArrayContent) {
-                    capturedBody = body.bytes().decodeToString()
-                }
-                respond(
-                    ByteReadChannel("""{"id":"draft-123"}"""),
-                    HttpStatusCode.OK,
-                    headersOf(HttpHeaders.ContentType, "application/json"),
-                )
-            },
-        )
-        val xrpc = XrpcClient(baseUrl = "https://pds.test", httpClient = client)
+        fixture.respondWith("""{"id":"draft-123"}""")
 
-        val response = DraftService(xrpc).createDraft(
+        val response = DraftService(fixture.client).createDraft(
             CreateDraftRequest(
                 draft = Draft(
                     posts = listOf(DraftPost(text = "hello from a draft")),
@@ -48,12 +30,16 @@ class DraftServiceTest {
             ),
         )
 
-        assertEquals(HttpMethod.Post, capturedMethod)
-        val url = capturedUrl
+        assertEquals(HttpMethod.Post, fixture.capturedMethod)
+        val url = fixture.capturedUrl
         assertNotNull(url)
         assertContains(url, "/xrpc/app.bsky.draft.createDraft")
 
-        val body = capturedBody
+        val contentType = fixture.capturedContentType
+        assertNotNull(contentType)
+        assertContains(contentType, "application/json")
+
+        val body = fixture.capturedBody
         assertNotNull(body)
         assertContains(body, "\"draft\"")
         assertContains(body, "hello from a draft")
