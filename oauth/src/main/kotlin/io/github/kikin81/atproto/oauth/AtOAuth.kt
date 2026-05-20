@@ -219,9 +219,23 @@ class AtOAuth(
             redirectUri = pending.redirectUri,
         )
 
-        val resolvedDid: String?
-        val resolvedHandle: String?
-        val resolvedPdsUrl: String?
+        val exported = pending.signer.exportKeyPair()
+        val refreshToken = tokenResponse.refresh_token
+            ?: throw OAuthException("No refresh_token in token response")
+
+        fun buildSession(did: String?, handle: String?, pdsUrl: String?): OAuthSession = OAuthSession(
+            accessToken = tokenResponse.access_token,
+            refreshToken = refreshToken,
+            did = did,
+            handle = handle,
+            pdsUrl = pdsUrl,
+            tokenEndpoint = pending.metadata.tokenEndpoint,
+            revocationEndpoint = pending.metadata.revocationEndpoint,
+            clientId = clientMetadataUrl,
+            dpopPrivateKey = exported.privateKeyEncoded,
+            dpopPublicKey = exported.publicKeyEncoded,
+            clockOffsetSeconds = pending.signer.clockOffsetSeconds,
+        )
 
         when (pending.flowOrigin) {
             FlowOrigin.Login -> {
@@ -230,35 +244,36 @@ class AtOAuth(
                         "Token response sub '${tokenResponse.sub}' does not match resolved DID '${pending.metadata.did}'",
                     )
                 }
-                resolvedDid = pending.metadata.did
-                resolvedHandle = pending.metadata.handle
-                resolvedPdsUrl = pending.metadata.pdsUrl
+                // Login already has fully resolved identity — one write is enough.
+                sessionStore.save(
+                    buildSession(
+                        did = pending.metadata.did,
+                        handle = pending.metadata.handle,
+                        pdsUrl = pending.metadata.pdsUrl,
+                    ),
+                )
             }
             FlowOrigin.Signup -> {
                 val signupDid = tokenResponse.sub
                     ?: throw OAuthException("Token response from signup flow has no 'sub' field")
-                resolvedDid = signupDid
+                // Crash-resilience: persist tokens + DID before hydration runs. If
+                // the process dies during the bounded backoff below, the session is
+                // recoverable (the consumer can re-resolve identity off the DID).
+                sessionStore.save(buildSession(did = signupDid, handle = null, pdsUrl = null))
+
                 val hydrated = DiscoveryChain(httpClient, json).hydrateIdentityFromDid(signupDid)
-                resolvedHandle = hydrated.handle
-                resolvedPdsUrl = hydrated.pdsUrl
+                // Re-persist with whatever resolved. If both fields are still null
+                // after the retry budget exhausts, this is effectively a no-op write
+                // — kept for clarity that hydration completed.
+                sessionStore.save(
+                    buildSession(
+                        did = signupDid,
+                        handle = hydrated.handle,
+                        pdsUrl = hydrated.pdsUrl,
+                    ),
+                )
             }
         }
-
-        val exported = pending.signer.exportKeyPair()
-        val session = OAuthSession(
-            accessToken = tokenResponse.access_token,
-            refreshToken = tokenResponse.refresh_token ?: throw OAuthException("No refresh_token in token response"),
-            did = resolvedDid,
-            handle = resolvedHandle,
-            pdsUrl = resolvedPdsUrl,
-            tokenEndpoint = pending.metadata.tokenEndpoint,
-            revocationEndpoint = pending.metadata.revocationEndpoint,
-            clientId = clientMetadataUrl,
-            dpopPrivateKey = exported.privateKeyEncoded,
-            dpopPublicKey = exported.publicKeyEncoded,
-            clockOffsetSeconds = pending.signer.clockOffsetSeconds,
-        )
-        sessionStore.save(session)
     }
 
     /**

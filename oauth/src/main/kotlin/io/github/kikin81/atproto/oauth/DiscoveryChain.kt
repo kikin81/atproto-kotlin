@@ -100,11 +100,20 @@ class DiscoveryChain(
      * left null — populate them post-token-exchange via
      * [hydrateIdentityFromDid].
      *
-     * Accepts either a bare hostname (`"bsky.social"`) or a full URL
-     * (`"https://bsky.social"`); both are normalized to a URL prefix.
+     * Accepts either a bare hostname (`"bsky.social"`) or an `https://`
+     * URL (`"https://bsky.social"`); both are normalized. Plain `http://`
+     * URLs are rejected because OAuth 2.0 requires the authorization
+     * server be reached over TLS.
      */
     suspend fun resolveKnownAuthServer(authServerUrl: String): AuthServerMetadata {
-        val normalized = if (authServerUrl.startsWith("http")) authServerUrl else "https://$authServerUrl"
+        val normalized = when {
+            authServerUrl.startsWith("https://") -> authServerUrl
+            authServerUrl.startsWith("http://") ->
+                throw OAuthDiscoveryException(
+                    "Authorization server URL must use HTTPS, got: $authServerUrl",
+                )
+            else -> "https://$authServerUrl"
+        }
         val metadata = fetchAuthServerMetadata(normalized)
         return AuthServerMetadata(
             issuer = metadata.issuer ?: normalized,
@@ -128,13 +137,23 @@ class DiscoveryChain(
      * signup path post-token-exchange, where the token response carries
      * a freshly-minted `sub` DID that the consumer has no handle for.
      *
-     * Retries on transient `OAuthDiscoveryException` (typically a PLC
-     * propagation delay) with bounded exponential backoff. Returns `null`
-     * for whichever field could not be resolved when the retry budget
-     * exhausts; the access token remains usable for DID-keyed calls.
+     * Retries with bounded exponential backoff in two failure modes:
+     * - the DID document fetch itself throws (PLC not yet aware of the DID),
+     * - the document was fetched but is missing the `#atproto_pds` service
+     *   or the `at://` handle in `alsoKnownAs` (PLC has the record but the
+     *   PDS hasn't published yet).
+     *
+     * Across attempts, the best-resolved value of each field is retained —
+     * so if attempt 2 returns a handle but no PDS and attempt 3 throws,
+     * the caller still gets the handle. Early-exits as soon as both fields
+     * are populated; otherwise returns the best-known pair when the budget
+     * exhausts. The access token remains usable for DID-keyed calls even
+     * if `pdsUrl` is never resolved.
      */
     internal suspend fun hydrateIdentityFromDid(did: String): HydratedIdentity {
         var lastError: OAuthDiscoveryException? = null
+        var bestHandle: String? = null
+        var bestPdsUrl: String? = null
         val delaysMs = longArrayOf(0, 100, 400, 1200)
         for (attemptDelay in delaysMs) {
             if (attemptDelay > 0) delay(attemptDelay)
@@ -142,13 +161,18 @@ class DiscoveryChain(
                 val doc = resolveDid(did)
                 val pdsUrl = doc.service?.firstOrNull { it.id == "#atproto_pds" }?.serviceEndpoint
                 val handle = doc.alsoKnownAs?.firstOrNull { it.startsWith("at://") }?.removePrefix("at://")
-                return HydratedIdentity(handle = handle, pdsUrl = pdsUrl)
+                if (handle != null) bestHandle = handle
+                if (pdsUrl != null) bestPdsUrl = pdsUrl
+                if (bestHandle != null && bestPdsUrl != null) {
+                    return HydratedIdentity(handle = bestHandle, pdsUrl = bestPdsUrl)
+                }
+                // Partial doc — retry; another attempt may publish the missing fields.
             } catch (e: OAuthDiscoveryException) {
                 lastError = e
             }
         }
-        // Budget exhausted: surface what we never got, let caller persist nulls
-        return HydratedIdentity(handle = null, pdsUrl = null, lastError = lastError)
+        // Budget exhausted: persist whatever resolved (possibly partial / both null).
+        return HydratedIdentity(handle = bestHandle, pdsUrl = bestPdsUrl, lastError = lastError)
     }
 
     internal data class HydratedIdentity(
