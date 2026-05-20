@@ -775,6 +775,100 @@ class AtOAuthTest {
     }
 
     @Test
+    fun signupPersistsTokensBeforeHydrationCompletes() = runTest {
+        // Two-write semantics: first save carries the new DID + null identity
+        // (crash-resilience guarantee), second save carries the hydrated identity.
+        val saves = mutableListOf<OAuthSession>()
+        val store = object : OAuthSessionStore {
+            override suspend fun load(): OAuthSession? = saves.lastOrNull()
+            override suspend fun save(session: OAuthSession) {
+                saves.add(session)
+            }
+            override suspend fun clear() {
+                saves.clear()
+            }
+        }
+        val client = HttpClient(
+            MockEngine { request ->
+                val url = request.url.toString()
+                when {
+                    url.contains("/.well-known/oauth-authorization-server") ->
+                        respond(ByteReadChannel(bskySocialAuthServerMetadata), HttpStatusCode.OK, jsonHeaders)
+
+                    url.contains("/par") ->
+                        respond(ByteReadChannel("""{"request_uri":"urn:t","expires_in":60}"""), HttpStatusCode.OK, jsonHeaders)
+
+                    url.contains("/token") ->
+                        respond(
+                            ByteReadChannel(
+                                """{"access_token":"at","refresh_token":"rt","sub":"did:plc:newuser"}""",
+                            ),
+                            HttpStatusCode.OK,
+                            jsonHeaders,
+                        )
+
+                    url.contains("plc.directory/did:plc:newuser") ->
+                        respond(
+                            ByteReadChannel(
+                                """{"id":"did:plc:newuser","alsoKnownAs":["at://newbie.bsky.social"],"service":[{"id":"#atproto_pds","type":"AtprotoPersonalDataServer","serviceEndpoint":"https://newbie-pds.test"}]}""",
+                            ),
+                            HttpStatusCode.OK,
+                            jsonHeaders,
+                        )
+
+                    else -> respond(ByteReadChannel(""), HttpStatusCode.NotFound)
+                }
+            },
+        )
+
+        val oauth = AtOAuth("https://app.test/m.json", "app.example:/oauth-redirect", store, client)
+        oauth.beginSignup()
+        oauth.completeLogin(
+            "app.example:/oauth-redirect?code=c&state=${extractState(oauth)}&iss=https://bsky.social",
+        )
+
+        assertEquals(2, saves.size, "signup flow should persist twice: pre- and post-hydration")
+        // First save: DID known, identity not yet hydrated
+        assertEquals("did:plc:newuser", saves[0].did)
+        assertEquals(null, saves[0].handle)
+        assertEquals(null, saves[0].pdsUrl)
+        assertEquals("at", saves[0].accessToken)
+        // Second save: identity hydrated
+        assertEquals("did:plc:newuser", saves[1].did)
+        assertEquals("newbie.bsky.social", saves[1].handle)
+        assertEquals("https://newbie-pds.test", saves[1].pdsUrl)
+    }
+
+    @Test
+    fun loginFlowPersistsSessionOnce() = runTest {
+        // Regression: login path remains single-write (no benefit to a second save
+        // since identity is fully resolved before the first persist).
+        val saves = mutableListOf<OAuthSession>()
+        val store = object : OAuthSessionStore {
+            override suspend fun load(): OAuthSession? = saves.lastOrNull()
+            override suspend fun save(session: OAuthSession) {
+                saves.add(session)
+            }
+            override suspend fun clear() {
+                saves.clear()
+            }
+        }
+        val oauth = AtOAuth(
+            clientMetadataUrl = "https://app.test/oauth/client-metadata.json",
+            redirectUri = "app.example:/oauth-redirect",
+            sessionStore = store,
+            httpClient = fullFlowMockClient(),
+        )
+        oauth.beginLogin("alice.test")
+        oauth.completeLogin(
+            "app.example:/oauth-redirect?code=c&state=${extractState(oauth)}&iss=https://auth.test",
+        )
+
+        assertEquals(1, saves.size, "login flow should persist exactly once")
+        assertEquals("alice.test", saves[0].handle)
+    }
+
+    @Test
     fun beginLoginStillRejectsMismatchedSubAfterSignupBranching() = runTest {
         // Regression: signup-flow branching must NOT disable login-flow's DID mismatch check.
         val store = InMemorySessionStore()

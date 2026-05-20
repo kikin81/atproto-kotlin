@@ -281,4 +281,73 @@ class DiscoveryChainTest {
         // promptValuesSupported empty when server doesn't advertise it
         assertTrue(metadata.promptValuesSupported.isEmpty())
     }
+
+    @Test
+    fun resolveKnownAuthServerRejectsPlainHttpUrl() = runTest {
+        val client = HttpClient(MockEngine { respond(ByteReadChannel(""), HttpStatusCode.OK) })
+        val ex = assertFailsWith<OAuthDiscoveryException> {
+            DiscoveryChain(client).resolveKnownAuthServer("http://insecure.test")
+        }
+        assertTrue(ex.message!!.contains("HTTPS"), "expected HTTPS-related error, got: ${ex.message}")
+    }
+
+    @Test
+    fun hydrateIdentityRetriesWhenDocReturnsPartialThenComplete() = runTest {
+        var attempt = 0
+        val client = HttpClient(
+            MockEngine { request ->
+                if (request.url.toString().contains("plc.directory/did:plc:partial")) {
+                    attempt++
+                    val body = when (attempt) {
+                        // First attempt: DID doc exists but service[] is empty and alsoKnownAs is empty
+                        1 -> """{"id":"did:plc:partial","alsoKnownAs":[],"service":[]}"""
+                        // Second attempt: handle is now in alsoKnownAs, still no PDS
+                        2 -> """{"id":"did:plc:partial","alsoKnownAs":["at://late.bsky.social"],"service":[]}"""
+                        // Third attempt: both fields populated
+                        else ->
+                            """{"id":"did:plc:partial","alsoKnownAs":["at://late.bsky.social"],"service":[{"id":"#atproto_pds","type":"AtprotoPersonalDataServer","serviceEndpoint":"https://late-pds.test"}]}"""
+                    }
+                    respond(ByteReadChannel(body), HttpStatusCode.OK, jsonHeaders)
+                } else {
+                    respond(ByteReadChannel(""), HttpStatusCode.NotFound)
+                }
+            },
+        )
+
+        val hydrated = DiscoveryChain(client).hydrateIdentityFromDid("did:plc:partial")
+        assertEquals("late.bsky.social", hydrated.handle)
+        assertEquals("https://late-pds.test", hydrated.pdsUrl)
+        assertTrue(attempt >= 3, "expected at least 3 attempts under retry budget, got $attempt")
+    }
+
+    @Test
+    fun hydrateIdentityRetainsBestKnownAcrossAttempts() = runTest {
+        var attempt = 0
+        val client = HttpClient(
+            MockEngine { request ->
+                if (request.url.toString().contains("plc.directory/did:plc:flaky")) {
+                    attempt++
+                    when (attempt) {
+                        // Attempt 1: handle present, no PDS
+                        1 -> respond(
+                            ByteReadChannel(
+                                """{"id":"did:plc:flaky","alsoKnownAs":["at://flaky.test"],"service":[]}""",
+                            ),
+                            HttpStatusCode.OK,
+                            jsonHeaders,
+                        )
+                        // Attempts 2-4: 404 (PLC fluttered offline)
+                        else -> respond(ByteReadChannel(""), HttpStatusCode.NotFound)
+                    }
+                } else {
+                    respond(ByteReadChannel(""), HttpStatusCode.NotFound)
+                }
+            },
+        )
+
+        val hydrated = DiscoveryChain(client).hydrateIdentityFromDid("did:plc:flaky")
+        // Best-known handle from attempt 1 is preserved through subsequent failures
+        assertEquals("flaky.test", hydrated.handle)
+        assertEquals(null, hydrated.pdsUrl)
+    }
 }
