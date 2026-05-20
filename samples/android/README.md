@@ -38,6 +38,13 @@ login screen, enter your handle (e.g. `alice.bsky.social`) and tap **Sign In**.
 A Chrome Custom Tab opens Bluesky's authorization page. After you approve,
 the browser redirects back and the feed loads.
 
+If you don't have a Bluesky account yet, tap **Create account on Bluesky**
+instead. The same Chrome Custom Tab opens `bsky.social`'s signup page (via
+OIDC `prompt=create`); after you create the account, the browser redirects
+back and the app lands you on the feed already signed in -- no need to
+re-type your newly-chosen handle. This calls `AtOAuth.beginSignup()` which
+short-circuits the handle/DID discovery chain.
+
 Tap the log-out icon in the top-right to clear the stored session.
 
 ## OAuth flow

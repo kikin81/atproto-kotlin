@@ -216,4 +216,69 @@ class DiscoveryChainTest {
         assertEquals("did:plc:direct", metadata.did)
         assertEquals("direct.example.com", metadata.handle)
     }
+
+    @Test
+    fun resolveKnownAuthServerSkipsIdentityResolution() = runTest {
+        var requestedUrls = mutableListOf<String>()
+        val client = HttpClient(
+            MockEngine { request ->
+                requestedUrls.add(request.url.toString())
+                if (request.url.toString().contains("/.well-known/oauth-authorization-server")) {
+                    respond(
+                        ByteReadChannel(
+                            """{"issuer":"https://bsky.social","authorization_endpoint":"https://bsky.social/oauth/authorize","token_endpoint":"https://bsky.social/oauth/token","pushed_authorization_request_endpoint":"https://bsky.social/oauth/par","prompt_values_supported":["none","login","consent","select_account","create"]}""",
+                        ),
+                        HttpStatusCode.OK,
+                        jsonHeaders,
+                    )
+                } else {
+                    respond(ByteReadChannel(""), HttpStatusCode.NotFound)
+                }
+            },
+        )
+
+        val metadata = DiscoveryChain(client).resolveKnownAuthServer("bsky.social")
+
+        // Endpoints populated
+        assertEquals("https://bsky.social", metadata.issuer)
+        assertEquals("https://bsky.social/oauth/authorize", metadata.authorizationEndpoint)
+        assertEquals("https://bsky.social/oauth/token", metadata.tokenEndpoint)
+        assertEquals("https://bsky.social/oauth/par", metadata.parEndpoint)
+
+        // prompt_values_supported parsed
+        assertTrue(metadata.promptValuesSupported.contains("create"))
+
+        // Identity fields null — discovery was short-circuited
+        assertEquals(null, metadata.did)
+        assertEquals(null, metadata.handle)
+        assertEquals(null, metadata.pdsUrl)
+
+        // Only one HTTP call — the auth-server metadata fetch
+        assertEquals(1, requestedUrls.size, "expected single HTTP call, got: $requestedUrls")
+        assertTrue(requestedUrls[0].contains("/.well-known/oauth-authorization-server"))
+    }
+
+    @Test
+    fun resolveKnownAuthServerAcceptsFullUrl() = runTest {
+        val client = HttpClient(
+            MockEngine { request ->
+                if (request.url.toString().contains("/.well-known/oauth-authorization-server")) {
+                    respond(
+                        ByteReadChannel(
+                            """{"issuer":"https://entryway.test","authorization_endpoint":"https://entryway.test/a","token_endpoint":"https://entryway.test/t","pushed_authorization_request_endpoint":"https://entryway.test/p"}""",
+                        ),
+                        HttpStatusCode.OK,
+                        jsonHeaders,
+                    )
+                } else {
+                    respond(ByteReadChannel(""), HttpStatusCode.NotFound)
+                }
+            },
+        )
+
+        val metadata = DiscoveryChain(client).resolveKnownAuthServer("https://entryway.test")
+        assertEquals("https://entryway.test", metadata.issuer)
+        // promptValuesSupported empty when server doesn't advertise it
+        assertTrue(metadata.promptValuesSupported.isEmpty())
+    }
 }

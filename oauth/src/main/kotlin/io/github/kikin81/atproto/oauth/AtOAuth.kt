@@ -20,6 +20,15 @@ import kotlin.io.encoding.ExperimentalEncodingApi
  * authorization, token exchange, and session management with transparent
  * refresh.
  *
+ * Supports two entry points:
+ *
+ * - [beginLogin] — keyed on a user's handle/DID; full discovery chain.
+ * - [beginSignup] — keyed on a known auth server (default `bsky.social`);
+ *   short-circuits discovery and sends OIDC `prompt=create` so the auth
+ *   server renders its signup UI. Identity is hydrated post-token-exchange.
+ *
+ * Both flows complete via [completeLogin] — the redirect handling is shared.
+ *
  * ## Consumer usage
  *
  * ```kotlin
@@ -29,14 +38,13 @@ import kotlin.io.encoding.ExperimentalEncodingApi
  *     sessionStore = mySessionStore,
  *     httpClient = myKtorClient,
  * )
- * // Step 1: get the authorization URL
+ * // Login path:
  * val authUrl = oauth.beginLogin("alice.bsky.social")
- * // Step 2: open authUrl in a browser (Custom Tabs on Android)
- * // Step 3: capture the redirect URI
+ * // Signup path:
+ * val signupUrl = oauth.beginSignup() // defaults to bsky.social
+ * // Both paths: open the URL in a browser, then call:
  * oauth.completeLogin(redirectUri)
- * // Step 4: use the authenticated client
  * val client = oauth.createClient()
- * FeedService(client).getTimeline()
  * ```
  *
  * ## Requesting additional scopes
@@ -67,7 +75,7 @@ class AtOAuth(
     private val json: Json = Json { ignoreUnknownKeys = true },
     private val scope: String = "atproto transition:generic",
 ) {
-    // Transient state during the login flow (between beginLogin and completeLogin)
+    // Transient state during the login/signup flow (between beginX and completeLogin)
     private var pendingState: PendingAuthState? = null
 
     /**
@@ -87,6 +95,61 @@ class AtOAuth(
     suspend fun beginLogin(handleOrDid: String): String {
         val discovery = DiscoveryChain(httpClient, json)
         val metadata = discovery.resolve(handleOrDid)
+        return startAuthFlow(
+            metadata = metadata,
+            loginHint = handleOrDid,
+            prompt = null,
+            flowOrigin = FlowOrigin.Login,
+        )
+    }
+
+    /**
+     * Starts the OAuth signup flow against a known authorization server.
+     *
+     * Unlike [beginLogin], no handle or DID is required: the auth server
+     * is named directly, the discovery chain is short-circuited to fetch
+     * only its metadata, and PAR carries OIDC `prompt=create` so the
+     * server renders its signup UI. After the user signs up in the
+     * browser and the redirect lands, [completeLogin] derives the new
+     * account's DID from the token-response `sub`, then resolves the
+     * handle and PDS URL from the DID document.
+     *
+     * @param authServer The authorization server hostname or URL.
+     *   Defaults to `bsky.social`. Accepts either a bare hostname or a
+     *   full `https://` URL.
+     * @param requirePromptCreateSupport When `true` (the default), the
+     *   module verifies that the auth server's metadata advertises
+     *   `"create"` in `prompt_values_supported` and throws
+     *   [OAuthSignupNotSupportedException] otherwise. Pass `false` to
+     *   bypass the check for non-conformant entryways.
+     * @return The authorization URL to open in a Custom Tab or system browser.
+     */
+    suspend fun beginSignup(
+        authServer: String = "bsky.social",
+        requirePromptCreateSupport: Boolean = true,
+    ): String {
+        val discovery = DiscoveryChain(httpClient, json)
+        val metadata = discovery.resolveKnownAuthServer(authServer)
+        if (requirePromptCreateSupport && !metadata.promptValuesSupported.contains("create")) {
+            throw OAuthSignupNotSupportedException(
+                authServerUrl = metadata.issuer,
+                advertisedPromptValues = metadata.promptValuesSupported,
+            )
+        }
+        return startAuthFlow(
+            metadata = metadata,
+            loginHint = null,
+            prompt = "create",
+            flowOrigin = FlowOrigin.Signup,
+        )
+    }
+
+    private suspend fun startAuthFlow(
+        metadata: AuthServerMetadata,
+        loginHint: String?,
+        prompt: String?,
+        flowOrigin: FlowOrigin,
+    ): String {
         val signer = DpopSigner.generate()
         val codeVerifier = Pkce.generateVerifier()
         val codeChallenge = Pkce.computeChallenge(codeVerifier)
@@ -98,7 +161,8 @@ class AtOAuth(
             codeChallenge = codeChallenge,
             state = state,
             redirectUri = redirectUri,
-            loginHint = handleOrDid,
+            loginHint = loginHint,
+            prompt = prompt,
         )
 
         pendingState = PendingAuthState(
@@ -107,6 +171,7 @@ class AtOAuth(
             codeVerifier = codeVerifier,
             state = state,
             redirectUri = redirectUri,
+            flowOrigin = flowOrigin,
         )
 
         return "${metadata.authorizationEndpoint}?client_id=$clientMetadataUrl&request_uri=$requestUri"
@@ -118,15 +183,17 @@ class AtOAuth(
      * 1. Validates the `state` parameter matches.
      * 2. Validates the `iss` parameter matches the discovered auth server.
      * 3. Exchanges the authorization code for tokens with PKCE + DPoP.
-     * 4. Verifies the `sub` (DID) in the token response matches the
-     *    resolved DID from discovery.
+     * 4. For the login flow, verifies the `sub` (DID) in the token
+     *    response matches the resolved DID from discovery. For the signup
+     *    flow, accepts `sub` as authoritative and hydrates handle + PDS
+     *    URL from the new DID document.
      * 5. Persists the session.
      *
      * @param redirectUri The full redirect URI from the browser callback
      *   (e.g. `myapp://oauth/callback?code=...&state=...&iss=...`).
      */
     suspend fun completeLogin(redirectUri: String) {
-        val pending = pendingState ?: throw OAuthException("No pending login — call beginLogin first")
+        val pending = pendingState ?: throw OAuthException("No pending login — call beginLogin or beginSignup first")
         pendingState = null
 
         val params = parseRedirectParams(redirectUri)
@@ -152,19 +219,38 @@ class AtOAuth(
             redirectUri = pending.redirectUri,
         )
 
-        if (tokenResponse.sub != null && tokenResponse.sub != pending.metadata.did) {
-            throw OAuthAccountMismatchException(
-                "Token response sub '${tokenResponse.sub}' does not match resolved DID '${pending.metadata.did}'",
-            )
+        val resolvedDid: String?
+        val resolvedHandle: String?
+        val resolvedPdsUrl: String?
+
+        when (pending.flowOrigin) {
+            FlowOrigin.Login -> {
+                if (tokenResponse.sub != null && tokenResponse.sub != pending.metadata.did) {
+                    throw OAuthAccountMismatchException(
+                        "Token response sub '${tokenResponse.sub}' does not match resolved DID '${pending.metadata.did}'",
+                    )
+                }
+                resolvedDid = pending.metadata.did
+                resolvedHandle = pending.metadata.handle
+                resolvedPdsUrl = pending.metadata.pdsUrl
+            }
+            FlowOrigin.Signup -> {
+                val signupDid = tokenResponse.sub
+                    ?: throw OAuthException("Token response from signup flow has no 'sub' field")
+                resolvedDid = signupDid
+                val hydrated = DiscoveryChain(httpClient, json).hydrateIdentityFromDid(signupDid)
+                resolvedHandle = hydrated.handle
+                resolvedPdsUrl = hydrated.pdsUrl
+            }
         }
 
         val exported = pending.signer.exportKeyPair()
         val session = OAuthSession(
             accessToken = tokenResponse.access_token,
             refreshToken = tokenResponse.refresh_token ?: throw OAuthException("No refresh_token in token response"),
-            did = pending.metadata.did,
-            handle = pending.metadata.handle,
-            pdsUrl = pending.metadata.pdsUrl,
+            did = resolvedDid,
+            handle = resolvedHandle,
+            pdsUrl = resolvedPdsUrl,
             tokenEndpoint = pending.metadata.tokenEndpoint,
             revocationEndpoint = pending.metadata.revocationEndpoint,
             clientId = clientMetadataUrl,
@@ -183,6 +269,11 @@ class AtOAuth(
     suspend fun createClient(): XrpcClient {
         val session = sessionStore.load()
             ?: throw OAuthException("No session — call beginLogin/completeLogin first or restore a persisted session")
+        val pdsUrl = session.pdsUrl
+            ?: throw OAuthException(
+                "Session has no pdsUrl. This usually means a signup-flow session whose " +
+                    "post-signup DID resolution did not complete; the PDS endpoint is unknown.",
+            )
         val signer = DpopSigner.fromExported(
             DpopSigner.ExportedKeyPair(session.dpopPrivateKey, session.dpopPublicKey),
         )
@@ -194,7 +285,7 @@ class AtOAuth(
             refreshClient = httpClient,
         )
         return XrpcClient(
-            baseUrl = session.pdsUrl,
+            baseUrl = pdsUrl,
             httpClient = httpClient,
             authProvider = authProvider,
         )
@@ -263,13 +354,14 @@ class AtOAuth(
         codeChallenge: String,
         state: String,
         redirectUri: String,
-        loginHint: String,
+        loginHint: String?,
+        prompt: String?,
     ): String {
         // First attempt: no nonce (expected to fail with use_dpop_nonce)
         val firstProof = signer.sign(method = "POST", url = metadata.parEndpoint)
         val firstResponse = httpClient.submitForm(
             url = metadata.parEndpoint,
-            formParameters = parParams(codeChallenge, state, redirectUri, loginHint),
+            formParameters = parParams(codeChallenge, state, redirectUri, loginHint, prompt),
         ) {
             header("DPoP", firstProof)
         }
@@ -291,7 +383,7 @@ class AtOAuth(
         val retryProof = signer.sign(method = "POST", url = metadata.parEndpoint, nonce = nonce)
         val retryResponse = httpClient.submitForm(
             url = metadata.parEndpoint,
-            formParameters = parParams(codeChallenge, state, redirectUri, loginHint),
+            formParameters = parParams(codeChallenge, state, redirectUri, loginHint, prompt),
         ) {
             header("DPoP", retryProof)
         }
@@ -308,7 +400,8 @@ class AtOAuth(
         codeChallenge: String,
         state: String,
         redirectUri: String,
-        loginHint: String,
+        loginHint: String?,
+        prompt: String?,
     ): Parameters = Parameters.build {
         append("client_id", clientMetadataUrl)
         append("response_type", "code")
@@ -317,7 +410,8 @@ class AtOAuth(
         append("state", state)
         append("code_challenge", codeChallenge)
         append("code_challenge_method", "S256")
-        append("login_hint", loginHint)
+        if (loginHint != null) append("login_hint", loginHint)
+        if (prompt != null) append("prompt", prompt)
     }
 
     private suspend fun exchangeCode(
@@ -399,12 +493,15 @@ class AtOAuth(
             }
     }
 
+    internal enum class FlowOrigin { Login, Signup }
+
     private data class PendingAuthState(
         val metadata: AuthServerMetadata,
         val signer: DpopSigner,
         val codeVerifier: String,
         val state: String,
         val redirectUri: String,
+        val flowOrigin: FlowOrigin,
     )
 }
 

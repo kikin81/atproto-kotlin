@@ -32,7 +32,7 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             val existing = sessionStore.load()
             _uiState.value = if (existing != null) {
-                MainUiState.LoggedIn(existing.handle, existing.did)
+                MainUiState.LoggedIn(existing.handle ?: existing.did.orEmpty(), existing.did)
             } else {
                 MainUiState.LoggedOut()
             }
@@ -42,6 +42,7 @@ class MainViewModel @Inject constructor(
     fun onEvent(event: MainEvent) {
         when (event) {
             is MainEvent.Login -> login(event.handle)
+            MainEvent.Signup -> signup()
             is MainEvent.CompleteOAuthRedirect -> completeLogin(event.redirectUri)
             MainEvent.Logout -> logout()
         }
@@ -64,6 +65,23 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    private fun signup() {
+        viewModelScope.launch {
+            _uiState.value = MainUiState.LoggedOut(busy = true)
+            runCatching { oauth.beginSignup() }
+                .onSuccess { url ->
+                    _uiState.value = MainUiState.LoggedOut(busy = false)
+                    _authUrl.emit(url)
+                }
+                .onFailure { t ->
+                    Log.e(TAG, "beginSignup failed", t)
+                    _uiState.value = MainUiState.LoggedOut(
+                        error = t.message ?: "Signup failed",
+                    )
+                }
+        }
+    }
+
     private fun completeLogin(redirectUri: String) {
         val currentState = _uiState.value
         if (currentState is MainUiState.LoggedOut && currentState.busy) {
@@ -80,7 +98,10 @@ class MainViewModel @Inject constructor(
                     val session = sessionStore.load()
                     if (session != null) {
                         Log.d(TAG, "Session loaded: ${session.handle}")
-                        _uiState.value = MainUiState.LoggedIn(session.handle, session.did)
+                        _uiState.value = MainUiState.LoggedIn(
+                            handle = session.handle ?: session.did.orEmpty(),
+                            did = session.did,
+                        )
                     } else {
                         Log.e(TAG, "Session not found after successful login")
                         _uiState.value = MainUiState.LoggedOut(error = "Session not found after login")
