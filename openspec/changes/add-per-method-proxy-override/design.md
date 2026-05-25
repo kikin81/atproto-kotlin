@@ -48,7 +48,7 @@ For services without a constructor `proxy`, the expression collapses to just `pr
 
 ### Decision 3: Cut v9.0.0; no compatibility shim
 
-Adding any parameter to a public API tracked by `kotlinx-binary-compatibility-validator` is binary-breaking even with a default value — captured in bd memory `adding-any-parameter-to-a-public-api-xrpcclient`, learned from prior breaking releases. The validator runs as `:models:apiCheck` in CI; the only way to satisfy it is to refresh `models/api/models.api` and accept the major bump.
+Adding any parameter to a public API tracked by `kotlinx-binary-compatibility-validator` is binary-breaking even with a default value. The validator runs as `:models:apiCheck` in CI (gating every release) and refuses to pass against the previous `models/api/models.api` dump once any signature shifts. The only way to satisfy it is to refresh the dump and accept the major bump. Prior breaking releases — see `docs/breaking-changes/v5.md`, `v6.md`, `v7.md`, `v8.md` — followed the same pattern.
 
 There is no source-level break: existing call sites like `notificationService.registerPush(request)` compile unchanged. Only Kotlin consumers who recompile against v9 see new behavior available (the parameter); Java consumers shouldn't exist (this is a KMP library, but `:models` publishes a JVM artifact too — the new parameter is still source-compatible from Java via the default-value bridge KotlinPoet emits).
 
@@ -59,7 +59,7 @@ Alternatives rejected:
 
 ### Decision 4: Test surface — full plan→emit, not isolated unit
 
-The existing `ServiceGeneratorResolveProxyTest` tests the pure function `resolveProxyForPackage` in isolation — it's not appropriate for asserting emitted Kotlin syntax. The new test runs a small synthetic lexicon corpus (one `chat.bsky.*` NSID, one `app.bsky.*` NSID, both with at least one query and one procedure) through `LexiconParser → RefResolver → ContextTagger → NamingMatrix → VerificationPass → EmissionPlan → ServiceGenerator`, then asserts against the emitted `TypeSpec`:
+The existing `ServiceGeneratorResolveProxyTest` tests the pure function `resolveProxyForPackage` in isolation — it's not appropriate for asserting emitted Kotlin syntax. The new test runs a small synthetic lexicon corpus (one `chat.bsky.*` NSID, one `app.bsky.*` NSID, both with at least one query and one procedure) through the same stages that `CodeGenerator` invokes for service emission — `LexiconParser → SymbolTable.build → RefResolver.validate → ContextTagger → EmissionPlan.build → ServiceGenerator.emitAll` — and asserts against the emitted `TypeSpec`. (`VerificationPass`, which `CodeGenerator` runs after `ServiceGenerator.emitAll` to catch naming collisions across the full corpus, is intentionally omitted: the synthetic corpus is too small to trip a collision, and the test's invariants are about per-method parameter and body shape, not naming.):
 
 - Every `FunSpec` in the service `TypeSpec` ends with a `ParameterSpec` named `proxy` of type `String?` with default `null`.
 - The method body `CodeBlock` for the proxied service contains `proxy = proxy ?: this.proxy`; the unproxied service contains `proxy = proxy`.
