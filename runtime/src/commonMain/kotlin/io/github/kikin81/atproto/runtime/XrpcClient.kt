@@ -242,6 +242,16 @@ public class XrpcClient(
     ): R {
         val body = response.bodyAsText()
         if (response.status.isSuccess()) {
+            // Spec-conforming PDS behavior: procedures whose lexicon declares
+            // no `output.schema` return HTTP 2xx with a literally empty body.
+            // UnitSerializer expects `{}` and throws on empty input, surfacing
+            // a successful call as a non-XrpcError JsonDecodingException. Only
+            // short-circuit when the caller is actually expecting Unit — any
+            // other typed response still fails loudly on a truncated body.
+            if (body.isBlank() && responseSerializer.descriptor == UnitResponseSerializer.descriptor) {
+                @Suppress("UNCHECKED_CAST")
+                return Unit as R
+            }
             return json.decodeFromString(responseSerializer, body)
         }
         val decoded = runCatching {
