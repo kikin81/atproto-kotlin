@@ -199,6 +199,7 @@ public class ServiceGenerator(
                 param.defaultValue("%T()", requestCn)
             }
             fn.addParameter(param.build())
+            fn.addParameter(proxyOverrideParam())
             fn.addCode(
                 buildCall(
                     kind = "query",
@@ -213,6 +214,7 @@ public class ServiceGenerator(
             )
         } else {
             // No params: use NoXrpcParams as a sentinel to satisfy XrpcClient.query's signature.
+            fn.addParameter(proxyOverrideParam())
             fn.addCode(
                 buildCall(
                     kind = "query",
@@ -260,6 +262,7 @@ public class ServiceGenerator(
                         param.defaultValue("%T()", requestCn)
                     }
                     fn.addParameter(param.build())
+                    fn.addParameter(proxyOverrideParam())
                     fn.addCode(
                         buildCall(
                             kind = "procedure",
@@ -275,6 +278,7 @@ public class ServiceGenerator(
                 } else {
                     // Edge: classifier said Json (encoding is application/json or
                     // schema present) but no schema/Request — fall back to no-body.
+                    fn.addParameter(proxyOverrideParam())
                     fn.addCode(noInputCall(defKey, responseSerializer, emitProxy))
                 }
             }
@@ -286,6 +290,7 @@ public class ServiceGenerator(
                         param.defaultValue("%T()", requestCn)
                     }
                     fn.addParameter(param.build())
+                    fn.addParameter(proxyOverrideParam())
                     fn.addCode(
                         buildCall(
                             kind = "procedure",
@@ -299,6 +304,7 @@ public class ServiceGenerator(
                         ),
                     )
                 } else {
+                    fn.addParameter(proxyOverrideParam())
                     fn.addCode(noInputCall(defKey, responseSerializer, emitProxy))
                 }
             }
@@ -309,6 +315,7 @@ public class ServiceGenerator(
                     contentTypeParam.defaultValue(contentTypeDefaultExpr(it))
                 }
                 fn.addParameter(contentTypeParam.build())
+                fn.addParameter(proxyOverrideParam())
                 fn.addCode(
                     buildRawBytesCall(
                         nsid = defKey.nsid.raw,
@@ -317,7 +324,10 @@ public class ServiceGenerator(
                     ),
                 )
             }
-            is ProcedureInputShape.None -> fn.addCode(noInputCall(defKey, responseSerializer, emitProxy))
+            is ProcedureInputShape.None -> {
+                fn.addParameter(proxyOverrideParam())
+                fn.addCode(noInputCall(defKey, responseSerializer, emitProxy))
+            }
             is ProcedureInputShape.UnsupportedRawBytesWithParams -> throw VerificationFailure(
                 "Unsupported procedure shape: lexicon '${shape.lexiconId}' declares input.encoding " +
                     "'${shape.encoding}' (raw bytes) AND def.parameters (URL params). The SDK does not " +
@@ -361,7 +371,7 @@ public class ServiceGenerator(
         emitProxy: Boolean,
     ): CodeBlock {
         val rsExpr = responseSerializerExpr ?: CodeBlock.of("%T", UNIT_RESPONSE_SERIALIZER)
-        val proxyLine = if (emitProxy) "    proxy = proxy,\n" else ""
+        val proxyLine = if (emitProxy) "    proxy = proxy ?: this.proxy,\n" else "    proxy = proxy,\n"
         return CodeBlock.of(
             "return client.procedure(\n" +
                 "    nsid = %S,\n" +
@@ -378,6 +388,10 @@ public class ServiceGenerator(
             rsExpr,
         )
     }
+
+    private fun proxyOverrideParam(): ParameterSpec = ParameterSpec.builder("proxy", STRING_NULLABLE)
+        .defaultValue("null")
+        .build()
 
     private fun responseSerializerExpr(fqName: FqName): CodeBlock {
         val cn = ClassName(fqName.pkg, fqName.simpleName)
@@ -416,6 +430,8 @@ public class ServiceGenerator(
             }
             append("    responseSerializer = %L,\n")
             if (emitProxy) {
+                append("    proxy = proxy ?: this.proxy,\n")
+            } else {
                 append("    proxy = proxy,\n")
             }
             append(")\n")
