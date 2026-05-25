@@ -14,12 +14,12 @@ public class ConvoService(
   /**
    * List conversations.
    */
-  public suspend fun listConvos(request: ListConvosRequest = ListConvosRequest()): ListConvosResponse = client.query(
+  public suspend fun listConvos(request: ListConvosRequest = ListConvosRequest(), proxy: String? = null): ListConvosResponse = client.query(
       nsid = "chat.bsky.convo.listConvos",
       params = request,
       paramsSerializer = ListConvosRequest.serializer(),
       responseSerializer = ListConvosResponse.serializer(),
-      proxy = proxy,
+      proxy = proxy ?: this.proxy,
   )
 }
 

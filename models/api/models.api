@@ -1,16 +1,19 @@
 public final class io/github/kikin81/atproto/app/bsky/actor/ActorService {
 	public fun <init> (Lio/github/kikin81/atproto/runtime/XrpcClient;)V
-	public final fun getPreferences (Lio/github/kikin81/atproto/app/bsky/actor/GetPreferencesRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun getPreferences$default (Lio/github/kikin81/atproto/app/bsky/actor/ActorService;Lio/github/kikin81/atproto/app/bsky/actor/GetPreferencesRequest;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public final fun getProfile (Lio/github/kikin81/atproto/app/bsky/actor/GetProfileRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun getProfiles (Lio/github/kikin81/atproto/app/bsky/actor/GetProfilesRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun getSuggestions (Lio/github/kikin81/atproto/app/bsky/actor/GetSuggestionsRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun getSuggestions$default (Lio/github/kikin81/atproto/app/bsky/actor/ActorService;Lio/github/kikin81/atproto/app/bsky/actor/GetSuggestionsRequest;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public final fun putPreferences (Lio/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun searchActors (Lio/github/kikin81/atproto/app/bsky/actor/SearchActorsRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun searchActors$default (Lio/github/kikin81/atproto/app/bsky/actor/ActorService;Lio/github/kikin81/atproto/app/bsky/actor/SearchActorsRequest;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public final fun searchActorsTypeahead (Lio/github/kikin81/atproto/app/bsky/actor/SearchActorsTypeaheadRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun searchActorsTypeahead$default (Lio/github/kikin81/atproto/app/bsky/actor/ActorService;Lio/github/kikin81/atproto/app/bsky/actor/SearchActorsTypeaheadRequest;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getPreferences (Lio/github/kikin81/atproto/app/bsky/actor/GetPreferencesRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getPreferences$default (Lio/github/kikin81/atproto/app/bsky/actor/ActorService;Lio/github/kikin81/atproto/app/bsky/actor/GetPreferencesRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getProfile (Lio/github/kikin81/atproto/app/bsky/actor/GetProfileRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getProfile$default (Lio/github/kikin81/atproto/app/bsky/actor/ActorService;Lio/github/kikin81/atproto/app/bsky/actor/GetProfileRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getProfiles (Lio/github/kikin81/atproto/app/bsky/actor/GetProfilesRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getProfiles$default (Lio/github/kikin81/atproto/app/bsky/actor/ActorService;Lio/github/kikin81/atproto/app/bsky/actor/GetProfilesRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getSuggestions (Lio/github/kikin81/atproto/app/bsky/actor/GetSuggestionsRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getSuggestions$default (Lio/github/kikin81/atproto/app/bsky/actor/ActorService;Lio/github/kikin81/atproto/app/bsky/actor/GetSuggestionsRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun putPreferences (Lio/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun putPreferences$default (Lio/github/kikin81/atproto/app/bsky/actor/ActorService;Lio/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun searchActors (Lio/github/kikin81/atproto/app/bsky/actor/SearchActorsRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun searchActors$default (Lio/github/kikin81/atproto/app/bsky/actor/ActorService;Lio/github/kikin81/atproto/app/bsky/actor/SearchActorsRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun searchActorsTypeahead (Lio/github/kikin81/atproto/app/bsky/actor/SearchActorsTypeaheadRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun searchActorsTypeahead$default (Lio/github/kikin81/atproto/app/bsky/actor/ActorService;Lio/github/kikin81/atproto/app/bsky/actor/SearchActorsTypeaheadRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 
 public final class io/github/kikin81/atproto/app/bsky/actor/ActorServiceKt {
@@ -1791,10 +1794,12 @@ public final class io/github/kikin81/atproto/app/bsky/bookmark/Bookmark$Companio
 
 public final class io/github/kikin81/atproto/app/bsky/bookmark/BookmarkService {
 	public fun <init> (Lio/github/kikin81/atproto/runtime/XrpcClient;)V
-	public final fun createBookmark (Lio/github/kikin81/atproto/app/bsky/bookmark/CreateBookmarkRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun deleteBookmark (Lio/github/kikin81/atproto/app/bsky/bookmark/DeleteBookmarkRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun getBookmarks (Lio/github/kikin81/atproto/app/bsky/bookmark/GetBookmarksRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun getBookmarks$default (Lio/github/kikin81/atproto/app/bsky/bookmark/BookmarkService;Lio/github/kikin81/atproto/app/bsky/bookmark/GetBookmarksRequest;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun createBookmark (Lio/github/kikin81/atproto/app/bsky/bookmark/CreateBookmarkRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun createBookmark$default (Lio/github/kikin81/atproto/app/bsky/bookmark/BookmarkService;Lio/github/kikin81/atproto/app/bsky/bookmark/CreateBookmarkRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun deleteBookmark (Lio/github/kikin81/atproto/app/bsky/bookmark/DeleteBookmarkRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun deleteBookmark$default (Lio/github/kikin81/atproto/app/bsky/bookmark/BookmarkService;Lio/github/kikin81/atproto/app/bsky/bookmark/DeleteBookmarkRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getBookmarks (Lio/github/kikin81/atproto/app/bsky/bookmark/GetBookmarksRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getBookmarks$default (Lio/github/kikin81/atproto/app/bsky/bookmark/BookmarkService;Lio/github/kikin81/atproto/app/bsky/bookmark/GetBookmarksRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 
 public final class io/github/kikin81/atproto/app/bsky/bookmark/BookmarkServiceKt {
@@ -2542,11 +2547,14 @@ public final class io/github/kikin81/atproto/app/bsky/draft/DraftPostgateEmbeddi
 
 public final class io/github/kikin81/atproto/app/bsky/draft/DraftService {
 	public fun <init> (Lio/github/kikin81/atproto/runtime/XrpcClient;)V
-	public final fun createDraft (Lio/github/kikin81/atproto/app/bsky/draft/CreateDraftRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun deleteDraft (Lio/github/kikin81/atproto/app/bsky/draft/DeleteDraftRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun getDrafts (Lio/github/kikin81/atproto/app/bsky/draft/GetDraftsRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun getDrafts$default (Lio/github/kikin81/atproto/app/bsky/draft/DraftService;Lio/github/kikin81/atproto/app/bsky/draft/GetDraftsRequest;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public final fun updateDraft (Lio/github/kikin81/atproto/app/bsky/draft/UpdateDraftRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun createDraft (Lio/github/kikin81/atproto/app/bsky/draft/CreateDraftRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun createDraft$default (Lio/github/kikin81/atproto/app/bsky/draft/DraftService;Lio/github/kikin81/atproto/app/bsky/draft/CreateDraftRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun deleteDraft (Lio/github/kikin81/atproto/app/bsky/draft/DeleteDraftRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun deleteDraft$default (Lio/github/kikin81/atproto/app/bsky/draft/DraftService;Lio/github/kikin81/atproto/app/bsky/draft/DeleteDraftRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getDrafts (Lio/github/kikin81/atproto/app/bsky/draft/GetDraftsRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getDrafts$default (Lio/github/kikin81/atproto/app/bsky/draft/DraftService;Lio/github/kikin81/atproto/app/bsky/draft/GetDraftsRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun updateDraft (Lio/github/kikin81/atproto/app/bsky/draft/UpdateDraftRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun updateDraft$default (Lio/github/kikin81/atproto/app/bsky/draft/DraftService;Lio/github/kikin81/atproto/app/bsky/draft/UpdateDraftRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 
 public final class io/github/kikin81/atproto/app/bsky/draft/DraftServiceKt {
@@ -3592,16 +3600,24 @@ public final class io/github/kikin81/atproto/app/bsky/feed/BlockedPost$Companion
 
 public final class io/github/kikin81/atproto/app/bsky/feed/FeedService {
 	public fun <init> (Lio/github/kikin81/atproto/runtime/XrpcClient;)V
-	public final fun getAuthorFeed (Lio/github/kikin81/atproto/app/bsky/feed/GetAuthorFeedRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun getFeed (Lio/github/kikin81/atproto/app/bsky/feed/GetFeedRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun getFeedGenerator (Lio/github/kikin81/atproto/app/bsky/feed/GetFeedGeneratorRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun getLikes (Lio/github/kikin81/atproto/app/bsky/feed/GetLikesRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun getPostThread (Lio/github/kikin81/atproto/app/bsky/feed/GetPostThreadRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun getPosts (Lio/github/kikin81/atproto/app/bsky/feed/GetPostsRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun getRepostedBy (Lio/github/kikin81/atproto/app/bsky/feed/GetRepostedByRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun getTimeline (Lio/github/kikin81/atproto/app/bsky/feed/GetTimelineRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun getTimeline$default (Lio/github/kikin81/atproto/app/bsky/feed/FeedService;Lio/github/kikin81/atproto/app/bsky/feed/GetTimelineRequest;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public final fun searchPosts (Lio/github/kikin81/atproto/app/bsky/feed/SearchPostsRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun getAuthorFeed (Lio/github/kikin81/atproto/app/bsky/feed/GetAuthorFeedRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getAuthorFeed$default (Lio/github/kikin81/atproto/app/bsky/feed/FeedService;Lio/github/kikin81/atproto/app/bsky/feed/GetAuthorFeedRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getFeed (Lio/github/kikin81/atproto/app/bsky/feed/GetFeedRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getFeed$default (Lio/github/kikin81/atproto/app/bsky/feed/FeedService;Lio/github/kikin81/atproto/app/bsky/feed/GetFeedRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getFeedGenerator (Lio/github/kikin81/atproto/app/bsky/feed/GetFeedGeneratorRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getFeedGenerator$default (Lio/github/kikin81/atproto/app/bsky/feed/FeedService;Lio/github/kikin81/atproto/app/bsky/feed/GetFeedGeneratorRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getLikes (Lio/github/kikin81/atproto/app/bsky/feed/GetLikesRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getLikes$default (Lio/github/kikin81/atproto/app/bsky/feed/FeedService;Lio/github/kikin81/atproto/app/bsky/feed/GetLikesRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getPostThread (Lio/github/kikin81/atproto/app/bsky/feed/GetPostThreadRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getPostThread$default (Lio/github/kikin81/atproto/app/bsky/feed/FeedService;Lio/github/kikin81/atproto/app/bsky/feed/GetPostThreadRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getPosts (Lio/github/kikin81/atproto/app/bsky/feed/GetPostsRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getPosts$default (Lio/github/kikin81/atproto/app/bsky/feed/FeedService;Lio/github/kikin81/atproto/app/bsky/feed/GetPostsRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getRepostedBy (Lio/github/kikin81/atproto/app/bsky/feed/GetRepostedByRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getRepostedBy$default (Lio/github/kikin81/atproto/app/bsky/feed/FeedService;Lio/github/kikin81/atproto/app/bsky/feed/GetRepostedByRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getTimeline (Lio/github/kikin81/atproto/app/bsky/feed/GetTimelineRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getTimeline$default (Lio/github/kikin81/atproto/app/bsky/feed/FeedService;Lio/github/kikin81/atproto/app/bsky/feed/GetTimelineRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun searchPosts (Lio/github/kikin81/atproto/app/bsky/feed/SearchPostsRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun searchPosts$default (Lio/github/kikin81/atproto/app/bsky/feed/FeedService;Lio/github/kikin81/atproto/app/bsky/feed/SearchPostsRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 
 public final class io/github/kikin81/atproto/app/bsky/feed/FeedServiceKt {
@@ -6853,33 +6869,52 @@ public final class io/github/kikin81/atproto/app/bsky/graph/GetSuggestedFollowsB
 
 public final class io/github/kikin81/atproto/app/bsky/graph/GraphService {
 	public fun <init> (Lio/github/kikin81/atproto/runtime/XrpcClient;)V
-	public final fun getActorStarterPacks (Lio/github/kikin81/atproto/app/bsky/graph/GetActorStarterPacksRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun getBlocks (Lio/github/kikin81/atproto/app/bsky/graph/GetBlocksRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun getBlocks$default (Lio/github/kikin81/atproto/app/bsky/graph/GraphService;Lio/github/kikin81/atproto/app/bsky/graph/GetBlocksRequest;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public final fun getFollowers (Lio/github/kikin81/atproto/app/bsky/graph/GetFollowersRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun getFollows (Lio/github/kikin81/atproto/app/bsky/graph/GetFollowsRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun getKnownFollowers (Lio/github/kikin81/atproto/app/bsky/graph/GetKnownFollowersRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun getList (Lio/github/kikin81/atproto/app/bsky/graph/GetListRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun getListBlocks (Lio/github/kikin81/atproto/app/bsky/graph/GetListBlocksRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun getListBlocks$default (Lio/github/kikin81/atproto/app/bsky/graph/GraphService;Lio/github/kikin81/atproto/app/bsky/graph/GetListBlocksRequest;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public final fun getListMutes (Lio/github/kikin81/atproto/app/bsky/graph/GetListMutesRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun getListMutes$default (Lio/github/kikin81/atproto/app/bsky/graph/GraphService;Lio/github/kikin81/atproto/app/bsky/graph/GetListMutesRequest;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public final fun getLists (Lio/github/kikin81/atproto/app/bsky/graph/GetListsRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun getListsWithMembership (Lio/github/kikin81/atproto/app/bsky/graph/GetListsWithMembershipRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun getMutes (Lio/github/kikin81/atproto/app/bsky/graph/GetMutesRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun getMutes$default (Lio/github/kikin81/atproto/app/bsky/graph/GraphService;Lio/github/kikin81/atproto/app/bsky/graph/GetMutesRequest;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public final fun getRelationships (Lio/github/kikin81/atproto/app/bsky/graph/GetRelationshipsRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun getStarterPack (Lio/github/kikin81/atproto/app/bsky/graph/GetStarterPackRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun getStarterPacks (Lio/github/kikin81/atproto/app/bsky/graph/GetStarterPacksRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun getStarterPacksWithMembership (Lio/github/kikin81/atproto/app/bsky/graph/GetStarterPacksWithMembershipRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun getSuggestedFollowsByActor (Lio/github/kikin81/atproto/app/bsky/graph/GetSuggestedFollowsByActorRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun muteActor (Lio/github/kikin81/atproto/app/bsky/graph/MuteActorRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun muteActorList (Lio/github/kikin81/atproto/app/bsky/graph/MuteActorListRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun muteThread (Lio/github/kikin81/atproto/app/bsky/graph/MuteThreadRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun searchStarterPacks (Lio/github/kikin81/atproto/app/bsky/graph/SearchStarterPacksRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun unmuteActor (Lio/github/kikin81/atproto/app/bsky/graph/UnmuteActorRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun unmuteActorList (Lio/github/kikin81/atproto/app/bsky/graph/UnmuteActorListRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun unmuteThread (Lio/github/kikin81/atproto/app/bsky/graph/UnmuteThreadRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun getActorStarterPacks (Lio/github/kikin81/atproto/app/bsky/graph/GetActorStarterPacksRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getActorStarterPacks$default (Lio/github/kikin81/atproto/app/bsky/graph/GraphService;Lio/github/kikin81/atproto/app/bsky/graph/GetActorStarterPacksRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getBlocks (Lio/github/kikin81/atproto/app/bsky/graph/GetBlocksRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getBlocks$default (Lio/github/kikin81/atproto/app/bsky/graph/GraphService;Lio/github/kikin81/atproto/app/bsky/graph/GetBlocksRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getFollowers (Lio/github/kikin81/atproto/app/bsky/graph/GetFollowersRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getFollowers$default (Lio/github/kikin81/atproto/app/bsky/graph/GraphService;Lio/github/kikin81/atproto/app/bsky/graph/GetFollowersRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getFollows (Lio/github/kikin81/atproto/app/bsky/graph/GetFollowsRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getFollows$default (Lio/github/kikin81/atproto/app/bsky/graph/GraphService;Lio/github/kikin81/atproto/app/bsky/graph/GetFollowsRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getKnownFollowers (Lio/github/kikin81/atproto/app/bsky/graph/GetKnownFollowersRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getKnownFollowers$default (Lio/github/kikin81/atproto/app/bsky/graph/GraphService;Lio/github/kikin81/atproto/app/bsky/graph/GetKnownFollowersRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getList (Lio/github/kikin81/atproto/app/bsky/graph/GetListRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getList$default (Lio/github/kikin81/atproto/app/bsky/graph/GraphService;Lio/github/kikin81/atproto/app/bsky/graph/GetListRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getListBlocks (Lio/github/kikin81/atproto/app/bsky/graph/GetListBlocksRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getListBlocks$default (Lio/github/kikin81/atproto/app/bsky/graph/GraphService;Lio/github/kikin81/atproto/app/bsky/graph/GetListBlocksRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getListMutes (Lio/github/kikin81/atproto/app/bsky/graph/GetListMutesRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getListMutes$default (Lio/github/kikin81/atproto/app/bsky/graph/GraphService;Lio/github/kikin81/atproto/app/bsky/graph/GetListMutesRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getLists (Lio/github/kikin81/atproto/app/bsky/graph/GetListsRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getLists$default (Lio/github/kikin81/atproto/app/bsky/graph/GraphService;Lio/github/kikin81/atproto/app/bsky/graph/GetListsRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getListsWithMembership (Lio/github/kikin81/atproto/app/bsky/graph/GetListsWithMembershipRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getListsWithMembership$default (Lio/github/kikin81/atproto/app/bsky/graph/GraphService;Lio/github/kikin81/atproto/app/bsky/graph/GetListsWithMembershipRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getMutes (Lio/github/kikin81/atproto/app/bsky/graph/GetMutesRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getMutes$default (Lio/github/kikin81/atproto/app/bsky/graph/GraphService;Lio/github/kikin81/atproto/app/bsky/graph/GetMutesRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getRelationships (Lio/github/kikin81/atproto/app/bsky/graph/GetRelationshipsRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getRelationships$default (Lio/github/kikin81/atproto/app/bsky/graph/GraphService;Lio/github/kikin81/atproto/app/bsky/graph/GetRelationshipsRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getStarterPack (Lio/github/kikin81/atproto/app/bsky/graph/GetStarterPackRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getStarterPack$default (Lio/github/kikin81/atproto/app/bsky/graph/GraphService;Lio/github/kikin81/atproto/app/bsky/graph/GetStarterPackRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getStarterPacks (Lio/github/kikin81/atproto/app/bsky/graph/GetStarterPacksRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getStarterPacks$default (Lio/github/kikin81/atproto/app/bsky/graph/GraphService;Lio/github/kikin81/atproto/app/bsky/graph/GetStarterPacksRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getStarterPacksWithMembership (Lio/github/kikin81/atproto/app/bsky/graph/GetStarterPacksWithMembershipRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getStarterPacksWithMembership$default (Lio/github/kikin81/atproto/app/bsky/graph/GraphService;Lio/github/kikin81/atproto/app/bsky/graph/GetStarterPacksWithMembershipRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getSuggestedFollowsByActor (Lio/github/kikin81/atproto/app/bsky/graph/GetSuggestedFollowsByActorRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getSuggestedFollowsByActor$default (Lio/github/kikin81/atproto/app/bsky/graph/GraphService;Lio/github/kikin81/atproto/app/bsky/graph/GetSuggestedFollowsByActorRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun muteActor (Lio/github/kikin81/atproto/app/bsky/graph/MuteActorRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun muteActor$default (Lio/github/kikin81/atproto/app/bsky/graph/GraphService;Lio/github/kikin81/atproto/app/bsky/graph/MuteActorRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun muteActorList (Lio/github/kikin81/atproto/app/bsky/graph/MuteActorListRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun muteActorList$default (Lio/github/kikin81/atproto/app/bsky/graph/GraphService;Lio/github/kikin81/atproto/app/bsky/graph/MuteActorListRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun muteThread (Lio/github/kikin81/atproto/app/bsky/graph/MuteThreadRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun muteThread$default (Lio/github/kikin81/atproto/app/bsky/graph/GraphService;Lio/github/kikin81/atproto/app/bsky/graph/MuteThreadRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun searchStarterPacks (Lio/github/kikin81/atproto/app/bsky/graph/SearchStarterPacksRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun searchStarterPacks$default (Lio/github/kikin81/atproto/app/bsky/graph/GraphService;Lio/github/kikin81/atproto/app/bsky/graph/SearchStarterPacksRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun unmuteActor (Lio/github/kikin81/atproto/app/bsky/graph/UnmuteActorRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun unmuteActor$default (Lio/github/kikin81/atproto/app/bsky/graph/GraphService;Lio/github/kikin81/atproto/app/bsky/graph/UnmuteActorRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun unmuteActorList (Lio/github/kikin81/atproto/app/bsky/graph/UnmuteActorListRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun unmuteActorList$default (Lio/github/kikin81/atproto/app/bsky/graph/GraphService;Lio/github/kikin81/atproto/app/bsky/graph/UnmuteActorListRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun unmuteThread (Lio/github/kikin81/atproto/app/bsky/graph/UnmuteThreadRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun unmuteThread$default (Lio/github/kikin81/atproto/app/bsky/graph/GraphService;Lio/github/kikin81/atproto/app/bsky/graph/UnmuteThreadRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 
 public final class io/github/kikin81/atproto/app/bsky/graph/GraphServiceKt {
@@ -7854,7 +7889,8 @@ public final class io/github/kikin81/atproto/app/bsky/labeler/LabelerPoliciesInp
 
 public final class io/github/kikin81/atproto/app/bsky/labeler/LabelerService {
 	public fun <init> (Lio/github/kikin81/atproto/runtime/XrpcClient;)V
-	public final fun getServices (Lio/github/kikin81/atproto/app/bsky/labeler/GetServicesRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun getServices (Lio/github/kikin81/atproto/app/bsky/labeler/GetServicesRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getServices$default (Lio/github/kikin81/atproto/app/bsky/labeler/LabelerService;Lio/github/kikin81/atproto/app/bsky/labeler/GetServicesRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 
 public final class io/github/kikin81/atproto/app/bsky/labeler/LabelerView : io/github/kikin81/atproto/app/bsky/embed/RecordViewRecordUnion, io/github/kikin81/atproto/app/bsky/labeler/GetServicesResponseViewsUnion {
@@ -8448,21 +8484,26 @@ public final class io/github/kikin81/atproto/app/bsky/notification/ListNotificat
 
 public final class io/github/kikin81/atproto/app/bsky/notification/NotificationService {
 	public fun <init> (Lio/github/kikin81/atproto/runtime/XrpcClient;)V
-	public final fun getPreferences (Lio/github/kikin81/atproto/app/bsky/notification/GetPreferencesRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun getPreferences$default (Lio/github/kikin81/atproto/app/bsky/notification/NotificationService;Lio/github/kikin81/atproto/app/bsky/notification/GetPreferencesRequest;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public final fun getUnreadCount (Lio/github/kikin81/atproto/app/bsky/notification/GetUnreadCountRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun getUnreadCount$default (Lio/github/kikin81/atproto/app/bsky/notification/NotificationService;Lio/github/kikin81/atproto/app/bsky/notification/GetUnreadCountRequest;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public final fun listActivitySubscriptions (Lio/github/kikin81/atproto/app/bsky/notification/ListActivitySubscriptionsRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun listActivitySubscriptions$default (Lio/github/kikin81/atproto/app/bsky/notification/NotificationService;Lio/github/kikin81/atproto/app/bsky/notification/ListActivitySubscriptionsRequest;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public final fun listNotifications (Lio/github/kikin81/atproto/app/bsky/notification/ListNotificationsRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun listNotifications$default (Lio/github/kikin81/atproto/app/bsky/notification/NotificationService;Lio/github/kikin81/atproto/app/bsky/notification/ListNotificationsRequest;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public final fun putActivitySubscription (Lio/github/kikin81/atproto/app/bsky/notification/PutActivitySubscriptionRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun putPreferences (Lio/github/kikin81/atproto/app/bsky/notification/PutPreferencesRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun putPreferencesV2 (Lio/github/kikin81/atproto/app/bsky/notification/PutPreferencesV2Request;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun putPreferencesV2$default (Lio/github/kikin81/atproto/app/bsky/notification/NotificationService;Lio/github/kikin81/atproto/app/bsky/notification/PutPreferencesV2Request;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public final fun registerPush (Lio/github/kikin81/atproto/app/bsky/notification/RegisterPushRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun unregisterPush (Lio/github/kikin81/atproto/app/bsky/notification/UnregisterPushRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun updateSeen (Lio/github/kikin81/atproto/app/bsky/notification/UpdateSeenRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun getPreferences (Lio/github/kikin81/atproto/app/bsky/notification/GetPreferencesRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getPreferences$default (Lio/github/kikin81/atproto/app/bsky/notification/NotificationService;Lio/github/kikin81/atproto/app/bsky/notification/GetPreferencesRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getUnreadCount (Lio/github/kikin81/atproto/app/bsky/notification/GetUnreadCountRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getUnreadCount$default (Lio/github/kikin81/atproto/app/bsky/notification/NotificationService;Lio/github/kikin81/atproto/app/bsky/notification/GetUnreadCountRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun listActivitySubscriptions (Lio/github/kikin81/atproto/app/bsky/notification/ListActivitySubscriptionsRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun listActivitySubscriptions$default (Lio/github/kikin81/atproto/app/bsky/notification/NotificationService;Lio/github/kikin81/atproto/app/bsky/notification/ListActivitySubscriptionsRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun listNotifications (Lio/github/kikin81/atproto/app/bsky/notification/ListNotificationsRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun listNotifications$default (Lio/github/kikin81/atproto/app/bsky/notification/NotificationService;Lio/github/kikin81/atproto/app/bsky/notification/ListNotificationsRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun putActivitySubscription (Lio/github/kikin81/atproto/app/bsky/notification/PutActivitySubscriptionRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun putActivitySubscription$default (Lio/github/kikin81/atproto/app/bsky/notification/NotificationService;Lio/github/kikin81/atproto/app/bsky/notification/PutActivitySubscriptionRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun putPreferences (Lio/github/kikin81/atproto/app/bsky/notification/PutPreferencesRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun putPreferences$default (Lio/github/kikin81/atproto/app/bsky/notification/NotificationService;Lio/github/kikin81/atproto/app/bsky/notification/PutPreferencesRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun putPreferencesV2 (Lio/github/kikin81/atproto/app/bsky/notification/PutPreferencesV2Request;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun putPreferencesV2$default (Lio/github/kikin81/atproto/app/bsky/notification/NotificationService;Lio/github/kikin81/atproto/app/bsky/notification/PutPreferencesV2Request;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun registerPush (Lio/github/kikin81/atproto/app/bsky/notification/RegisterPushRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun registerPush$default (Lio/github/kikin81/atproto/app/bsky/notification/NotificationService;Lio/github/kikin81/atproto/app/bsky/notification/RegisterPushRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun unregisterPush (Lio/github/kikin81/atproto/app/bsky/notification/UnregisterPushRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun unregisterPush$default (Lio/github/kikin81/atproto/app/bsky/notification/NotificationService;Lio/github/kikin81/atproto/app/bsky/notification/UnregisterPushRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun updateSeen (Lio/github/kikin81/atproto/app/bsky/notification/UpdateSeenRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun updateSeen$default (Lio/github/kikin81/atproto/app/bsky/notification/NotificationService;Lio/github/kikin81/atproto/app/bsky/notification/UpdateSeenRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 
 public final class io/github/kikin81/atproto/app/bsky/notification/NotificationServiceKt {
@@ -9331,30 +9372,46 @@ public final class io/github/kikin81/atproto/chat/bsky/convo/AddReactionResponse
 public final class io/github/kikin81/atproto/chat/bsky/convo/ConvoService {
 	public fun <init> (Lio/github/kikin81/atproto/runtime/XrpcClient;Ljava/lang/String;)V
 	public synthetic fun <init> (Lio/github/kikin81/atproto/runtime/XrpcClient;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun acceptConvo (Lio/github/kikin81/atproto/chat/bsky/convo/AcceptConvoRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun addReaction (Lio/github/kikin81/atproto/chat/bsky/convo/AddReactionRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun deleteMessageForSelf (Lio/github/kikin81/atproto/chat/bsky/convo/DeleteMessageForSelfRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun getConvo (Lio/github/kikin81/atproto/chat/bsky/convo/GetConvoRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun getConvoAvailability (Lio/github/kikin81/atproto/chat/bsky/convo/GetConvoAvailabilityRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun getConvoForMembers (Lio/github/kikin81/atproto/chat/bsky/convo/GetConvoForMembersRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun getLog (Lio/github/kikin81/atproto/chat/bsky/convo/GetLogRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun getLog$default (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/GetLogRequest;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public final fun getMessages (Lio/github/kikin81/atproto/chat/bsky/convo/GetMessagesRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun leaveConvo (Lio/github/kikin81/atproto/chat/bsky/convo/LeaveConvoRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun listConvoRequests (Lio/github/kikin81/atproto/chat/bsky/convo/ListConvoRequestsRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun listConvoRequests$default (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/ListConvoRequestsRequest;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public final fun listConvos (Lio/github/kikin81/atproto/chat/bsky/convo/ListConvosRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun listConvos$default (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/ListConvosRequest;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public final fun lockConvo (Lio/github/kikin81/atproto/chat/bsky/convo/LockConvoRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun muteConvo (Lio/github/kikin81/atproto/chat/bsky/convo/MuteConvoRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun removeReaction (Lio/github/kikin81/atproto/chat/bsky/convo/RemoveReactionRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun sendMessage (Lio/github/kikin81/atproto/chat/bsky/convo/SendMessageRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun sendMessageBatch (Lio/github/kikin81/atproto/chat/bsky/convo/SendMessageBatchRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun unlockConvo (Lio/github/kikin81/atproto/chat/bsky/convo/UnlockConvoRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun unmuteConvo (Lio/github/kikin81/atproto/chat/bsky/convo/UnmuteConvoRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun updateAllRead (Lio/github/kikin81/atproto/chat/bsky/convo/UpdateAllReadRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun updateAllRead$default (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/UpdateAllReadRequest;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public final fun updateRead (Lio/github/kikin81/atproto/chat/bsky/convo/UpdateReadRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun acceptConvo (Lio/github/kikin81/atproto/chat/bsky/convo/AcceptConvoRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun acceptConvo$default (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/AcceptConvoRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun addReaction (Lio/github/kikin81/atproto/chat/bsky/convo/AddReactionRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun addReaction$default (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/AddReactionRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun deleteMessageForSelf (Lio/github/kikin81/atproto/chat/bsky/convo/DeleteMessageForSelfRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun deleteMessageForSelf$default (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/DeleteMessageForSelfRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getConvo (Lio/github/kikin81/atproto/chat/bsky/convo/GetConvoRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getConvo$default (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/GetConvoRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getConvoAvailability (Lio/github/kikin81/atproto/chat/bsky/convo/GetConvoAvailabilityRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getConvoAvailability$default (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/GetConvoAvailabilityRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getConvoForMembers (Lio/github/kikin81/atproto/chat/bsky/convo/GetConvoForMembersRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getConvoForMembers$default (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/GetConvoForMembersRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getLog (Lio/github/kikin81/atproto/chat/bsky/convo/GetLogRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getLog$default (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/GetLogRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getMessages (Lio/github/kikin81/atproto/chat/bsky/convo/GetMessagesRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getMessages$default (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/GetMessagesRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun leaveConvo (Lio/github/kikin81/atproto/chat/bsky/convo/LeaveConvoRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun leaveConvo$default (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/LeaveConvoRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun listConvoRequests (Lio/github/kikin81/atproto/chat/bsky/convo/ListConvoRequestsRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun listConvoRequests$default (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/ListConvoRequestsRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun listConvos (Lio/github/kikin81/atproto/chat/bsky/convo/ListConvosRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun listConvos$default (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/ListConvosRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun lockConvo (Lio/github/kikin81/atproto/chat/bsky/convo/LockConvoRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun lockConvo$default (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/LockConvoRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun muteConvo (Lio/github/kikin81/atproto/chat/bsky/convo/MuteConvoRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun muteConvo$default (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/MuteConvoRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun removeReaction (Lio/github/kikin81/atproto/chat/bsky/convo/RemoveReactionRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun removeReaction$default (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/RemoveReactionRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun sendMessage (Lio/github/kikin81/atproto/chat/bsky/convo/SendMessageRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun sendMessage$default (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/SendMessageRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun sendMessageBatch (Lio/github/kikin81/atproto/chat/bsky/convo/SendMessageBatchRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun sendMessageBatch$default (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/SendMessageBatchRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun unlockConvo (Lio/github/kikin81/atproto/chat/bsky/convo/UnlockConvoRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun unlockConvo$default (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/UnlockConvoRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun unmuteConvo (Lio/github/kikin81/atproto/chat/bsky/convo/UnmuteConvoRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun unmuteConvo$default (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/UnmuteConvoRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun updateAllRead (Lio/github/kikin81/atproto/chat/bsky/convo/UpdateAllReadRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun updateAllRead$default (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/UpdateAllReadRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun updateRead (Lio/github/kikin81/atproto/chat/bsky/convo/UpdateReadRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun updateRead$default (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/UpdateReadRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 
 public final class io/github/kikin81/atproto/chat/bsky/convo/ConvoServiceKt {
@@ -12762,8 +12819,10 @@ public final class io/github/kikin81/atproto/com/atproto/admin/ThreatSignature$C
 
 public final class io/github/kikin81/atproto/com/atproto/identity/IdentityService {
 	public fun <init> (Lio/github/kikin81/atproto/runtime/XrpcClient;)V
-	public final fun resolveHandle (Lio/github/kikin81/atproto/com/atproto/identity/ResolveHandleRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun updateHandle (Lio/github/kikin81/atproto/com/atproto/identity/UpdateHandleRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun resolveHandle (Lio/github/kikin81/atproto/com/atproto/identity/ResolveHandleRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun resolveHandle$default (Lio/github/kikin81/atproto/com/atproto/identity/IdentityService;Lio/github/kikin81/atproto/com/atproto/identity/ResolveHandleRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun updateHandle (Lio/github/kikin81/atproto/com/atproto/identity/UpdateHandleRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun updateHandle$default (Lio/github/kikin81/atproto/com/atproto/identity/IdentityService;Lio/github/kikin81/atproto/com/atproto/identity/UpdateHandleRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 
 public final class io/github/kikin81/atproto/com/atproto/identity/ResolveHandleRequest {
@@ -12893,7 +12952,8 @@ public final class io/github/kikin81/atproto/com/atproto/label/Label$Companion {
 
 public final class io/github/kikin81/atproto/com/atproto/label/LabelService {
 	public fun <init> (Lio/github/kikin81/atproto/runtime/XrpcClient;)V
-	public final fun queryLabels (Lio/github/kikin81/atproto/com/atproto/label/QueryLabelsRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun queryLabels (Lio/github/kikin81/atproto/com/atproto/label/QueryLabelsRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun queryLabels$default (Lio/github/kikin81/atproto/com/atproto/label/LabelService;Lio/github/kikin81/atproto/com/atproto/label/QueryLabelsRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 
 public final class io/github/kikin81/atproto/com/atproto/label/LabelServiceKt {
@@ -13310,7 +13370,8 @@ public final class io/github/kikin81/atproto/com/atproto/moderation/CreateReport
 
 public final class io/github/kikin81/atproto/com/atproto/moderation/ModerationService {
 	public fun <init> (Lio/github/kikin81/atproto/runtime/XrpcClient;)V
-	public final fun createReport (Lio/github/kikin81/atproto/com/atproto/moderation/CreateReportRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun createReport (Lio/github/kikin81/atproto/com/atproto/moderation/CreateReportRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun createReport$default (Lio/github/kikin81/atproto/com/atproto/moderation/ModerationService;Lio/github/kikin81/atproto/com/atproto/moderation/CreateReportRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 
 public final class io/github/kikin81/atproto/com/atproto/repo/ApplyWritesCreate : io/github/kikin81/atproto/com/atproto/repo/ApplyWritesRequestWritesUnion {
@@ -14101,14 +14162,22 @@ public final class io/github/kikin81/atproto/com/atproto/repo/PutRecordResponse$
 
 public final class io/github/kikin81/atproto/com/atproto/repo/RepoService {
 	public fun <init> (Lio/github/kikin81/atproto/runtime/XrpcClient;)V
-	public final fun applyWrites (Lio/github/kikin81/atproto/com/atproto/repo/ApplyWritesRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun createRecord (Lio/github/kikin81/atproto/com/atproto/repo/CreateRecordRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun deleteRecord (Lio/github/kikin81/atproto/com/atproto/repo/DeleteRecordRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun describeRepo (Lio/github/kikin81/atproto/com/atproto/repo/DescribeRepoRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun getRecord (Lio/github/kikin81/atproto/com/atproto/repo/GetRecordRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun listRecords (Lio/github/kikin81/atproto/com/atproto/repo/ListRecordsRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun putRecord (Lio/github/kikin81/atproto/com/atproto/repo/PutRecordRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun uploadBlob ([BLio/ktor/http/ContentType;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun applyWrites (Lio/github/kikin81/atproto/com/atproto/repo/ApplyWritesRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun applyWrites$default (Lio/github/kikin81/atproto/com/atproto/repo/RepoService;Lio/github/kikin81/atproto/com/atproto/repo/ApplyWritesRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun createRecord (Lio/github/kikin81/atproto/com/atproto/repo/CreateRecordRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun createRecord$default (Lio/github/kikin81/atproto/com/atproto/repo/RepoService;Lio/github/kikin81/atproto/com/atproto/repo/CreateRecordRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun deleteRecord (Lio/github/kikin81/atproto/com/atproto/repo/DeleteRecordRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun deleteRecord$default (Lio/github/kikin81/atproto/com/atproto/repo/RepoService;Lio/github/kikin81/atproto/com/atproto/repo/DeleteRecordRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun describeRepo (Lio/github/kikin81/atproto/com/atproto/repo/DescribeRepoRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun describeRepo$default (Lio/github/kikin81/atproto/com/atproto/repo/RepoService;Lio/github/kikin81/atproto/com/atproto/repo/DescribeRepoRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getRecord (Lio/github/kikin81/atproto/com/atproto/repo/GetRecordRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getRecord$default (Lio/github/kikin81/atproto/com/atproto/repo/RepoService;Lio/github/kikin81/atproto/com/atproto/repo/GetRecordRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun listRecords (Lio/github/kikin81/atproto/com/atproto/repo/ListRecordsRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun listRecords$default (Lio/github/kikin81/atproto/com/atproto/repo/RepoService;Lio/github/kikin81/atproto/com/atproto/repo/ListRecordsRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun putRecord (Lio/github/kikin81/atproto/com/atproto/repo/PutRecordRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun putRecord$default (Lio/github/kikin81/atproto/com/atproto/repo/RepoService;Lio/github/kikin81/atproto/com/atproto/repo/PutRecordRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun uploadBlob ([BLio/ktor/http/ContentType;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun uploadBlob$default (Lio/github/kikin81/atproto/com/atproto/repo/RepoService;[BLio/ktor/http/ContentType;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 
 public final class io/github/kikin81/atproto/com/atproto/repo/RepoServiceKt {
@@ -14587,11 +14656,16 @@ public final class io/github/kikin81/atproto/com/atproto/server/RefreshSessionRe
 
 public final class io/github/kikin81/atproto/com/atproto/server/ServerService {
 	public fun <init> (Lio/github/kikin81/atproto/runtime/XrpcClient;)V
-	public final fun createAccount (Lio/github/kikin81/atproto/com/atproto/server/CreateAccountRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun createSession (Lio/github/kikin81/atproto/com/atproto/server/CreateSessionRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun describeServer (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun getSession (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun refreshSession (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun createAccount (Lio/github/kikin81/atproto/com/atproto/server/CreateAccountRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun createAccount$default (Lio/github/kikin81/atproto/com/atproto/server/ServerService;Lio/github/kikin81/atproto/com/atproto/server/CreateAccountRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun createSession (Lio/github/kikin81/atproto/com/atproto/server/CreateSessionRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun createSession$default (Lio/github/kikin81/atproto/com/atproto/server/ServerService;Lio/github/kikin81/atproto/com/atproto/server/CreateSessionRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun describeServer (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun describeServer$default (Lio/github/kikin81/atproto/com/atproto/server/ServerService;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getSession (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getSession$default (Lio/github/kikin81/atproto/com/atproto/server/ServerService;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun refreshSession (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun refreshSession$default (Lio/github/kikin81/atproto/com/atproto/server/ServerService;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 
 public final class io/github/kikin81/atproto/com/atproto/sync/GetLatestCommitRequest {
@@ -14682,7 +14756,9 @@ public final class io/github/kikin81/atproto/com/atproto/sync/GetRepoRequest$Com
 
 public final class io/github/kikin81/atproto/com/atproto/sync/SyncService {
 	public fun <init> (Lio/github/kikin81/atproto/runtime/XrpcClient;)V
-	public final fun getLatestCommit (Lio/github/kikin81/atproto/com/atproto/sync/GetLatestCommitRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun getRepo (Lio/github/kikin81/atproto/com/atproto/sync/GetRepoRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun getLatestCommit (Lio/github/kikin81/atproto/com/atproto/sync/GetLatestCommitRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getLatestCommit$default (Lio/github/kikin81/atproto/com/atproto/sync/SyncService;Lio/github/kikin81/atproto/com/atproto/sync/GetLatestCommitRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getRepo (Lio/github/kikin81/atproto/com/atproto/sync/GetRepoRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getRepo$default (Lio/github/kikin81/atproto/com/atproto/sync/SyncService;Lio/github/kikin81/atproto/com/atproto/sync/GetRepoRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 

@@ -4,6 +4,7 @@ import io.github.kikin81.atproto.example.StrongRef
 import io.github.kikin81.atproto.runtime.XrpcClient
 import io.github.kikin81.atproto.runtime.paginate
 import io.github.kikin81.atproto.runtime.paginatePages
+import kotlin.String
 import kotlin.collections.List
 import kotlinx.coroutines.flow.Flow
 
@@ -13,11 +14,12 @@ public class FeedService(
   /**
    * Get a paginated timeline.
    */
-  public suspend fun getTimeline(request: GetTimelineRequest = GetTimelineRequest()): GetTimelineResponse = client.query(
+  public suspend fun getTimeline(request: GetTimelineRequest = GetTimelineRequest(), proxy: String? = null): GetTimelineResponse = client.query(
       nsid = "example.feed.getTimeline",
       params = request,
       paramsSerializer = GetTimelineRequest.serializer(),
       responseSerializer = GetTimelineResponse.serializer(),
+      proxy = proxy,
   )
 }
 
