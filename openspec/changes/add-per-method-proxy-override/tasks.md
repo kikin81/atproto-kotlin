@@ -50,9 +50,9 @@
 
 ## 7. Wrap-up
 
-- [ ] 7.1 Open the PR. Title: `feat(generator): per-method proxy override on generated services`. Body must include `BREAKING CHANGE:` footer so semantic-release cuts v9.0.0.
-- [ ] 7.2 Link the PR to GitHub issue #117 (`Closes #117`) and reference nubecita PR #301 as the consumer use case.
-- [ ] 7.3 Open follow-up bd issues for the out-of-scope items:
-  - `NoBodyResponseSerializer` runtime marker for procedures with no `output.schema`
-  - Lexicon-declared proxy hints (read routing metadata from lexicon JSON, fall back to `ProxyMapping`)
+- [ ] 7.1 Open the PR. Title: `feat(generator): per-method proxy override on generated services`. Body must include `BREAKING CHANGE:` footer so semantic-release cuts v9.0.0. (Branch pushed; PR creation deferred — visit https://github.com/kikin81/atproto-kotlin/pull/new/feat/kikinlex-b1h-per-method-proxy-override or run `gh pr create` to open.)
+- [ ] 7.2 Link the PR to GitHub issue #117 (`Closes #117`) and reference nubecita PR #301 as the consumer use case. (Will land with PR body.)
+- [x] 7.3 Open follow-up bd issues for the out-of-scope items:
+  - `NoBodyResponseSerializer` runtime marker for procedures with no `output.schema` → **kikinlex-l7u** (P3)
+  - Lexicon-declared proxy hints (read routing metadata from lexicon JSON, fall back to `ProxyMapping`) → **kikinlex-90j** (P4)
 - [ ] 7.4 After merge and release: notify the `nubecita` `:core:push` author that the bypass can now be replaced with the typed `NotificationService.registerPush(..., proxy = ...)` call.
