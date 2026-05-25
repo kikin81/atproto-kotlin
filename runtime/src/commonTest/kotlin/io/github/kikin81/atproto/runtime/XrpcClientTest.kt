@@ -435,6 +435,78 @@ class XrpcClientTest {
     }
 
     @Test
+    fun procedure_with_unit_response_accepts_empty_body() = runTest {
+        // Spec-conforming PDS behavior for procedures with no output.schema —
+        // e.g. app.bsky.notification.registerPush returns HTTP 2xx with an
+        // empty body. See GitHub issue #119.
+        val (client, engine) = makeClient {
+            respond(ByteReadChannel(""), HttpStatusCode.OK, jsonHeaders)
+        }
+
+        client.procedure(
+            nsid = "app.bsky.notification.registerPush",
+            params = Unit,
+            paramsSerializer = Unit.serializer(),
+            input = CreateSessionInput(identifier = "x", password = "y"),
+            inputSerializer = CreateSessionInput.serializer(),
+            responseSerializer = UnitResponseSerializer,
+        )
+
+        assertEquals(1, engine.requestHistory.size)
+    }
+
+    @Test
+    fun procedure_with_unit_response_accepts_whitespace_body() = runTest {
+        val (client, _) = makeClient {
+            respond(ByteReadChannel("   \n  "), HttpStatusCode.OK, jsonHeaders)
+        }
+
+        client.procedure(
+            nsid = "app.bsky.notification.unregisterPush",
+            params = Unit,
+            paramsSerializer = Unit.serializer(),
+            input = CreateSessionInput(identifier = "x", password = "y"),
+            inputSerializer = CreateSessionInput.serializer(),
+            responseSerializer = UnitResponseSerializer,
+        )
+    }
+
+    @Test
+    fun procedure_with_unit_response_still_accepts_empty_object_body() = runTest {
+        // Existing behavior must keep working — some PDS implementations do
+        // return `{}` for Unit-shaped procedures.
+        val (client, _) = makeClient { ok("{}") }
+
+        client.procedure(
+            nsid = "com.atproto.repo.deleteRecord",
+            params = Unit,
+            paramsSerializer = Unit.serializer(),
+            input = CreateSessionInput(identifier = "x", password = "y"),
+            inputSerializer = CreateSessionInput.serializer(),
+            responseSerializer = UnitResponseSerializer,
+        )
+    }
+
+    @Test
+    fun empty_body_with_non_unit_serializer_still_fails() = runTest {
+        // The short-circuit must be Unit-only — a procedure that declares an
+        // output schema but gets an empty body is a real protocol error and
+        // should surface, not silently succeed.
+        val (client, _) = makeClient {
+            respond(ByteReadChannel(""), HttpStatusCode.OK, jsonHeaders)
+        }
+
+        assertFailsWith<kotlinx.serialization.SerializationException> {
+            client.query(
+                nsid = "app.bsky.feed.getTimeline",
+                params = TimelineParams(),
+                paramsSerializer = TimelineParams.serializer(),
+                responseSerializer = TimelineResponse.serializer(),
+            )
+        }
+    }
+
+    @Test
     fun unknown_error_falls_through_to_unknown() = runTest {
         val (client, _) = makeClient {
             respond(
