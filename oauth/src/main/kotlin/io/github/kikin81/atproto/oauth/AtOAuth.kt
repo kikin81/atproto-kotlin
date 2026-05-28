@@ -155,7 +155,7 @@ class AtOAuth(
         val codeChallenge = Pkce.computeChallenge(codeVerifier)
         val state = generateState()
 
-        val requestUri = pushAuthorizationRequest(
+        val parResult = pushAuthorizationRequest(
             metadata = metadata,
             signer = signer,
             codeChallenge = codeChallenge,
@@ -172,9 +172,10 @@ class AtOAuth(
             state = state,
             redirectUri = redirectUri,
             flowOrigin = flowOrigin,
+            authServerNonce = parResult.dpopNonce,
         )
 
-        return "${metadata.authorizationEndpoint}?client_id=$clientMetadataUrl&request_uri=$requestUri"
+        return "${metadata.authorizationEndpoint}?client_id=$clientMetadataUrl&request_uri=${parResult.requestUri}"
     }
 
     /**
@@ -217,6 +218,7 @@ class AtOAuth(
             code = code,
             codeVerifier = pending.codeVerifier,
             redirectUri = pending.redirectUri,
+            initialNonce = pending.authServerNonce,
         )
 
         val exported = pending.signer.exportKeyPair()
@@ -371,7 +373,7 @@ class AtOAuth(
         redirectUri: String,
         loginHint: String?,
         prompt: String?,
-    ): String {
+    ): ParResult {
         // First attempt: no nonce (expected to fail with use_dpop_nonce)
         val firstProof = signer.sign(method = "POST", url = metadata.parEndpoint)
         val firstResponse = httpClient.submitForm(
@@ -383,7 +385,7 @@ class AtOAuth(
 
         if (firstResponse.status == HttpStatusCode.OK) {
             val body = json.decodeFromString(ParResponse.serializer(), firstResponse.bodyAsText())
-            return body.request_uri
+            return ParResult(requestUri = body.request_uri, dpopNonce = firstResponse.headers["DPoP-Nonce"])
         }
 
         // Expected: 401 with use_dpop_nonce. Also calibrate the clock
@@ -408,7 +410,12 @@ class AtOAuth(
         }
 
         val body = json.decodeFromString(ParResponse.serializer(), retryResponse.bodyAsText())
-        return body.request_uri
+        // Prefer the nonce echoed on the successful retry; fall back to the one
+        // we just used (auth servers commonly keep the same nonce sticky).
+        return ParResult(
+            requestUri = body.request_uri,
+            dpopNonce = retryResponse.headers["DPoP-Nonce"] ?: nonce,
+        )
     }
 
     private fun parParams(
@@ -435,8 +442,14 @@ class AtOAuth(
         code: String,
         codeVerifier: String,
         redirectUri: String,
+        initialNonce: String?,
     ): TokenResponse {
-        val proof = signer.sign(method = "POST", url = metadata.tokenEndpoint)
+        // The authorization code is single-use: bsky.social's auth server
+        // consumes it even when it rejects the request for use_dpop_nonce.
+        // Sign the first proof with the nonce we captured from PAR so the
+        // first attempt succeeds; the retry below still covers the rare
+        // case where the nonce has rotated since PAR.
+        val proof = signer.sign(method = "POST", url = metadata.tokenEndpoint, nonce = initialNonce)
         val response = httpClient.submitForm(
             url = metadata.tokenEndpoint,
             formParameters = Parameters.build {
@@ -517,6 +530,12 @@ class AtOAuth(
         val state: String,
         val redirectUri: String,
         val flowOrigin: FlowOrigin,
+        val authServerNonce: String?,
+    )
+
+    private data class ParResult(
+        val requestUri: String,
+        val dpopNonce: String?,
     )
 }
 
