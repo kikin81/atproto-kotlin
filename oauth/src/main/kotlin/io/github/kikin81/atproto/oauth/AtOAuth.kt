@@ -410,8 +410,9 @@ class AtOAuth(
         }
 
         val body = json.decodeFromString(ParResponse.serializer(), retryResponse.bodyAsText())
-        // Prefer the nonce echoed on the successful retry; fall back to the one
-        // we just used (auth servers commonly keep the same nonce sticky).
+        // Prefer the nonce echoed on the successful retry; the `?: nonce`
+        // fallback is defense-in-depth — atproto auth servers echo DPoP-Nonce
+        // on every response per the spec, so it should be unreachable.
         return ParResult(
             requestUri = body.request_uri,
             dpopNonce = retryResponse.headers["DPoP-Nonce"] ?: nonce,

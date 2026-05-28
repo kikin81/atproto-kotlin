@@ -11,7 +11,13 @@ import io.ktor.http.headersOf
 import io.ktor.http.parseQueryString
 import io.ktor.utils.io.ByteReadChannel
 import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
@@ -998,10 +1004,13 @@ class AtOAuthTest {
         // code when the proof lacks a nonce; the subsequent retry returns
         // 400 invalid_grant. With the fix, the first /token request already
         // carries the PAR-issued nonce so the code survives.
+        // Verbatim from the issue #124 server-trace log — a real bsky.social
+        // DPoP-Nonce, so the assertion below pins the actual server-issued
+        // value rather than "any non-null string."
         val serverNonce = "BgT4Qx-dyAJVTGYC91DHu-jPX1XbrikVrr3prTDueOk"
         var tokenCallCount = 0
         var codeConsumed = false
-        var firstTokenAttemptHadNonce: Boolean? = null
+        var firstTokenAttemptNonce: String? = null
 
         val store = InMemorySessionStore()
         val client = HttpClient(
@@ -1011,7 +1020,7 @@ class AtOAuthTest {
                     url.contains("/par") -> {
                         // First PAR (no nonce in DPoP) -> 400 + nonce header,
                         // matching bsky.social's "use_dpop_nonce" cycle.
-                        if (!dpopProofHasNonce(request.headers["DPoP"])) {
+                        if (dpopProofNonce(request.headers["DPoP"]) == null) {
                             respond(
                                 ByteReadChannel("""{"error":"use_dpop_nonce"}"""),
                                 HttpStatusCode.BadRequest,
@@ -1034,13 +1043,13 @@ class AtOAuthTest {
 
                     url.contains("/token") -> {
                         tokenCallCount++
-                        val hasNonce = dpopProofHasNonce(request.headers["DPoP"])
-                        if (firstTokenAttemptHadNonce == null) firstTokenAttemptHadNonce = hasNonce
+                        val proofNonce = dpopProofNonce(request.headers["DPoP"])
+                        if (tokenCallCount == 1) firstTokenAttemptNonce = proofNonce
 
                         when {
                             // No nonce on the first attempt: this is the bug
                             // path — consume the code and return use_dpop_nonce.
-                            !hasNonce && !codeConsumed -> {
+                            proofNonce == null && !codeConsumed -> {
                                 codeConsumed = true
                                 respond(
                                     ByteReadChannel(
@@ -1089,8 +1098,8 @@ class AtOAuthTest {
         )
 
         assertEquals(
-            true,
-            firstTokenAttemptHadNonce,
+            serverNonce,
+            firstTokenAttemptNonce,
             "First /token request must carry the PAR-issued DPoP nonce, otherwise the auth-code gets burned",
         )
         assertEquals(1, tokenCallCount, "/token should be called exactly once when the cached nonce is still valid")
@@ -1101,17 +1110,24 @@ class AtOAuthTest {
     }
 
     /**
-     * Decodes the JWT payload of a DPoP proof and reports whether it carries
-     * a `nonce` claim. Used to assert what the SDK actually signs without
-     * relying on call-counting heuristics.
+     * Decodes the JWT payload of a DPoP proof and returns the value of its
+     * `nonce` claim, or null when no such claim is present.
+     *
+     * Errors on a missing or malformed header — production code always
+     * attaches a well-formed 3-part signed JWT, so a shape failure here is a
+     * real regression we want surfaced as a clear diagnostic rather than
+     * silently masked as "no nonce." Parses the payload as JSON so claims
+     * whose name merely contains `nonce` (`renonce`, `nonce_supported`, ...)
+     * don't produce false positives.
      */
-    private fun dpopProofHasNonce(header: String?): Boolean {
-        val h = header ?: return false
+    @OptIn(ExperimentalEncodingApi::class)
+    private fun dpopProofNonce(header: String?): String? {
+        val h = header ?: error("DPoP header missing on request")
         val parts = h.split('.')
-        if (parts.size != 3) return false
+        check(parts.size == 3) { "DPoP header is not a 3-part JWT: $h" }
         val padded = parts[1] + "=".repeat((4 - parts[1].length % 4) % 4)
-        val payload = String(java.util.Base64.getUrlDecoder().decode(padded))
-        return payload.contains("\"nonce\":")
+        val payload = Base64.UrlSafe.decode(padded).decodeToString()
+        return Json.parseToJsonElement(payload).jsonObject["nonce"]?.jsonPrimitive?.contentOrNull
     }
 
     /**
