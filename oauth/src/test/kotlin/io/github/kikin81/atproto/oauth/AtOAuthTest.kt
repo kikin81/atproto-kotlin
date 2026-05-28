@@ -985,6 +985,135 @@ class AtOAuthTest {
         assertContains(body, "prompt=create")
     }
 
+    @Test
+    fun tokenExchangeUsesParNonceOnFirstAttemptSoCodeIsNotBurned() = runTest {
+        // Regression for issue #124. bsky.social's auth server consumes the
+        // single-use authorization code on any token POST, even when it
+        // rejects the request for use_dpop_nonce. If exchangeCode signs the
+        // first proof without a nonce, the retry hits invalid_grant and login
+        // fails on every fresh attempt.
+        //
+        // This mock pins that exact state machine: PAR issues a sticky
+        // DPoP-Nonce; /token returns 400 + nonce header AND consumes the
+        // code when the proof lacks a nonce; the subsequent retry returns
+        // 400 invalid_grant. With the fix, the first /token request already
+        // carries the PAR-issued nonce so the code survives.
+        val serverNonce = "BgT4Qx-dyAJVTGYC91DHu-jPX1XbrikVrr3prTDueOk"
+        var tokenCallCount = 0
+        var codeConsumed = false
+        var firstTokenAttemptHadNonce: Boolean? = null
+
+        val store = InMemorySessionStore()
+        val client = HttpClient(
+            MockEngine { request ->
+                val url = request.url.toString()
+                respondToDiscovery(url) ?: when {
+                    url.contains("/par") -> {
+                        // First PAR (no nonce in DPoP) -> 400 + nonce header,
+                        // matching bsky.social's "use_dpop_nonce" cycle.
+                        if (!dpopProofHasNonce(request.headers["DPoP"])) {
+                            respond(
+                                ByteReadChannel("""{"error":"use_dpop_nonce"}"""),
+                                HttpStatusCode.BadRequest,
+                                headersOf(
+                                    HttpHeaders.ContentType to listOf("application/json"),
+                                    "DPoP-Nonce" to listOf(serverNonce),
+                                ),
+                            )
+                        } else {
+                            respond(
+                                ByteReadChannel("""{"request_uri":"urn:ietf:params:oauth:request_uri:par-ok","expires_in":3600}"""),
+                                HttpStatusCode.OK,
+                                headersOf(
+                                    HttpHeaders.ContentType to listOf("application/json"),
+                                    "DPoP-Nonce" to listOf(serverNonce),
+                                ),
+                            )
+                        }
+                    }
+
+                    url.contains("/token") -> {
+                        tokenCallCount++
+                        val hasNonce = dpopProofHasNonce(request.headers["DPoP"])
+                        if (firstTokenAttemptHadNonce == null) firstTokenAttemptHadNonce = hasNonce
+
+                        when {
+                            // No nonce on the first attempt: this is the bug
+                            // path — consume the code and return use_dpop_nonce.
+                            !hasNonce && !codeConsumed -> {
+                                codeConsumed = true
+                                respond(
+                                    ByteReadChannel(
+                                        """{"error":"use_dpop_nonce","error_description":"Authorization server requires nonce in DPoP proof"}""",
+                                    ),
+                                    HttpStatusCode.BadRequest,
+                                    headersOf(
+                                        HttpHeaders.ContentType to listOf("application/json"),
+                                        "DPoP-Nonce" to listOf(serverNonce),
+                                    ),
+                                )
+                            }
+                            // Retry after the code was burned: invalid_grant.
+                            codeConsumed -> respond(
+                                ByteReadChannel(
+                                    """{"error":"invalid_grant","error_description":"Invalid code"}""",
+                                ),
+                                HttpStatusCode.BadRequest,
+                                jsonHeaders,
+                            )
+                            // First attempt already carries the nonce — happy path.
+                            else -> respond(
+                                ByteReadChannel(
+                                    """{"access_token":"at_124","refresh_token":"rt_124","token_type":"DPoP","expires_in":3600,"sub":"did:plc:testuser"}""",
+                                ),
+                                HttpStatusCode.OK,
+                                jsonHeaders,
+                            )
+                        }
+                    }
+
+                    else -> respond(ByteReadChannel(""), HttpStatusCode.NotFound)
+                }
+            },
+        )
+
+        val oauth = AtOAuth(
+            clientMetadataUrl = "https://app.test/oauth/client-metadata.json",
+            redirectUri = "app.example:/oauth-redirect",
+            sessionStore = store,
+            httpClient = client,
+        )
+        oauth.beginLogin("alice.test")
+        oauth.completeLogin(
+            "app.example:/oauth-redirect?code=auth_code_124&state=${extractState(oauth)}&iss=https://auth.test",
+        )
+
+        assertEquals(
+            true,
+            firstTokenAttemptHadNonce,
+            "First /token request must carry the PAR-issued DPoP nonce, otherwise the auth-code gets burned",
+        )
+        assertEquals(1, tokenCallCount, "/token should be called exactly once when the cached nonce is still valid")
+        assertEquals(false, codeConsumed, "code must not be burned by a doomed no-nonce probe")
+        val session = store.session
+        assertNotNull(session)
+        assertEquals("at_124", session.accessToken)
+    }
+
+    /**
+     * Decodes the JWT payload of a DPoP proof and reports whether it carries
+     * a `nonce` claim. Used to assert what the SDK actually signs without
+     * relying on call-counting heuristics.
+     */
+    private fun dpopProofHasNonce(header: String?): Boolean {
+        val h = header ?: return false
+        val parts = h.split('.')
+        if (parts.size != 3) return false
+        val padded = parts[1] + "=".repeat((4 - parts[1].length % 4) % 4)
+        val payload = String(java.util.Base64.getUrlDecoder().decode(padded))
+        return payload.contains("\"nonce\":")
+    }
+
     /**
      * Extracts the state from a pending AtOAuth instance via reflection.
      * Only for testing — production consumers don't access internal state.
