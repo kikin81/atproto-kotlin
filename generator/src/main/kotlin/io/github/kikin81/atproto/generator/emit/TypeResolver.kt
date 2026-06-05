@@ -104,7 +104,7 @@ public class TypeResolver(
         }
         is UnionType -> {
             val site = plan.unionSites.firstOrNull {
-                it.owner == ownerFqName && it.fieldName == fieldName
+                (it.owner == ownerFqName || ownerFqName in it.aliasOwners) && it.fieldName == fieldName
             }
             if (site != null) {
                 ClassName(site.fqName.pkg, site.fqName.simpleName)

@@ -280,6 +280,84 @@ class CodeGeneratorTest {
         }
     """.trimIndent()
 
+    // Reproduces issue #133: a shared `.defs` object with a `union` field reached
+    // from both a mutation root (procedure input) and a read root (query output)
+    // → contextual split into `Payload` + `PayloadInput`. The union must survive
+    // on BOTH the read-shape Primary and the mutation-shape Input, not collapse
+    // to JsonObject on the Input. (Mirrors app.bsky.draft.defs#draftPost.)
+    private val splitUnionDefsJson = """
+        {
+          "lexicon": 1,
+          "id": "app.bsky.test.defs",
+          "defs": {
+            "payload": {
+              "type": "object",
+              "required": ["name"],
+              "properties": {
+                "name": { "type": "string" },
+                "embed": {
+                  "type": "union",
+                  "refs": ["app.bsky.test.defs#imageEmbed", "app.bsky.test.defs#videoEmbed"]
+                }
+              }
+            },
+            "imageEmbed": {
+              "type": "object",
+              "required": ["count"],
+              "properties": { "count": { "type": "integer" } }
+            },
+            "videoEmbed": {
+              "type": "object",
+              "required": ["url"],
+              "properties": { "url": { "type": "string", "format": "uri" } }
+            }
+          }
+        }
+    """.trimIndent()
+
+    private val splitUnionMutationRootJson = """
+        {
+          "lexicon": 1,
+          "id": "app.bsky.test.putThing",
+          "defs": {
+            "main": {
+              "type": "procedure",
+              "input": {
+                "encoding": "application/json",
+                "schema": {
+                  "type": "ref",
+                  "ref": "app.bsky.test.defs#payload"
+                }
+              }
+            }
+          }
+        }
+    """.trimIndent()
+
+    private val splitUnionReadRootJson = """
+        {
+          "lexicon": 1,
+          "id": "app.bsky.test.getThing",
+          "defs": {
+            "main": {
+              "type": "query",
+              "parameters": {
+                "type": "params",
+                "required": ["id"],
+                "properties": { "id": { "type": "string" } }
+              },
+              "output": {
+                "encoding": "application/json",
+                "schema": {
+                  "type": "ref",
+                  "ref": "app.bsky.test.defs#payload"
+                }
+              }
+            }
+          }
+        }
+    """.trimIndent()
+
     private val subscriptionJson = """
         {
           "lexicon": 1,
@@ -379,6 +457,43 @@ class CodeGeneratorTest {
         assertTrue("accent: String? = null" in primaryStr, primaryStr)
         // Input is mutation-shape: AtField<String> accent
         assertTrue("AtField" in inputStr, inputStr)
+    }
+
+    @Test
+    fun `union field survives on the contextual-split Input class (issue 133)`() {
+        val files = generate(splitUnionDefsJson, splitUnionMutationRootJson, splitUnionReadRootJson)
+        val text = renderAll(files)
+
+        // `#payload` is reached from both a mutation root (record) and a read
+        // root (query output) and has an optional union field → splits into
+        // Payload (read) + PayloadInput (mutation). Exactly one union interface
+        // is synthesized and must be referenced from BOTH classes.
+        val union = files.firstOrNull { it.name == "PayloadEmbedUnion" }
+        assertNotNull(union, "missing synthesized union\n$text")
+        assertEquals(
+            1,
+            files.count { it.name == "PayloadEmbedUnion" },
+            "expected exactly one union interface shared by Primary and Input:\n$text",
+        )
+
+        val primary = files.firstOrNull { it.name == "Payload" }
+        assertNotNull(primary, "missing Payload primary\n$text")
+        val input = files.firstOrNull { it.name == "PayloadInput" }
+        assertNotNull(input, "missing PayloadInput\n$text")
+
+        val primaryStr = primary.toString()
+        val inputStr = input.toString()
+
+        // Read-shape Primary: nullable union.
+        assertTrue("embed: PayloadEmbedUnion? = null" in primaryStr, primaryStr)
+
+        // Mutation-shape Input must keep the typed union (wrapped in AtField),
+        // NOT collapse to JsonObject.
+        assertTrue(
+            "AtField<PayloadEmbedUnion>" in inputStr,
+            "PayloadInput.embed must be AtField<PayloadEmbedUnion>, not JsonObject:\n$inputStr",
+        )
+        assertTrue("JsonObject" !in inputStr, "PayloadInput must not fall back to JsonObject:\n$inputStr")
     }
 
     @Test
