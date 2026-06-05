@@ -27,7 +27,7 @@ public final class io/github/kikin81/atproto/app/bsky/actor/ActorServiceKt {
 	public static synthetic fun suggestionsPageFlow$default (Lio/github/kikin81/atproto/app/bsky/actor/ActorService;Lio/github/kikin81/atproto/app/bsky/actor/GetSuggestionsRequest;ILjava/lang/Object;)Lkotlinx/coroutines/flow/Flow;
 }
 
-public final class io/github/kikin81/atproto/app/bsky/actor/AdultContentPref {
+public final class io/github/kikin81/atproto/app/bsky/actor/AdultContentPref : io/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponsePreferencesUnion, io/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequestPreferencesUnion {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/actor/AdultContentPref$Companion;
 	public fun <init> (Z)V
 	public final fun component1 ()Z
@@ -81,7 +81,7 @@ public final class io/github/kikin81/atproto/app/bsky/actor/BskyAppProgressGuide
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class io/github/kikin81/atproto/app/bsky/actor/BskyAppStatePref {
+public final class io/github/kikin81/atproto/app/bsky/actor/BskyAppStatePref : io/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponsePreferencesUnion, io/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequestPreferencesUnion {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/actor/BskyAppStatePref$Companion;
 	public fun <init> ()V
 	public fun <init> (Lio/github/kikin81/atproto/app/bsky/actor/BskyAppProgressGuide;Ljava/util/List;Ljava/util/List;)V
@@ -114,7 +114,7 @@ public final class io/github/kikin81/atproto/app/bsky/actor/BskyAppStatePref$Com
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class io/github/kikin81/atproto/app/bsky/actor/ContentLabelPref {
+public final class io/github/kikin81/atproto/app/bsky/actor/ContentLabelPref : io/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponsePreferencesUnion, io/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequestPreferencesUnion {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/actor/ContentLabelPref$Companion;
 	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -146,7 +146,7 @@ public final class io/github/kikin81/atproto/app/bsky/actor/ContentLabelPref$Com
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class io/github/kikin81/atproto/app/bsky/actor/DeclaredAgePref {
+public final class io/github/kikin81/atproto/app/bsky/actor/DeclaredAgePref : io/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponsePreferencesUnion, io/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequestPreferencesUnion {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/actor/DeclaredAgePref$Companion;
 	public fun <init> ()V
 	public fun <init> (Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;)V
@@ -179,7 +179,7 @@ public final class io/github/kikin81/atproto/app/bsky/actor/DeclaredAgePref$Comp
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class io/github/kikin81/atproto/app/bsky/actor/FeedViewPref {
+public final class io/github/kikin81/atproto/app/bsky/actor/FeedViewPref : io/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponsePreferencesUnion, io/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequestPreferencesUnion {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/actor/FeedViewPref$Companion;
 	public fun <init> (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Long;Ljava/lang/Boolean;Ljava/lang/Boolean;)V
 	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Long;Ljava/lang/Boolean;Ljava/lang/Boolean;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -239,12 +239,12 @@ public final class io/github/kikin81/atproto/app/bsky/actor/GetPreferencesReques
 
 public final class io/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponse {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponse$Companion;
-	public fun <init> (Lkotlinx/serialization/json/JsonObject;)V
-	public final fun component1 ()Lkotlinx/serialization/json/JsonObject;
-	public final fun copy (Lkotlinx/serialization/json/JsonObject;)Lio/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponse;
-	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponse;Lkotlinx/serialization/json/JsonObject;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponse;
+	public fun <init> (Ljava/util/List;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun copy (Ljava/util/List;)Lio/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponse;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponse;Ljava/util/List;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponse;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getPreferences ()Lkotlinx/serialization/json/JsonObject;
+	public final fun getPreferences ()Ljava/util/List;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -262,6 +262,46 @@ public final synthetic class io/github/kikin81/atproto/app/bsky/actor/GetPrefere
 
 public final class io/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponse$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public abstract interface class io/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponsePreferencesUnion : io/github/kikin81/atproto/runtime/OpenUnionMember {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponsePreferencesUnion$Companion;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponsePreferencesUnion$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponsePreferencesUnion$Unknown : io/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponsePreferencesUnion, io/github/kikin81/atproto/runtime/UnknownOpenUnionMember {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponsePreferencesUnion$Unknown$Companion;
+	public fun <init> (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Lkotlinx/serialization/json/JsonObject;
+	public final fun copy (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)Lio/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponsePreferencesUnion$Unknown;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponsePreferencesUnion$Unknown;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponsePreferencesUnion$Unknown;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getRaw ()Lkotlinx/serialization/json/JsonObject;
+	public fun getType ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponsePreferencesUnion$Unknown$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponsePreferencesUnionSerializer : io/github/kikin81/atproto/runtime/OpenUnionSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponsePreferencesUnionSerializer;
+	public fun selectKnownDeserializer (Ljava/lang/String;)Lkotlinx/serialization/KSerializer;
+	public fun selectKnownSerializer (Lio/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponsePreferencesUnion;)Lkotlinx/serialization/KSerializer;
+	public synthetic fun selectKnownSerializer (Lio/github/kikin81/atproto/runtime/OpenUnionMember;)Lkotlinx/serialization/KSerializer;
+	public fun unknownSerializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponsePreferencesUnionUnknownSerializer : io/github/kikin81/atproto/runtime/UnknownMemberSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponsePreferencesUnionUnknownSerializer;
+	public fun construct (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)Lio/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponsePreferencesUnion$Unknown;
+	public synthetic fun construct (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)Lio/github/kikin81/atproto/runtime/UnknownOpenUnionMember;
 }
 
 public final class io/github/kikin81/atproto/app/bsky/actor/GetProfileRequest {
@@ -410,7 +450,7 @@ public final class io/github/kikin81/atproto/app/bsky/actor/GetSuggestionsRespon
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class io/github/kikin81/atproto/app/bsky/actor/HiddenPostsPref {
+public final class io/github/kikin81/atproto/app/bsky/actor/HiddenPostsPref : io/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponsePreferencesUnion, io/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequestPreferencesUnion {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/actor/HiddenPostsPref$Companion;
 	public fun <init> (Ljava/util/List;)V
 	public final fun component1 ()Ljava/util/List;
@@ -437,7 +477,7 @@ public final class io/github/kikin81/atproto/app/bsky/actor/HiddenPostsPref$Comp
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class io/github/kikin81/atproto/app/bsky/actor/InterestsPref {
+public final class io/github/kikin81/atproto/app/bsky/actor/InterestsPref : io/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponsePreferencesUnion, io/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequestPreferencesUnion {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/actor/InterestsPref$Companion;
 	public fun <init> (Ljava/util/List;)V
 	public final fun component1 ()Ljava/util/List;
@@ -520,7 +560,7 @@ public final class io/github/kikin81/atproto/app/bsky/actor/LabelerPrefItem$Comp
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class io/github/kikin81/atproto/app/bsky/actor/LabelersPref {
+public final class io/github/kikin81/atproto/app/bsky/actor/LabelersPref : io/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponsePreferencesUnion, io/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequestPreferencesUnion {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/actor/LabelersPref$Companion;
 	public fun <init> (Ljava/util/List;)V
 	public final fun component1 ()Ljava/util/List;
@@ -547,7 +587,7 @@ public final class io/github/kikin81/atproto/app/bsky/actor/LabelersPref$Compani
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class io/github/kikin81/atproto/app/bsky/actor/LiveEventPreferences {
+public final class io/github/kikin81/atproto/app/bsky/actor/LiveEventPreferences : io/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponsePreferencesUnion, io/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequestPreferencesUnion {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/actor/LiveEventPreferences$Companion;
 	public fun <init> ()V
 	public fun <init> (Ljava/util/List;Ljava/lang/Boolean;)V
@@ -614,7 +654,7 @@ public final class io/github/kikin81/atproto/app/bsky/actor/MutedWord$Companion 
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class io/github/kikin81/atproto/app/bsky/actor/MutedWordsPref {
+public final class io/github/kikin81/atproto/app/bsky/actor/MutedWordsPref : io/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponsePreferencesUnion, io/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequestPreferencesUnion {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/actor/MutedWordsPref$Companion;
 	public fun <init> (Ljava/util/List;)V
 	public final fun component1 ()Ljava/util/List;
@@ -675,7 +715,7 @@ public final class io/github/kikin81/atproto/app/bsky/actor/Nux$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class io/github/kikin81/atproto/app/bsky/actor/PersonalDetailsPref {
+public final class io/github/kikin81/atproto/app/bsky/actor/PersonalDetailsPref : io/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponsePreferencesUnion, io/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequestPreferencesUnion {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/actor/PersonalDetailsPref$Companion;
 	public synthetic fun <init> (Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -703,7 +743,7 @@ public final class io/github/kikin81/atproto/app/bsky/actor/PersonalDetailsPref$
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class io/github/kikin81/atproto/app/bsky/actor/PostInteractionSettingsPref {
+public final class io/github/kikin81/atproto/app/bsky/actor/PostInteractionSettingsPref : io/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponsePreferencesUnion, io/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequestPreferencesUnion {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/actor/PostInteractionSettingsPref$Companion;
 	public fun <init> ()V
 	public fun <init> (Ljava/util/List;Ljava/util/List;)V
@@ -1199,12 +1239,12 @@ public final class io/github/kikin81/atproto/app/bsky/actor/ProfileViewDetailed$
 
 public final class io/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequest {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequest$Companion;
-	public fun <init> (Lkotlinx/serialization/json/JsonObject;)V
-	public final fun component1 ()Lkotlinx/serialization/json/JsonObject;
-	public final fun copy (Lkotlinx/serialization/json/JsonObject;)Lio/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequest;
-	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequest;Lkotlinx/serialization/json/JsonObject;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequest;
+	public fun <init> (Ljava/util/List;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun copy (Ljava/util/List;)Lio/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequest;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequest;Ljava/util/List;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequest;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getPreferences ()Lkotlinx/serialization/json/JsonObject;
+	public final fun getPreferences ()Ljava/util/List;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -1222,6 +1262,46 @@ public final synthetic class io/github/kikin81/atproto/app/bsky/actor/PutPrefere
 
 public final class io/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequest$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public abstract interface class io/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequestPreferencesUnion : io/github/kikin81/atproto/runtime/OpenUnionMember {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequestPreferencesUnion$Companion;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequestPreferencesUnion$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequestPreferencesUnion$Unknown : io/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequestPreferencesUnion, io/github/kikin81/atproto/runtime/UnknownOpenUnionMember {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequestPreferencesUnion$Unknown$Companion;
+	public fun <init> (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Lkotlinx/serialization/json/JsonObject;
+	public final fun copy (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)Lio/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequestPreferencesUnion$Unknown;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequestPreferencesUnion$Unknown;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequestPreferencesUnion$Unknown;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getRaw ()Lkotlinx/serialization/json/JsonObject;
+	public fun getType ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequestPreferencesUnion$Unknown$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequestPreferencesUnionSerializer : io/github/kikin81/atproto/runtime/OpenUnionSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequestPreferencesUnionSerializer;
+	public fun selectKnownDeserializer (Ljava/lang/String;)Lkotlinx/serialization/KSerializer;
+	public fun selectKnownSerializer (Lio/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequestPreferencesUnion;)Lkotlinx/serialization/KSerializer;
+	public synthetic fun selectKnownSerializer (Lio/github/kikin81/atproto/runtime/OpenUnionMember;)Lkotlinx/serialization/KSerializer;
+	public fun unknownSerializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequestPreferencesUnionUnknownSerializer : io/github/kikin81/atproto/runtime/UnknownMemberSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequestPreferencesUnionUnknownSerializer;
+	public fun construct (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)Lio/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequestPreferencesUnion$Unknown;
+	public synthetic fun construct (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)Lio/github/kikin81/atproto/runtime/UnknownOpenUnionMember;
 }
 
 public final class io/github/kikin81/atproto/app/bsky/actor/SavedFeed {
@@ -1257,7 +1337,7 @@ public final class io/github/kikin81/atproto/app/bsky/actor/SavedFeed$Companion 
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class io/github/kikin81/atproto/app/bsky/actor/SavedFeedsPref {
+public final class io/github/kikin81/atproto/app/bsky/actor/SavedFeedsPref : io/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponsePreferencesUnion, io/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequestPreferencesUnion {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/actor/SavedFeedsPref$Companion;
 	public fun <init> (Ljava/util/List;Ljava/util/List;Ljava/lang/Long;)V
 	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;Ljava/lang/Long;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -1289,7 +1369,7 @@ public final class io/github/kikin81/atproto/app/bsky/actor/SavedFeedsPref$Compa
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class io/github/kikin81/atproto/app/bsky/actor/SavedFeedsPrefV2 {
+public final class io/github/kikin81/atproto/app/bsky/actor/SavedFeedsPrefV2 : io/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponsePreferencesUnion, io/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequestPreferencesUnion {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/actor/SavedFeedsPrefV2$Companion;
 	public fun <init> (Ljava/util/List;)V
 	public final fun component1 ()Ljava/util/List;
@@ -1599,7 +1679,7 @@ public final class io/github/kikin81/atproto/app/bsky/actor/StatusViewEmbedUnion
 	public synthetic fun construct (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)Lio/github/kikin81/atproto/runtime/UnknownOpenUnionMember;
 }
 
-public final class io/github/kikin81/atproto/app/bsky/actor/ThreadViewPref {
+public final class io/github/kikin81/atproto/app/bsky/actor/ThreadViewPref : io/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponsePreferencesUnion, io/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequestPreferencesUnion {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/actor/ThreadViewPref$Companion;
 	public fun <init> ()V
 	public fun <init> (Ljava/lang/String;)V
@@ -1628,7 +1708,7 @@ public final class io/github/kikin81/atproto/app/bsky/actor/ThreadViewPref$Compa
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class io/github/kikin81/atproto/app/bsky/actor/VerificationPrefs {
+public final class io/github/kikin81/atproto/app/bsky/actor/VerificationPrefs : io/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponsePreferencesUnion, io/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequestPreferencesUnion {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/actor/VerificationPrefs$Companion;
 	public fun <init> ()V
 	public fun <init> (Ljava/lang/Boolean;)V
