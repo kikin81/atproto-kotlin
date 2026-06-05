@@ -1,5 +1,6 @@
 package io.github.kikin81.atproto.generator.emit
 
+import io.github.kikin81.atproto.generator.ir.ArrayDefTopLevel
 import io.github.kikin81.atproto.generator.ir.ArrayType
 import io.github.kikin81.atproto.generator.ir.Definition
 import io.github.kikin81.atproto.generator.ir.FieldType
@@ -10,6 +11,7 @@ import io.github.kikin81.atproto.generator.ir.ParamsDefTopLevel
 import io.github.kikin81.atproto.generator.ir.ProcedureDef
 import io.github.kikin81.atproto.generator.ir.QueryDef
 import io.github.kikin81.atproto.generator.ir.RecordDef
+import io.github.kikin81.atproto.generator.ir.RefType
 import io.github.kikin81.atproto.generator.ir.SubscriptionDef
 import io.github.kikin81.atproto.generator.ir.UnionType
 import io.github.kikin81.atproto.generator.naming.EmittedClass
@@ -163,7 +165,7 @@ public class EmissionPlan(
 
             for (key in symbols.keys) {
                 val def = symbols.get(key) ?: continue
-                collectFromDef(def, key, classMap, unionSites, membership)
+                collectFromDef(def, key, classMap, unionSites, membership, symbols)
             }
 
             // Sort union sites deterministically by (owner, fieldName).
@@ -182,6 +184,7 @@ public class EmissionPlan(
             classMap: Map<DefKey, List<EmittedClass>>,
             sites: MutableList<UnionSite>,
             membership: MutableMap<DefKey, MutableSet<FqName>>,
+            symbols: SymbolTable,
         ) {
             val origin = key.nsid
             fun owner(role: NameRole): FqName? = classMap[key]?.firstOrNull { it.role == role }?.fqName
@@ -189,13 +192,13 @@ public class EmissionPlan(
 
             when (def) {
                 is ObjectDef -> primary?.let {
-                    collectFromProperties(def.properties, origin, it, sites, membership, classMap)
+                    collectFromProperties(def.properties, origin, it, sites, membership, classMap, symbols)
                 }
                 is ParamsDefTopLevel -> primary?.let {
-                    collectFromProperties(def.properties, origin, it, sites, membership, classMap)
+                    collectFromProperties(def.properties, origin, it, sites, membership, classMap, symbols)
                 }
                 is RecordDef -> primary?.let {
-                    collectFromProperties(def.record.properties, origin, it, sites, membership, classMap)
+                    collectFromProperties(def.record.properties, origin, it, sites, membership, classMap, symbols)
                 }
                 is QueryDef -> {
                     // Parameters go into the Request class; output goes into Response.
@@ -203,12 +206,12 @@ public class EmissionPlan(
                     val resp = owner(NameRole.Response)
                     if (req != null) {
                         def.parameters?.let {
-                            collectFromProperties(it.properties, origin, req, sites, membership, classMap)
+                            collectFromProperties(it.properties, origin, req, sites, membership, classMap, symbols)
                         }
                     }
                     if (resp != null) {
                         def.output?.let { body ->
-                            collectFromHttpBody(body, origin, resp, sites, membership, classMap)
+                            collectFromHttpBody(body, origin, resp, sites, membership, classMap, symbols)
                         }
                     }
                 }
@@ -217,15 +220,15 @@ public class EmissionPlan(
                     val resp = owner(NameRole.Response)
                     if (req != null) {
                         def.parameters?.let {
-                            collectFromProperties(it.properties, origin, req, sites, membership, classMap)
+                            collectFromProperties(it.properties, origin, req, sites, membership, classMap, symbols)
                         }
                         def.input?.let { body ->
-                            collectFromHttpBody(body, origin, req, sites, membership, classMap)
+                            collectFromHttpBody(body, origin, req, sites, membership, classMap, symbols)
                         }
                     }
                     if (resp != null) {
                         def.output?.let { body ->
-                            collectFromHttpBody(body, origin, resp, sites, membership, classMap)
+                            collectFromHttpBody(body, origin, resp, sites, membership, classMap, symbols)
                         }
                     }
                 }
@@ -241,10 +244,11 @@ public class EmissionPlan(
             sites: MutableList<UnionSite>,
             membership: MutableMap<DefKey, MutableSet<FqName>>,
             classMap: Map<DefKey, List<EmittedClass>>,
+            symbols: SymbolTable,
         ) {
             val schema = body.schema ?: return
             if (schema is ObjectType) {
-                collectFromProperties(schema.properties, origin, ownerFqName, sites, membership, classMap)
+                collectFromProperties(schema.properties, origin, ownerFqName, sites, membership, classMap, symbols)
             }
         }
 
@@ -255,10 +259,11 @@ public class EmissionPlan(
             sites: MutableList<UnionSite>,
             membership: MutableMap<DefKey, MutableSet<FqName>>,
             classMap: Map<DefKey, List<EmittedClass>>,
+            symbols: SymbolTable,
         ) {
             val sortedProps = props.toSortedMap()
             for ((fieldName, ft) in sortedProps) {
-                collectFromFieldType(ft, fieldName, origin, ownerFqName, sites, membership, classMap)
+                collectFromFieldType(ft, fieldName, origin, ownerFqName, sites, membership, classMap, symbols)
             }
         }
 
@@ -270,6 +275,7 @@ public class EmissionPlan(
             sites: MutableList<UnionSite>,
             membership: MutableMap<DefKey, MutableSet<FqName>>,
             classMap: Map<DefKey, List<EmittedClass>>,
+            symbols: SymbolTable,
         ) {
             when (ft) {
                 is UnionType -> {
@@ -305,7 +311,32 @@ public class EmissionPlan(
                     sites,
                     membership,
                     classMap,
+                    symbols,
                 )
+                is RefType -> {
+                    // A field whose `type: ref` points at a top-level
+                    // `type: array` def (e.g. app.bsky.actor.defs#preferences) is
+                    // a transparent typedef: dereference it and recurse on the
+                    // array's item type so any nested union still synthesizes a
+                    // UnionSite owned by (ownerFqName, fieldName). The array def's
+                    // item refs are local to its own file, so recurse under the
+                    // target's NSID. See issue #132. (TypeResolver mirrors this to
+                    // emit `List<...Union>` instead of falling back to JsonObject.)
+                    val target = DefKey.resolve(ft.ref, origin)
+                    val targetDef = symbols.get(target)
+                    if (targetDef is ArrayDefTopLevel) {
+                        collectFromFieldType(
+                            targetDef.items,
+                            fieldName,
+                            target.nsid,
+                            ownerFqName,
+                            sites,
+                            membership,
+                            classMap,
+                            symbols,
+                        )
+                    }
+                }
                 else -> Unit
             }
         }

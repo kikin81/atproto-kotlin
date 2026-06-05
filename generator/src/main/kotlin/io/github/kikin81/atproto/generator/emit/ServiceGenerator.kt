@@ -494,7 +494,7 @@ public class ServiceGenerator(
         val requestCn = ClassName(requestClass.fqName.pkg, requestClass.fqName.simpleName)
         val responseCn = ClassName(responseClass.fqName.pkg, responseClass.fqName.simpleName)
 
-        val typeResolver = TypeResolver(plan)
+        val typeResolver = TypeResolver(plan, symbols)
         val itemType = typeResolver.resolve(itemsArrayType.items, defKey.nsid, responseClass.fqName, itemsFieldName)
 
         val methodName = defKey.nsid.raw.substringAfterLast('.')
