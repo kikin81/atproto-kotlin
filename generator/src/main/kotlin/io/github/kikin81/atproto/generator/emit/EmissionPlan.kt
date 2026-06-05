@@ -73,7 +73,13 @@ public sealed interface KtorContentTypeRef {
 
 /**
  * One synthesized sealed-interface union arising from a `union` field on a
- * named definition. Owner is the class that contains the field.
+ * named definition. [owner] is the class that contains the field.
+ *
+ * [aliasOwners] are additional class FqNames that share this same field and must
+ * resolve to the same union. The motivating case is a contextually-split def,
+ * where the field appears on both the read-shape Primary ([owner]) and the
+ * mutation-shape `Input` class (an alias) — both reference one synthesized union
+ * rather than duplicating it. See issue #133.
  */
 public data class UnionSite(
     public val owner: FqName,
@@ -83,6 +89,7 @@ public data class UnionSite(
     public val description: String? = null,
     public val deprecated: Boolean = false,
     public val deprecatedMessage: String? = null,
+    public val aliasOwners: List<FqName> = emptyList(),
 )
 
 /**
@@ -189,13 +196,18 @@ public class EmissionPlan(
             val origin = key.nsid
             fun owner(role: NameRole): FqName? = classMap[key]?.firstOrNull { it.role == role }?.fqName
             val primary = owner(NameRole.Primary) ?: classMap[key]?.firstOrNull()?.fqName
+            // A contextually-split def also emits an `Input` (mutation-shape)
+            // class that carries the same union field. Register it as an alias
+            // owner so the field resolves to the same synthesized union instead
+            // of collapsing to JsonObject on the Input. See issue #133.
+            val splitAliases = listOfNotNull(owner(NameRole.Input))
 
             when (def) {
                 is ObjectDef -> primary?.let {
-                    collectFromProperties(def.properties, origin, it, sites, membership, classMap, symbols)
+                    collectFromProperties(def.properties, origin, it, sites, membership, classMap, symbols, splitAliases)
                 }
                 is ParamsDefTopLevel -> primary?.let {
-                    collectFromProperties(def.properties, origin, it, sites, membership, classMap, symbols)
+                    collectFromProperties(def.properties, origin, it, sites, membership, classMap, symbols, splitAliases)
                 }
                 is RecordDef -> primary?.let {
                     collectFromProperties(def.record.properties, origin, it, sites, membership, classMap, symbols)
@@ -260,10 +272,11 @@ public class EmissionPlan(
             membership: MutableMap<DefKey, MutableSet<FqName>>,
             classMap: Map<DefKey, List<EmittedClass>>,
             symbols: SymbolTable,
+            aliasOwners: List<FqName> = emptyList(),
         ) {
             val sortedProps = props.toSortedMap()
             for ((fieldName, ft) in sortedProps) {
-                collectFromFieldType(ft, fieldName, origin, ownerFqName, sites, membership, classMap, symbols)
+                collectFromFieldType(ft, fieldName, origin, ownerFqName, sites, membership, classMap, symbols, aliasOwners)
             }
         }
 
@@ -276,6 +289,7 @@ public class EmissionPlan(
             membership: MutableMap<DefKey, MutableSet<FqName>>,
             classMap: Map<DefKey, List<EmittedClass>>,
             symbols: SymbolTable,
+            aliasOwners: List<FqName> = emptyList(),
         ) {
             when (ft) {
                 is UnionType -> {
@@ -296,6 +310,7 @@ public class EmissionPlan(
                         description = ft.description,
                         deprecated = ft.deprecated,
                         deprecatedMessage = ft.deprecatedMessage,
+                        aliasOwners = aliasOwners,
                     )
                     for (target in targets) {
                         if (classMap.containsKey(target)) {
@@ -312,6 +327,7 @@ public class EmissionPlan(
                     membership,
                     classMap,
                     symbols,
+                    aliasOwners,
                 )
                 is RefType -> {
                     // A field whose `type: ref` points at a top-level
@@ -334,6 +350,7 @@ public class EmissionPlan(
                             membership,
                             classMap,
                             symbols,
+                            aliasOwners,
                         )
                     }
                 }
