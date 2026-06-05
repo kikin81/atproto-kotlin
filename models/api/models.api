@@ -9773,6 +9773,173 @@ public final class io/github/kikin81/atproto/app/bsky/richtext/FacetTag$Companio
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class io/github/kikin81/atproto/app/bsky/video/GetJobStatusRequest {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/video/GetJobStatusRequest$Companion;
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/video/GetJobStatusRequest;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/video/GetJobStatusRequest;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/video/GetJobStatusRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getJobId ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/video/GetJobStatusRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/video/GetJobStatusRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/video/GetJobStatusRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/video/GetJobStatusRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/video/GetJobStatusRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/video/GetJobStatusResponse {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/video/GetJobStatusResponse$Companion;
+	public fun <init> (Lio/github/kikin81/atproto/app/bsky/video/JobStatus;)V
+	public final fun component1 ()Lio/github/kikin81/atproto/app/bsky/video/JobStatus;
+	public final fun copy (Lio/github/kikin81/atproto/app/bsky/video/JobStatus;)Lio/github/kikin81/atproto/app/bsky/video/GetJobStatusResponse;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/video/GetJobStatusResponse;Lio/github/kikin81/atproto/app/bsky/video/JobStatus;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/video/GetJobStatusResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getJobStatus ()Lio/github/kikin81/atproto/app/bsky/video/JobStatus;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/video/GetJobStatusResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/video/GetJobStatusResponse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/video/GetJobStatusResponse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/video/GetJobStatusResponse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/video/GetJobStatusResponse$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/video/GetUploadLimitsResponse {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/video/GetUploadLimitsResponse$Companion;
+	public fun <init> (ZLjava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Long;)V
+	public synthetic fun <init> (ZLjava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Long;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Z
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/Long;
+	public final fun component5 ()Ljava/lang/Long;
+	public final fun copy (ZLjava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Long;)Lio/github/kikin81/atproto/app/bsky/video/GetUploadLimitsResponse;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/video/GetUploadLimitsResponse;ZLjava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Long;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/video/GetUploadLimitsResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCanUpload ()Z
+	public final fun getError ()Ljava/lang/String;
+	public final fun getMessage ()Ljava/lang/String;
+	public final fun getRemainingDailyBytes ()Ljava/lang/Long;
+	public final fun getRemainingDailyVideos ()Ljava/lang/Long;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/video/GetUploadLimitsResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/video/GetUploadLimitsResponse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/video/GetUploadLimitsResponse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/video/GetUploadLimitsResponse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/video/GetUploadLimitsResponse$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/video/JobStatus {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/video/JobStatus$Companion;
+	public synthetic fun <init> (Lio/github/kikin81/atproto/runtime/Blob;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Lio/github/kikin81/atproto/runtime/Blob;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lio/github/kikin81/atproto/runtime/Blob;
+	public final fun component2-UyB9Nic ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun component6 ()Ljava/lang/Long;
+	public final fun component7 ()Ljava/lang/String;
+	public final fun copy-kJGyLG4 (Lio/github/kikin81/atproto/runtime/Blob;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/video/JobStatus;
+	public static synthetic fun copy-kJGyLG4$default (Lio/github/kikin81/atproto/app/bsky/video/JobStatus;Lio/github/kikin81/atproto/runtime/Blob;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/video/JobStatus;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBlob ()Lio/github/kikin81/atproto/runtime/Blob;
+	public final fun getDid-UyB9Nic ()Ljava/lang/String;
+	public final fun getError ()Ljava/lang/String;
+	public final fun getJobId ()Ljava/lang/String;
+	public final fun getMessage ()Ljava/lang/String;
+	public final fun getProgress ()Ljava/lang/Long;
+	public final fun getState ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/video/JobStatus$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/video/JobStatus$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/video/JobStatus;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/video/JobStatus;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/video/JobStatus$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/video/UploadVideoResponse {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/video/UploadVideoResponse$Companion;
+	public fun <init> (Lio/github/kikin81/atproto/app/bsky/video/JobStatus;)V
+	public final fun component1 ()Lio/github/kikin81/atproto/app/bsky/video/JobStatus;
+	public final fun copy (Lio/github/kikin81/atproto/app/bsky/video/JobStatus;)Lio/github/kikin81/atproto/app/bsky/video/UploadVideoResponse;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/video/UploadVideoResponse;Lio/github/kikin81/atproto/app/bsky/video/JobStatus;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/video/UploadVideoResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getJobStatus ()Lio/github/kikin81/atproto/app/bsky/video/JobStatus;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/video/UploadVideoResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/video/UploadVideoResponse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/video/UploadVideoResponse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/video/UploadVideoResponse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/video/UploadVideoResponse$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/video/VideoService {
+	public fun <init> (Lio/github/kikin81/atproto/runtime/XrpcClient;)V
+	public final fun getJobStatus (Lio/github/kikin81/atproto/app/bsky/video/GetJobStatusRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getJobStatus$default (Lio/github/kikin81/atproto/app/bsky/video/VideoService;Lio/github/kikin81/atproto/app/bsky/video/GetJobStatusRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getUploadLimits (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getUploadLimits$default (Lio/github/kikin81/atproto/app/bsky/video/VideoService;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun uploadVideo ([BLio/ktor/http/ContentType;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun uploadVideo$default (Lio/github/kikin81/atproto/app/bsky/video/VideoService;[BLio/ktor/http/ContentType;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+
 public final class io/github/kikin81/atproto/chat/bsky/actor/Declaration {
 	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/actor/Declaration$Companion;
 	public fun <init> (Lio/github/kikin81/atproto/runtime/AtField;Ljava/lang/String;)V

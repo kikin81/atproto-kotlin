@@ -86,6 +86,10 @@
     "app.bsky.notification.registerPush",
     "app.bsky.notification.unregisterPush",
     "app.bsky.notification.updateSeen",
+    "app.bsky.video.defs",
+    "app.bsky.video.getJobStatus",
+    "app.bsky.video.getUploadLimits",
+    "app.bsky.video.uploadVideo",
     "chat.bsky.actor.declaration",
     "chat.bsky.convo.acceptConvo",
     "chat.bsky.convo.addReaction",
@@ -516,6 +520,22 @@
     "app.bsky.richtext.facet": {
       "uri": "at://did:plc:4v4y5r3lwsbtmsxhile2ljac/com.atproto.lexicon.schema/app.bsky.richtext.facet",
       "cid": "bafyreidg56eo7zynf6ihz4xb627vwoqf5idnevkmwp7sxc4tijg6xngbu4"
+    },
+    "app.bsky.video.defs": {
+      "uri": "at://did:plc:4v4y5r3lwsbtmsxhile2ljac/com.atproto.lexicon.schema/app.bsky.video.defs",
+      "cid": "bafyreifgpicywqtgxj3afrw3fsadrr3qeykesmu52we3arwp5sps2blgpm"
+    },
+    "app.bsky.video.getJobStatus": {
+      "uri": "at://did:plc:4v4y5r3lwsbtmsxhile2ljac/com.atproto.lexicon.schema/app.bsky.video.getJobStatus",
+      "cid": "bafyreia5xkrbastzzbpodjm242orufiswrz5aasjqrqtuvb6lmmfwixmqy"
+    },
+    "app.bsky.video.getUploadLimits": {
+      "uri": "at://did:plc:4v4y5r3lwsbtmsxhile2ljac/com.atproto.lexicon.schema/app.bsky.video.getUploadLimits",
+      "cid": "bafyreidlw3fozroigsbrz73jtqdoc7dkdpxi4oie3df7nb3vnycy2kkz2y"
+    },
+    "app.bsky.video.uploadVideo": {
+      "uri": "at://did:plc:4v4y5r3lwsbtmsxhile2ljac/com.atproto.lexicon.schema/app.bsky.video.uploadVideo",
+      "cid": "bafyreibvsdivxr54ooykqhsy3i6n6f7223hbfnnnzs4h6xrzr5kvvztuvy"
     },
     "chat.bsky.actor.declaration": {
       "uri": "at://did:plc:4v4y5r3lwsbtmsxhile2ljac/com.atproto.lexicon.schema/chat.bsky.actor.declaration",
