@@ -217,6 +217,69 @@ class CodeGeneratorTest {
         }
     """.trimIndent()
 
+    // Reproduces issue #132: a property whose `type: ref` points at a top-level
+    // def that is itself `type: array` (of a union). The defs file holds the
+    // array-of-union typedef plus its member object defs; the query refs it.
+    private val refToArrayOfUnionDefsJson = """
+        {
+          "lexicon": 1,
+          "id": "app.bsky.actor.defs",
+          "defs": {
+            "preferences": {
+              "type": "array",
+              "items": {
+                "type": "union",
+                "refs": [
+                  "app.bsky.actor.defs#adultContentPref",
+                  "app.bsky.actor.defs#contentLabelPref"
+                ]
+              }
+            },
+            "adultContentPref": {
+              "type": "object",
+              "required": ["enabled"],
+              "properties": {
+                "enabled": { "type": "boolean" }
+              }
+            },
+            "contentLabelPref": {
+              "type": "object",
+              "required": ["label", "visibility"],
+              "properties": {
+                "label": { "type": "string" },
+                "visibility": { "type": "string" }
+              }
+            }
+          }
+        }
+    """.trimIndent()
+
+    private val getPreferencesQueryJson = """
+        {
+          "lexicon": 1,
+          "id": "app.bsky.actor.getPreferences",
+          "defs": {
+            "main": {
+              "type": "query",
+              "parameters": { "type": "params", "properties": {} },
+              "output": {
+                "encoding": "application/json",
+                "schema": {
+                  "type": "object",
+                  "required": ["preferences"],
+                  "properties": {
+                    "preferences": {
+                      "type": "ref",
+                      "ref": "app.bsky.actor.defs#preferences"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+    """.trimIndent()
+
     private val subscriptionJson = """
         {
           "lexicon": 1,
@@ -344,6 +407,41 @@ class CodeGeneratorTest {
         assertNotNull(images)
         val imagesStr = images.toString()
         assertTrue("PostEmbedUnion" in imagesStr, "PostImages must extend PostEmbedUnion:\n$imagesStr")
+    }
+
+    @Test
+    fun `ref to a top-level array-of-union def emits List of a synthesized union (issue 132)`() {
+        val files = generate(refToArrayOfUnionDefsJson, getPreferencesQueryJson)
+        val text = renderAll(files)
+
+        // The response property `preferences` is `type: ref` -> a top-level
+        // `type: array` def of a union. It must dereference to `List<...Union>`,
+        // NOT collapse to JsonObject.
+        val resp = files.firstOrNull { it.name == "GetPreferencesResponse" }
+        assertNotNull(resp, "missing GetPreferencesResponse\n$text")
+        val respStr = resp.toString()
+        assertTrue(
+            "preferences: List<" in respStr,
+            "preferences must be a List of the synthesized union, not JsonObject:\n$respStr",
+        )
+        assertTrue("JsonObject" !in respStr, "preferences must not fall back to JsonObject:\n$respStr")
+
+        // A union sealed interface is synthesized for the field, owned by the
+        // Response class: `GetPreferencesResponse` + `Preferences` + `Union`.
+        val union = files.firstOrNull { it.name == "GetPreferencesResponsePreferencesUnion" }
+        assertNotNull(union, "missing synthesized union file\n$text")
+        val unionStr = union.toString()
+        assertTrue("interface GetPreferencesResponsePreferencesUnion" in unionStr, unionStr)
+        assertTrue("app.bsky.actor.defs#adultContentPref" in unionStr, unionStr)
+        assertTrue("app.bsky.actor.defs#contentLabelPref" in unionStr, unionStr)
+
+        // The member pref classes extend the synthesized union.
+        val adult = files.firstOrNull { it.name == "AdultContentPref" }
+        assertNotNull(adult, "missing AdultContentPref\n$text")
+        assertTrue(
+            "GetPreferencesResponsePreferencesUnion" in adult.toString(),
+            "AdultContentPref must extend the synthesized union:\n$adult",
+        )
     }
 
     @Test

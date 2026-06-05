@@ -9,6 +9,7 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.STRING
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.UNIT
+import io.github.kikin81.atproto.generator.ir.ArrayDefTopLevel
 import io.github.kikin81.atproto.generator.ir.ArrayType
 import io.github.kikin81.atproto.generator.ir.BlobType
 import io.github.kikin81.atproto.generator.ir.BooleanType
@@ -26,6 +27,7 @@ import io.github.kikin81.atproto.generator.ir.UnionType
 import io.github.kikin81.atproto.generator.ir.UnknownType
 import io.github.kikin81.atproto.generator.resolved.DefKey
 import io.github.kikin81.atproto.generator.resolved.Nsid
+import io.github.kikin81.atproto.generator.resolved.SymbolTable
 
 internal val RUNTIME_PKG = "io.github.kikin81.atproto.runtime"
 internal val DID = ClassName(RUNTIME_PKG, "Did")
@@ -53,6 +55,7 @@ internal val JSON_OBJECT = ClassName("kotlinx.serialization.json", "JsonObject")
  */
 public class TypeResolver(
     private val plan: EmissionPlan,
+    private val symbols: SymbolTable,
 ) {
     /**
      * Resolve a field type at [origin]. [ownerFqName] and [fieldName] are
@@ -85,8 +88,18 @@ public class TypeResolver(
             if (fq != null) {
                 ClassName(fq.pkg, fq.simpleName)
             } else {
-                System.err.println("[warn] ref '${ft.ref}' (target $target) has no emitted class; using JsonObject")
-                JSON_OBJECT
+                // A top-level `type: array` def is a transparent typedef and
+                // emits no class, so it has no primary FqName. Dereference it and
+                // resolve its item type under the target's NSID — yielding
+                // `List<...>` (e.g. `List<...Union>` for an array of a union)
+                // instead of silently collapsing to JsonObject. See issue #132.
+                val targetDef = symbols.get(target)
+                if (targetDef is ArrayDefTopLevel) {
+                    LIST.parameterizedBy(resolve(targetDef.items, target.nsid, ownerFqName, fieldName))
+                } else {
+                    System.err.println("[warn] ref '${ft.ref}' (target $target) has no emitted class; using JsonObject")
+                    JSON_OBJECT
+                }
             }
         }
         is UnionType -> {

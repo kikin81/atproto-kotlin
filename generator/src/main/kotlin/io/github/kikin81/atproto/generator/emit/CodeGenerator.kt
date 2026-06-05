@@ -60,7 +60,7 @@ public class CodeGenerator(
         // consumers can pass a CollisionOverrides to repair known
         // collisions with a per-pair rename map.
         VerificationPass().verify(buildVerificationInput(plan, services), overrides)
-        val typeResolver = TypeResolver(plan)
+        val typeResolver = TypeResolver(plan, symbols)
         val models = ModelGenerator(plan, typeResolver, contexts)
         val unions = UnionGenerator(plan)
         val xrpc = XrpcGenerator(plan, models)
