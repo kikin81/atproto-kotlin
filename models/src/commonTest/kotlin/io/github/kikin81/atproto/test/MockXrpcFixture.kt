@@ -15,7 +15,7 @@ import io.ktor.utils.io.ByteReadChannel
  * Lightweight test fixture for generated XRPC service tests.
  *
  * Sets up a Ktor [MockEngine]-backed [XrpcClient] that captures the most
- * recent outgoing request (URL, method, content-type, body) and serves
+ * recent outgoing request (URL, method, headers, content-type, body) and serves
  * the most recently configured canned response. Designed for `@BeforeTest`
  * construction; per-test response is configured via [respondWith] before
  * invoking the service under test.
@@ -36,6 +36,8 @@ class MockXrpcFixture(baseUrl: String = "https://pds.test") {
         private set
     var capturedBody: String? = null
         private set
+    var capturedHeaders: Map<String, String> = emptyMap()
+        private set
 
     val client: XrpcClient = XrpcClient(
         baseUrl = baseUrl,
@@ -43,6 +45,8 @@ class MockXrpcFixture(baseUrl: String = "https://pds.test") {
             MockEngine { request ->
                 capturedUrl = request.url.toString()
                 capturedMethod = request.method
+                capturedHeaders = request.headers.entries()
+                    .associate { it.key to it.value.first() }
                 val body = request.body
                 if (body is OutgoingContent.ByteArrayContent) {
                     capturedBody = body.bytes().decodeToString()

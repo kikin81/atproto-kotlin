@@ -1,0 +1,36 @@
+{
+  "lexicon": 1,
+  "id": "chat.bsky.group.createGroup",
+  "description": "Creates a group convo. Exercises a maxLength-bounded array of DIDs in a procedure input plus the atproto-proxy emission for chat.bsky.* namespaces.",
+  "defs": {
+    "main": {
+      "type": "procedure",
+      "description": "Create a group convo with up to 49 invited members.",
+      "input": {
+        "encoding": "application/json",
+        "schema": {
+          "type": "object",
+          "required": ["members", "name"],
+          "properties": {
+            "members": {
+              "type": "array",
+              "maxLength": 49,
+              "items": { "type": "string", "format": "did" }
+            },
+            "name": { "type": "string" }
+          }
+        }
+      },
+      "output": {
+        "encoding": "application/json",
+        "schema": {
+          "type": "object",
+          "required": ["convoId"],
+          "properties": {
+            "convoId": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}
