@@ -45,8 +45,12 @@ class MockXrpcFixture(baseUrl: String = "https://pds.test") {
             MockEngine { request ->
                 capturedUrl = request.url.toString()
                 capturedMethod = request.method
+                // Normalize names to lower-case (HTTP header names are
+                // case-insensitive) and join multi-valued headers rather than
+                // dropping all but the first, so assertions are stable and
+                // never throw on an empty value list.
                 capturedHeaders = request.headers.entries()
-                    .associate { it.key to it.value.first() }
+                    .associate { (name, values) -> name.lowercase() to values.joinToString(",") }
                 val body = request.body
                 if (body is OutgoingContent.ByteArrayContent) {
                     capturedBody = body.bytes().decodeToString()
