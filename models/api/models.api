@@ -13403,6 +13403,510 @@ public final class io/github/kikin81/atproto/chat/bsky/convo/UpdateReadResponse$
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class io/github/kikin81/atproto/chat/bsky/group/AddMembersRequest {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/group/AddMembersRequest$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/util/List;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/util/List;
+	public final fun copy (Ljava/lang/String;Ljava/util/List;)Lio/github/kikin81/atproto/chat/bsky/group/AddMembersRequest;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/group/AddMembersRequest;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/group/AddMembersRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getConvoId ()Ljava/lang/String;
+	public final fun getMembers ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/group/AddMembersRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/group/AddMembersRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/group/AddMembersRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/group/AddMembersRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/AddMembersRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/AddMembersResponse {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/group/AddMembersResponse$Companion;
+	public fun <init> (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;)V
+	public final fun component1 ()Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;
+	public final fun copy (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;)Lio/github/kikin81/atproto/chat/bsky/group/AddMembersResponse;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/group/AddMembersResponse;Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/group/AddMembersResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getConvo ()Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/group/AddMembersResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/group/AddMembersResponse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/group/AddMembersResponse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/group/AddMembersResponse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/AddMembersResponse$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/ApproveJoinRequestRequest {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/group/ApproveJoinRequestRequest$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2-UyB9Nic ()Ljava/lang/String;
+	public final fun copy-aB4ouW8 (Ljava/lang/String;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/group/ApproveJoinRequestRequest;
+	public static synthetic fun copy-aB4ouW8$default (Lio/github/kikin81/atproto/chat/bsky/group/ApproveJoinRequestRequest;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/group/ApproveJoinRequestRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getConvoId ()Ljava/lang/String;
+	public final fun getMember-UyB9Nic ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/group/ApproveJoinRequestRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/group/ApproveJoinRequestRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/group/ApproveJoinRequestRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/group/ApproveJoinRequestRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/ApproveJoinRequestRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/ApproveJoinRequestResponse {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/group/ApproveJoinRequestResponse$Companion;
+	public fun <init> (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;)V
+	public final fun component1 ()Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;
+	public final fun copy (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;)Lio/github/kikin81/atproto/chat/bsky/group/ApproveJoinRequestResponse;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/group/ApproveJoinRequestResponse;Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/group/ApproveJoinRequestResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getConvo ()Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/group/ApproveJoinRequestResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/group/ApproveJoinRequestResponse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/group/ApproveJoinRequestResponse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/group/ApproveJoinRequestResponse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/ApproveJoinRequestResponse$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/CreateGroupRequest {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/group/CreateGroupRequest$Companion;
+	public fun <init> (Ljava/util/List;Ljava/lang/String;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Ljava/util/List;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/group/CreateGroupRequest;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/group/CreateGroupRequest;Ljava/util/List;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/group/CreateGroupRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getMembers ()Ljava/util/List;
+	public final fun getName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/group/CreateGroupRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/group/CreateGroupRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/group/CreateGroupRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/group/CreateGroupRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/CreateGroupRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/CreateGroupResponse {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/group/CreateGroupResponse$Companion;
+	public fun <init> (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;)V
+	public final fun component1 ()Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;
+	public final fun copy (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;)Lio/github/kikin81/atproto/chat/bsky/group/CreateGroupResponse;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/group/CreateGroupResponse;Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/group/CreateGroupResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getConvo ()Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/group/CreateGroupResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/group/CreateGroupResponse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/group/CreateGroupResponse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/group/CreateGroupResponse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/CreateGroupResponse$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/CreateJoinLinkRequest {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/group/CreateJoinLinkRequest$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Lio/github/kikin81/atproto/runtime/AtField;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lio/github/kikin81/atproto/runtime/AtField;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Lio/github/kikin81/atproto/runtime/AtField;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Lio/github/kikin81/atproto/runtime/AtField;)Lio/github/kikin81/atproto/chat/bsky/group/CreateJoinLinkRequest;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/group/CreateJoinLinkRequest;Ljava/lang/String;Ljava/lang/String;Lio/github/kikin81/atproto/runtime/AtField;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/group/CreateJoinLinkRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getConvoId ()Ljava/lang/String;
+	public final fun getJoinRule ()Ljava/lang/String;
+	public final fun getRequireApproval ()Lio/github/kikin81/atproto/runtime/AtField;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/group/CreateJoinLinkRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/group/CreateJoinLinkRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/group/CreateJoinLinkRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/group/CreateJoinLinkRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/CreateJoinLinkRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/CreateJoinLinkResponse {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/group/CreateJoinLinkResponse$Companion;
+	public fun <init> (Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkView;)V
+	public final fun component1 ()Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkView;
+	public final fun copy (Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkView;)Lio/github/kikin81/atproto/chat/bsky/group/CreateJoinLinkResponse;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/group/CreateJoinLinkResponse;Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkView;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/group/CreateJoinLinkResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getJoinLink ()Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkView;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/group/CreateJoinLinkResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/group/CreateJoinLinkResponse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/group/CreateJoinLinkResponse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/group/CreateJoinLinkResponse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/CreateJoinLinkResponse$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/DisableJoinLinkRequest {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/group/DisableJoinLinkRequest$Companion;
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/group/DisableJoinLinkRequest;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/group/DisableJoinLinkRequest;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/group/DisableJoinLinkRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getConvoId ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/group/DisableJoinLinkRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/group/DisableJoinLinkRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/group/DisableJoinLinkRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/group/DisableJoinLinkRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/DisableJoinLinkRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/DisableJoinLinkResponse {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/group/DisableJoinLinkResponse$Companion;
+	public fun <init> (Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkView;)V
+	public final fun component1 ()Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkView;
+	public final fun copy (Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkView;)Lio/github/kikin81/atproto/chat/bsky/group/DisableJoinLinkResponse;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/group/DisableJoinLinkResponse;Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkView;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/group/DisableJoinLinkResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getJoinLink ()Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkView;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/group/DisableJoinLinkResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/group/DisableJoinLinkResponse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/group/DisableJoinLinkResponse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/group/DisableJoinLinkResponse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/DisableJoinLinkResponse$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/EditGroupRequest {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/group/EditGroupRequest$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/group/EditGroupRequest;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/group/EditGroupRequest;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/group/EditGroupRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getConvoId ()Ljava/lang/String;
+	public final fun getName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/group/EditGroupRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/group/EditGroupRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/group/EditGroupRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/group/EditGroupRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/EditGroupRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/EditGroupResponse {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/group/EditGroupResponse$Companion;
+	public fun <init> (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;)V
+	public final fun component1 ()Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;
+	public final fun copy (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;)Lio/github/kikin81/atproto/chat/bsky/group/EditGroupResponse;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/group/EditGroupResponse;Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/group/EditGroupResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getConvo ()Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/group/EditGroupResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/group/EditGroupResponse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/group/EditGroupResponse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/group/EditGroupResponse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/EditGroupResponse$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/EditJoinLinkRequest {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/group/EditJoinLinkRequest$Companion;
+	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;)V
+	public synthetic fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Lio/github/kikin81/atproto/runtime/AtField;
+	public final fun component3 ()Lio/github/kikin81/atproto/runtime/AtField;
+	public final fun copy (Ljava/lang/String;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;)Lio/github/kikin81/atproto/chat/bsky/group/EditJoinLinkRequest;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/group/EditJoinLinkRequest;Ljava/lang/String;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/group/EditJoinLinkRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getConvoId ()Ljava/lang/String;
+	public final fun getJoinRule ()Lio/github/kikin81/atproto/runtime/AtField;
+	public final fun getRequireApproval ()Lio/github/kikin81/atproto/runtime/AtField;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/group/EditJoinLinkRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/group/EditJoinLinkRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/group/EditJoinLinkRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/group/EditJoinLinkRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/EditJoinLinkRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/EditJoinLinkResponse {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/group/EditJoinLinkResponse$Companion;
+	public fun <init> (Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkView;)V
+	public final fun component1 ()Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkView;
+	public final fun copy (Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkView;)Lio/github/kikin81/atproto/chat/bsky/group/EditJoinLinkResponse;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/group/EditJoinLinkResponse;Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkView;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/group/EditJoinLinkResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getJoinLink ()Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkView;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/group/EditJoinLinkResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/group/EditJoinLinkResponse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/group/EditJoinLinkResponse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/group/EditJoinLinkResponse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/EditJoinLinkResponse$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/EnableJoinLinkRequest {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/group/EnableJoinLinkRequest$Companion;
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/group/EnableJoinLinkRequest;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/group/EnableJoinLinkRequest;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/group/EnableJoinLinkRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getConvoId ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/group/EnableJoinLinkRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/group/EnableJoinLinkRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/group/EnableJoinLinkRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/group/EnableJoinLinkRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/EnableJoinLinkRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/EnableJoinLinkResponse {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/group/EnableJoinLinkResponse$Companion;
+	public fun <init> (Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkView;)V
+	public final fun component1 ()Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkView;
+	public final fun copy (Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkView;)Lio/github/kikin81/atproto/chat/bsky/group/EnableJoinLinkResponse;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/group/EnableJoinLinkResponse;Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkView;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/group/EnableJoinLinkResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getJoinLink ()Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkView;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/group/EnableJoinLinkResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/group/EnableJoinLinkResponse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/group/EnableJoinLinkResponse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/group/EnableJoinLinkResponse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/EnableJoinLinkResponse$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/GetGroupPublicInfoRequest {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/group/GetGroupPublicInfoRequest$Companion;
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/group/GetGroupPublicInfoRequest;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/group/GetGroupPublicInfoRequest;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/group/GetGroupPublicInfoRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCode ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/group/GetGroupPublicInfoRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/group/GetGroupPublicInfoRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/group/GetGroupPublicInfoRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/group/GetGroupPublicInfoRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/GetGroupPublicInfoRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/GetGroupPublicInfoResponse {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/group/GetGroupPublicInfoResponse$Companion;
+	public fun <init> (Lio/github/kikin81/atproto/chat/bsky/group/GroupPublicView;)V
+	public final fun component1 ()Lio/github/kikin81/atproto/chat/bsky/group/GroupPublicView;
+	public final fun copy (Lio/github/kikin81/atproto/chat/bsky/group/GroupPublicView;)Lio/github/kikin81/atproto/chat/bsky/group/GetGroupPublicInfoResponse;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/group/GetGroupPublicInfoResponse;Lio/github/kikin81/atproto/chat/bsky/group/GroupPublicView;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/group/GetGroupPublicInfoResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getGroup ()Lio/github/kikin81/atproto/chat/bsky/group/GroupPublicView;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/group/GetGroupPublicInfoResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/group/GetGroupPublicInfoResponse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/group/GetGroupPublicInfoResponse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/group/GetGroupPublicInfoResponse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/GetGroupPublicInfoResponse$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class io/github/kikin81/atproto/chat/bsky/group/GroupPublicView {
 	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/group/GroupPublicView$Companion;
 	public fun <init> (JLjava/lang/String;Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;Z)V
@@ -13434,6 +13938,42 @@ public final synthetic class io/github/kikin81/atproto/chat/bsky/group/GroupPubl
 
 public final class io/github/kikin81/atproto/chat/bsky/group/GroupPublicView$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/GroupService {
+	public fun <init> (Lio/github/kikin81/atproto/runtime/XrpcClient;Ljava/lang/String;)V
+	public synthetic fun <init> (Lio/github/kikin81/atproto/runtime/XrpcClient;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun addMembers (Lio/github/kikin81/atproto/chat/bsky/group/AddMembersRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun addMembers$default (Lio/github/kikin81/atproto/chat/bsky/group/GroupService;Lio/github/kikin81/atproto/chat/bsky/group/AddMembersRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun approveJoinRequest (Lio/github/kikin81/atproto/chat/bsky/group/ApproveJoinRequestRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun approveJoinRequest$default (Lio/github/kikin81/atproto/chat/bsky/group/GroupService;Lio/github/kikin81/atproto/chat/bsky/group/ApproveJoinRequestRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun createGroup (Lio/github/kikin81/atproto/chat/bsky/group/CreateGroupRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun createGroup$default (Lio/github/kikin81/atproto/chat/bsky/group/GroupService;Lio/github/kikin81/atproto/chat/bsky/group/CreateGroupRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun createJoinLink (Lio/github/kikin81/atproto/chat/bsky/group/CreateJoinLinkRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun createJoinLink$default (Lio/github/kikin81/atproto/chat/bsky/group/GroupService;Lio/github/kikin81/atproto/chat/bsky/group/CreateJoinLinkRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun disableJoinLink (Lio/github/kikin81/atproto/chat/bsky/group/DisableJoinLinkRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun disableJoinLink$default (Lio/github/kikin81/atproto/chat/bsky/group/GroupService;Lio/github/kikin81/atproto/chat/bsky/group/DisableJoinLinkRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun editGroup (Lio/github/kikin81/atproto/chat/bsky/group/EditGroupRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun editGroup$default (Lio/github/kikin81/atproto/chat/bsky/group/GroupService;Lio/github/kikin81/atproto/chat/bsky/group/EditGroupRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun editJoinLink (Lio/github/kikin81/atproto/chat/bsky/group/EditJoinLinkRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun editJoinLink$default (Lio/github/kikin81/atproto/chat/bsky/group/GroupService;Lio/github/kikin81/atproto/chat/bsky/group/EditJoinLinkRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun enableJoinLink (Lio/github/kikin81/atproto/chat/bsky/group/EnableJoinLinkRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun enableJoinLink$default (Lio/github/kikin81/atproto/chat/bsky/group/GroupService;Lio/github/kikin81/atproto/chat/bsky/group/EnableJoinLinkRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getGroupPublicInfo (Lio/github/kikin81/atproto/chat/bsky/group/GetGroupPublicInfoRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getGroupPublicInfo$default (Lio/github/kikin81/atproto/chat/bsky/group/GroupService;Lio/github/kikin81/atproto/chat/bsky/group/GetGroupPublicInfoRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun listJoinRequests (Lio/github/kikin81/atproto/chat/bsky/group/ListJoinRequestsRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun listJoinRequests$default (Lio/github/kikin81/atproto/chat/bsky/group/GroupService;Lio/github/kikin81/atproto/chat/bsky/group/ListJoinRequestsRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun rejectJoinRequest (Lio/github/kikin81/atproto/chat/bsky/group/RejectJoinRequestRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun rejectJoinRequest$default (Lio/github/kikin81/atproto/chat/bsky/group/GroupService;Lio/github/kikin81/atproto/chat/bsky/group/RejectJoinRequestRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun removeMembers (Lio/github/kikin81/atproto/chat/bsky/group/RemoveMembersRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun removeMembers$default (Lio/github/kikin81/atproto/chat/bsky/group/GroupService;Lio/github/kikin81/atproto/chat/bsky/group/RemoveMembersRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun requestJoin (Lio/github/kikin81/atproto/chat/bsky/group/RequestJoinRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun requestJoin$default (Lio/github/kikin81/atproto/chat/bsky/group/GroupService;Lio/github/kikin81/atproto/chat/bsky/group/RequestJoinRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/GroupServiceKt {
+	public static final fun listJoinRequestsFlow (Lio/github/kikin81/atproto/chat/bsky/group/GroupService;Lio/github/kikin81/atproto/chat/bsky/group/ListJoinRequestsRequest;)Lkotlinx/coroutines/flow/Flow;
+	public static final fun listJoinRequestsPageFlow (Lio/github/kikin81/atproto/chat/bsky/group/GroupService;Lio/github/kikin81/atproto/chat/bsky/group/ListJoinRequestsRequest;)Lkotlinx/coroutines/flow/Flow;
 }
 
 public final class io/github/kikin81/atproto/chat/bsky/group/JoinLinkView {
@@ -13499,6 +14039,230 @@ public final synthetic class io/github/kikin81/atproto/chat/bsky/group/JoinReque
 }
 
 public final class io/github/kikin81/atproto/chat/bsky/group/JoinRequestView$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/ListJoinRequestsRequest {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/group/ListJoinRequestsRequest$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/Long;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;)Lio/github/kikin81/atproto/chat/bsky/group/ListJoinRequestsRequest;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/group/ListJoinRequestsRequest;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/group/ListJoinRequestsRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getConvoId ()Ljava/lang/String;
+	public final fun getCursor ()Ljava/lang/String;
+	public final fun getLimit ()Ljava/lang/Long;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/group/ListJoinRequestsRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/group/ListJoinRequestsRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/group/ListJoinRequestsRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/group/ListJoinRequestsRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/ListJoinRequestsRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/ListJoinRequestsResponse {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/group/ListJoinRequestsResponse$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/util/List;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/util/List;
+	public final fun copy (Ljava/lang/String;Ljava/util/List;)Lio/github/kikin81/atproto/chat/bsky/group/ListJoinRequestsResponse;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/group/ListJoinRequestsResponse;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/group/ListJoinRequestsResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCursor ()Ljava/lang/String;
+	public final fun getRequests ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/group/ListJoinRequestsResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/group/ListJoinRequestsResponse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/group/ListJoinRequestsResponse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/group/ListJoinRequestsResponse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/ListJoinRequestsResponse$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/RejectJoinRequestRequest {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/group/RejectJoinRequestRequest$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2-UyB9Nic ()Ljava/lang/String;
+	public final fun copy-aB4ouW8 (Ljava/lang/String;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/group/RejectJoinRequestRequest;
+	public static synthetic fun copy-aB4ouW8$default (Lio/github/kikin81/atproto/chat/bsky/group/RejectJoinRequestRequest;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/group/RejectJoinRequestRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getConvoId ()Ljava/lang/String;
+	public final fun getMember-UyB9Nic ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/group/RejectJoinRequestRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/group/RejectJoinRequestRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/group/RejectJoinRequestRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/group/RejectJoinRequestRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/RejectJoinRequestRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/RejectJoinRequestResponse {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/group/RejectJoinRequestResponse$Companion;
+	public fun <init> ()V
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/group/RejectJoinRequestResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/group/RejectJoinRequestResponse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/group/RejectJoinRequestResponse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/group/RejectJoinRequestResponse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/RejectJoinRequestResponse$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/RemoveMembersRequest {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/group/RemoveMembersRequest$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/util/List;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/util/List;
+	public final fun copy (Ljava/lang/String;Ljava/util/List;)Lio/github/kikin81/atproto/chat/bsky/group/RemoveMembersRequest;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/group/RemoveMembersRequest;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/group/RemoveMembersRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getConvoId ()Ljava/lang/String;
+	public final fun getMembers ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/group/RemoveMembersRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/group/RemoveMembersRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/group/RemoveMembersRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/group/RemoveMembersRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/RemoveMembersRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/RemoveMembersResponse {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/group/RemoveMembersResponse$Companion;
+	public fun <init> (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;)V
+	public final fun component1 ()Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;
+	public final fun copy (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;)Lio/github/kikin81/atproto/chat/bsky/group/RemoveMembersResponse;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/group/RemoveMembersResponse;Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/group/RemoveMembersResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getConvo ()Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/group/RemoveMembersResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/group/RemoveMembersResponse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/group/RemoveMembersResponse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/group/RemoveMembersResponse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/RemoveMembersResponse$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/RequestJoinRequest {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/group/RequestJoinRequest$Companion;
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/group/RequestJoinRequest;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/group/RequestJoinRequest;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/group/RequestJoinRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCode ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/group/RequestJoinRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/group/RequestJoinRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/group/RequestJoinRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/group/RequestJoinRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/RequestJoinRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/RequestJoinResponse {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/group/RequestJoinResponse$Companion;
+	public fun <init> (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;Ljava/lang/String;)V
+	public synthetic fun <init> (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/group/RequestJoinResponse;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/group/RequestJoinResponse;Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/group/RequestJoinResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getConvo ()Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;
+	public final fun getStatus ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/group/RequestJoinResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/group/RequestJoinResponse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/group/RequestJoinResponse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/group/RequestJoinResponse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/RequestJoinResponse$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
