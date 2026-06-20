@@ -32,6 +32,7 @@ tasks.test {
  * for a rarely-run codegen task; day-to-day builds still use the cc.
  */
 val lexiconsDir = layout.projectDirectory.dir("lexicons")
+val overlayDir = layout.projectDirectory.dir("overlay-lexicons")
 val generatedModelsDir = project(":models")
     .layout.buildDirectory.dir("generated/source/lexicon/commonMain/kotlin")
 
@@ -47,11 +48,19 @@ tasks.register<JavaExec>("generateModels") {
 
     classpath = sourceSets.main.get().runtimeClasspath
     mainClass.set("io.github.kikin81.atproto.generator.MainKt")
-    args = listOf(lexiconsDirFile.absolutePath, generatedModelsDirFile.absolutePath)
+    args = listOf(
+        lexiconsDirFile.absolutePath,
+        generatedModelsDirFile.absolutePath,
+        overlayDir.asFile.absolutePath,
+    )
 
     inputs.dir(lexiconsDir)
         .withPathSensitivity(PathSensitivity.RELATIVE)
         .withPropertyName("lexicons")
+        .optional()
+    inputs.dir(overlayDir)
+        .withPathSensitivity(PathSensitivity.RELATIVE)
+        .withPropertyName("overlayLexicons")
         .optional()
     outputs.dir(generatedModelsDir).withPropertyName("generatedSources")
 
