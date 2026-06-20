@@ -74,6 +74,14 @@ jobs:
           for nsid in $(jq -r '.overlays[].nsid' overlay-lexicons.json); do
             tmp_manifest="$(mktemp)"
             tmp_dir="$(mktemp -d)"
+            # Seed a valid EMPTY manifest. @atproto/lex parses --manifest BEFORE
+            # any network resolution, so a zero-byte file (bare mktemp) — or one
+            # missing the required `resolutions` key — fails with "Unexpected end
+            # of JSON input" and the probe would ALWAYS fall to publishable=false,
+            # making the retire signal unreachable even after Bluesky publishes the
+            # record. An empty-but-valid manifest lets the resolver actually run, so
+            # exit 0 genuinely means "now resolvable on-network".
+            printf '%s' '{"version":1,"lexicons":[],"resolutions":{}}' > "$tmp_manifest"
             if npx lex install "$nsid" \
                  --manifest "$tmp_manifest" \
                  --lexicons "$tmp_dir" >/dev/null 2>&1; then
