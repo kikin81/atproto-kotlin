@@ -104,6 +104,36 @@ class DetectStaleOverlaysTest {
     }
 
     @Test
+    fun `pinned overlay (removeWhenPublished=false) is not retired when publishable`() {
+        // Publishable but intentionally pinned → NOT stale (no retire signal).
+        assertFalse(
+            OverlayStatus("a.b.c", publishable = true, DriftStatus.InSync, removeWhenPublished = false).isStale,
+        )
+        // A pinned overlay still surfaces drift (re-vendor), just not retirement.
+        assertTrue(
+            OverlayStatus("a.b.c", publishable = true, DriftStatus.Drifted, removeWhenPublished = false).isStale,
+        )
+    }
+
+    @Test
+    fun `renderReport does not emit RETIRE for a pinned publishable overlay`() {
+        val statuses = listOf(
+            OverlayStatus(
+                "chat.bsky.convo.getConvoMembers",
+                publishable = true,
+                DriftStatus.InSync,
+                removeWhenPublished = false,
+            ),
+        )
+
+        val body = renderReport(statuses, fixedNow)
+
+        assertContains(body, "## Overlays needing attention (0)")
+        assertFalse(body.contains("**RETIRE:**"))
+        assertContains(body, "publishable (pinned: removeWhenPublished=false)")
+    }
+
+    @Test
     fun `renderReport produces the clean body when nothing is stale`() {
         val statuses = listOf(
             OverlayStatus(
