@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "overlays": [
+    {
+      "nsid": "chat.bsky.convo.getConvoMembers",
+      "source": "https://github.com/bluesky-social/atproto/blob/3cb156907a15f3f22a1be734f82b3b0c855b4da0/lexicons/chat/bsky/convo/getConvoMembers.json",
+      "commit": "3cb156907a15f3f22a1be734f82b3b0c855b4da0",
+      "vendoredAt": "2026-06-20",
+      "reason": "Served by appview + present in bluesky-social/atproto main, but not yet published on-network (npx lex install -> RecordNotFound). Retire once publishable.",
+      "removeWhenPublished": true
+    }
+  ]
+}

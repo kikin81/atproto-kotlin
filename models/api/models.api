@@ -10237,6 +10237,8 @@ public final class io/github/kikin81/atproto/chat/bsky/convo/ConvoService {
 	public static synthetic fun getConvoAvailability$default (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/GetConvoAvailabilityRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public final fun getConvoForMembers (Lio/github/kikin81/atproto/chat/bsky/convo/GetConvoForMembersRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun getConvoForMembers$default (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/GetConvoForMembersRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getConvoMembers (Lio/github/kikin81/atproto/chat/bsky/convo/GetConvoMembersRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getConvoMembers$default (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/GetConvoMembersRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public final fun getLog (Lio/github/kikin81/atproto/chat/bsky/convo/GetLogRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun getLog$default (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/GetLogRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public final fun getMessages (Lio/github/kikin81/atproto/chat/bsky/convo/GetMessagesRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -10268,6 +10270,8 @@ public final class io/github/kikin81/atproto/chat/bsky/convo/ConvoService {
 }
 
 public final class io/github/kikin81/atproto/chat/bsky/convo/ConvoServiceKt {
+	public static final fun convoMembersFlow (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/GetConvoMembersRequest;)Lkotlinx/coroutines/flow/Flow;
+	public static final fun convoMembersPageFlow (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/GetConvoMembersRequest;)Lkotlinx/coroutines/flow/Flow;
 	public static final fun listConvoRequestsFlow (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/ListConvoRequestsRequest;)Lkotlinx/coroutines/flow/Flow;
 	public static synthetic fun listConvoRequestsFlow$default (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/ListConvoRequestsRequest;ILjava/lang/Object;)Lkotlinx/coroutines/flow/Flow;
 	public static final fun listConvoRequestsPageFlow (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/ListConvoRequestsRequest;)Lkotlinx/coroutines/flow/Flow;
@@ -10638,6 +10642,68 @@ public final synthetic class io/github/kikin81/atproto/chat/bsky/convo/GetConvoF
 }
 
 public final class io/github/kikin81/atproto/chat/bsky/convo/GetConvoForMembersResponse$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/convo/GetConvoMembersRequest {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/convo/GetConvoMembersRequest$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/Long;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;)Lio/github/kikin81/atproto/chat/bsky/convo/GetConvoMembersRequest;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/GetConvoMembersRequest;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/GetConvoMembersRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getConvoId ()Ljava/lang/String;
+	public final fun getCursor ()Ljava/lang/String;
+	public final fun getLimit ()Ljava/lang/Long;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/convo/GetConvoMembersRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/convo/GetConvoMembersRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/convo/GetConvoMembersRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/convo/GetConvoMembersRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/convo/GetConvoMembersRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/convo/GetConvoMembersResponse {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/convo/GetConvoMembersResponse$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/util/List;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/util/List;
+	public final fun copy (Ljava/lang/String;Ljava/util/List;)Lio/github/kikin81/atproto/chat/bsky/convo/GetConvoMembersResponse;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/GetConvoMembersResponse;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/GetConvoMembersResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCursor ()Ljava/lang/String;
+	public final fun getMembers ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/convo/GetConvoMembersResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/convo/GetConvoMembersResponse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/convo/GetConvoMembersResponse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/convo/GetConvoMembersResponse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/convo/GetConvoMembersResponse$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
