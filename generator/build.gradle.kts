@@ -93,3 +93,29 @@ tasks.register<JavaExec>("detectLexiconDrift") {
     // intentional opt-out from up-to-date caching.
     outputs.upToDateWhen { false }
 }
+
+/**
+ * Flags vendored overlays in `generator/overlay-lexicons.json` that should be
+ * retired (now resolvable on-network) or re-vendored (drifted from upstream).
+ *
+ * Reads the per-overlay publishable verdict from the `OVERLAY_PUBLISHABLE_JSON`
+ * env var (a `{nsid: bool}` map produced by the workflow's `npx lex install`
+ * probe); does its own upstream-drift HTTP comparison.
+ *
+ *   ./gradlew :generator:detectStaleOverlays
+ */
+val overlayManifestFile = layout.projectDirectory.file("overlay-lexicons.json")
+
+tasks.register<JavaExec>("detectStaleOverlays") {
+    group = "verification"
+    description = "Flag vendored overlays ready to retire or re-vendor."
+    notCompatibleWithConfigurationCache("overlay task captures script-level path values")
+
+    classpath = sourceSets.main.get().runtimeClasspath
+    mainClass.set("io.github.kikin81.atproto.generator.tools.DetectStaleOverlaysKt")
+    args = listOf(overlayManifestFile.asFile.absolutePath)
+
+    // Always reaches over the network for an authoritative upstream diff;
+    // intentional opt-out from up-to-date caching.
+    outputs.upToDateWhen { false }
+}

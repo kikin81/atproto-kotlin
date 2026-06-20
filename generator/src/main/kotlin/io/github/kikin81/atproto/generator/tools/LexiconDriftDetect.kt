@@ -69,6 +69,23 @@ internal fun parseUpstreamNsids(treeJson: String): Set<String> {
 
 internal fun parseManifestNsids(manifestJson: String): Set<String> = json.decodeFromString<Manifest>(manifestJson).lexicons.toSet()
 
+@Serializable
+internal data class OverlayManifestRef(val overlays: List<OverlayRef> = emptyList())
+
+@Serializable
+internal data class OverlayRef(val nsid: String)
+
+/**
+ * NSIDs handled by vendored overlays (`generator/overlay-lexicons.json`).
+ *
+ * These are intentionally absent from `lexicons.json` — they're served by the
+ * appview but not yet resolvable on-network — so the drift report subtracts
+ * them from the "new upstream" set to avoid flagging them forever. Their
+ * lifecycle is tracked by the overlay-staleness job instead. Missing file ->
+ * empty set.
+ */
+internal fun parseOverlayNsids(overlayManifestJson: String): Set<String> = json.decodeFromString<OverlayManifestRef>(overlayManifestJson).overlays.map { it.nsid }.toSet()
+
 internal fun isSubscription(nsid: String): Boolean = nsid.substringAfterLast('.').startsWith("subscribe")
 
 /**
@@ -98,6 +115,7 @@ internal fun renderReport(
     newNsids: Set<String>,
     removedNsids: Set<String>,
     now: OffsetDateTime,
+    overlayCount: Int = 0,
 ): String = buildString {
     appendLine(
         "_Generated ${timestampFormatter.format(now)} by " +
@@ -110,6 +128,13 @@ internal fun renderReport(
             "(https://github.com/bluesky-social/atproto/tree/main/lexicons).",
     )
     appendLine()
+    if (overlayCount > 0) {
+        appendLine(
+            "_($overlayCount NSID(s) handled by overlays — excluded here; " +
+                "see the `overlay-stale` tracking issue.)_",
+        )
+        appendLine()
+    }
 
     appendLine("## New upstream NSIDs (${newNsids.size})")
     appendLine()
@@ -228,13 +253,28 @@ public fun main(args: Array<String>) {
         exitProcess(2)
     }
 
+    // Overlay NSIDs are intentionally absent from lexicons.json (vendored
+    // until resolvable on-network); exclude them so they don't read as drift
+    // forever. Their lifecycle is tracked by the overlay-staleness job.
+    val overlayManifestPath = manifestPath.resolveSibling("overlay-lexicons.json")
+    val overlayNsids = if (overlayManifestPath.exists()) {
+        parseOverlayNsids(Files.readString(overlayManifestPath))
+    } else {
+        emptySet()
+    }
+
     val upstream = parseUpstreamNsids(fetchUpstreamTree(System.getenv("GITHUB_TOKEN")))
     val manifest = parseManifestNsids(Files.readString(manifestPath))
-    val newNsids = upstream - manifest
+    val newNsids = upstream - manifest - overlayNsids
     val removedNsids = manifest - upstream
     val hasDrift = newNsids.isNotEmpty() || removedNsids.isNotEmpty()
     val body =
-        renderReport(newNsids, removedNsids, OffsetDateTime.now(ZoneOffset.UTC))
+        renderReport(
+            newNsids,
+            removedNsids,
+            OffsetDateTime.now(ZoneOffset.UTC),
+            overlayNsids.size,
+        )
 
     println(body)
 

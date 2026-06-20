@@ -1,0 +1,157 @@
+name: Overlay staleness
+
+# Surfaces vendored lexicon overlays (generator/overlay-lexicons.json) that
+# should be RETIRED or RE-VENDORED:
+#   - retire: the record is now resolvable on-network (npx lex install
+#     succeeds), so the NSID belongs in generator/lexicons.json
+#   - re-vendor: the vendored JSON drifted from bluesky-social/atproto@main
+#
+# Complements .github/workflows/lexicon-drift-detect.yaml. That workflow flags
+# brand-new upstream NSIDs missing from our manifest (and now excludes overlay
+# NSIDs, deferring them here). This workflow manages the overlay lifecycle.
+#
+# Maintains a single tracking issue labeled `overlay-stale`:
+#   - staleness detected with no open issue -> create one
+#   - staleness detected with an open issue -> edit body in place
+#   - nothing stale with an open issue -> auto-close with comment
+
+on:
+  schedule:
+    # 12:00 UTC Mondays — one hour before lexicon-drift-detect (13:00 UTC).
+    - cron: "0 12 * * 1"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: overlay-staleness
+  cancel-in-progress: false
+
+jobs:
+  detect:
+    name: Detect overlay staleness
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: generator/package-lock.json
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: zulu
+          java-version-file: .java-version
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Install generator npm deps
+        working-directory: generator
+        run: npm ci
+
+      - name: Probe overlay publishability
+        # For each overlay NSID, run the REAL `npx lex install` resolver
+        # against a THROWAWAY manifest + lexicons dir; exit 0 means the
+        # on-network record now exists (so the overlay can be retired).
+        # GITHUB_TOKEN is intentionally NOT exposed: the resolver hits the
+        # public PLC/PDS network, not the GitHub API, and we keep the token
+        # scoped to the gh-issue-management steps below so the probe process
+        # can't leak a credential it doesn't have.
+        working-directory: generator
+        run: |
+          set -euo pipefail
+          map='{}'
+          for nsid in $(jq -r '.overlays[].nsid' overlay-lexicons.json); do
+            tmp_manifest="$(mktemp)"
+            tmp_dir="$(mktemp -d)"
+            if npx lex install "$nsid" \
+                 --manifest "$tmp_manifest" \
+                 --lexicons "$tmp_dir" >/dev/null 2>&1; then
+              publishable=true
+            else
+              publishable=false
+            fi
+            echo "probe: $nsid -> publishable=$publishable"
+            map="$(jq --arg n "$nsid" --argjson v "$publishable" \
+              '. + {($n): $v}' <<<"$map")"
+          done
+          {
+            echo "OVERLAY_PUBLISHABLE_JSON<<EOF_overlay_publishable"
+            echo "$map"
+            echo "EOF_overlay_publishable"
+          } >> "$GITHUB_ENV"
+
+      - name: Run overlay staleness detection
+        id: detect
+        # GITHUB_TOKEN intentionally NOT exposed here either — the detector
+        # makes one HTTPS request per overlay against public
+        # raw.githubusercontent.com; unauthenticated suffices at our weekly
+        # cadence. It reads OVERLAY_PUBLISHABLE_JSON from the probe step.
+        run: ./gradlew :generator:detectStaleOverlays --quiet --no-configuration-cache
+
+      - name: Ensure overlay-stale label exists
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh label create overlay-stale \
+            --color FBCA04 \
+            --description "A vendored overlay can be retired or re-vendored" \
+            --force
+
+      - name: Find existing overlay-stale issue
+        id: find
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          existing=$(gh issue list \
+            --label overlay-stale \
+            --state open \
+            --json number \
+            --jq '.[0].number // empty')
+          echo "issue_number=${existing}" >> "$GITHUB_OUTPUT"
+
+      - name: Open or update tracking issue
+        if: steps.detect.outputs.has_stale == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BODY: ${{ steps.detect.outputs.body }}
+          STALE_COUNT: ${{ steps.detect.outputs.stale_count }}
+          EXISTING: ${{ steps.find.outputs.issue_number }}
+        run: |
+          set -euo pipefail
+          title="Overlay staleness: ${STALE_COUNT} overlay(s) need attention"
+          tmp=$(mktemp)
+          printf '%s' "$BODY" > "$tmp"
+          if [ -n "$EXISTING" ]; then
+            gh issue edit "$EXISTING" \
+              --title "$title" \
+              --body-file "$tmp"
+            echo "Updated existing overlay-stale issue #${EXISTING}"
+          else
+            gh issue create \
+              --title "$title" \
+              --body-file "$tmp" \
+              --label overlay-stale
+            echo "Created new overlay-stale tracking issue"
+          fi
+
+      - name: Auto-close overlay-stale issue when clean
+        if: steps.detect.outputs.has_stale == 'false' && steps.find.outputs.issue_number != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EXISTING: ${{ steps.find.outputs.issue_number }}
+        run: |
+          set -euo pipefail
+          gh issue close "$EXISTING" \
+            --reason completed \
+            --comment "No stale overlays detected on $(date -u +%Y-%m-%d). Closing automatically; will reopen if an overlay becomes retirable or drifts."
