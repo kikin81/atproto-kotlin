@@ -147,9 +147,17 @@ internal data class OverlayStatus(
     val nsid: String,
     val publishable: Boolean,
     val drift: DriftStatus,
+    // Honors the manifest opt-out: an overlay pinned with removeWhenPublished=false
+    // is intentionally kept even after upstream publishes, so it must NOT be flagged
+    // for retirement. Defaults true (the common case).
+    val removeWhenPublished: Boolean = true,
 ) {
-    /** Stale = actionable: retire (publishable) or re-vendor (drifted/removed). */
-    val isStale: Boolean get() = publishable || drift != DriftStatus.InSync
+    /**
+     * Stale = actionable: retire (publishable AND opted in to removal) or re-vendor
+     * (drifted/removed). A pinned overlay (removeWhenPublished=false) still surfaces
+     * drift — we just never tell the maintainer to retire it.
+     */
+    val isStale: Boolean get() = (publishable && removeWhenPublished) || drift != DriftStatus.InSync
 }
 
 internal fun renderReport(
@@ -191,7 +199,11 @@ internal fun renderReport(
         appendLine()
     } else {
         for (status in statuses.sortedBy { it.nsid }) {
-            val pub = if (status.publishable) "publishable" else "not-yet-publishable"
+            val pub = when {
+                status.publishable && !status.removeWhenPublished -> "publishable (pinned: removeWhenPublished=false)"
+                status.publishable -> "publishable"
+                else -> "not-yet-publishable"
+            }
             val drift = when (status.drift) {
                 DriftStatus.InSync -> "in-sync"
                 DriftStatus.Drifted -> "DRIFTED"
@@ -217,7 +229,7 @@ private fun renderStaleLine(status: OverlayStatus): String {
     val nsid = status.nsid
     val path = nsidToPath(nsid)
     return when {
-        status.publishable -> {
+        status.publishable && status.removeWhenPublished -> {
             "✅ `$nsid` — now resolvable on-network. **RETIRE:** add to " +
                 "`generator/lexicons.json` + `npx lex install`, " +
                 "`rm generator/overlay-lexicons/$path.json` + its manifest entry, " +
@@ -326,6 +338,7 @@ public fun main(args: Array<String>) {
             nsid = overlay.nsid,
             publishable = publishable[overlay.nsid] == true,
             drift = drift,
+            removeWhenPublished = overlay.removeWhenPublished,
         )
     }
 
