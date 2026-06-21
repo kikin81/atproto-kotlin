@@ -9,7 +9,7 @@ junit = "5.11.0"
 spotless = "8.7.0"
 ktlint = "1.4.1"
 dokka = "2.2.0"
-vanniktech-maven-publish = "0.36.0"
+vanniktech-maven-publish = "0.37.0"
 binary-compatibility-validator = "0.18.1"
 
 # Android sample
