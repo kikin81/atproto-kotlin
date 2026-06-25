@@ -2,6 +2,7 @@ package io.github.kikin81.atproto.generator.ir
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonPrimitive
@@ -71,6 +72,14 @@ public data class StringType(
     public val enum: List<String>? = null,
     public val default: String? = null,
     public val const: String? = null,
+    /**
+     * A fallback value injected by a field-default override (not from the Lexicon
+     * JSON), used when a server omits a field its own published lexicon marks
+     * required. When set, the generator emits this string field as a non-null
+     * property defaulted to this value, so kotlinx tolerates the missing field
+     * without forcing every consumer to null-check. See FieldDefaultOverrides.
+     */
+    @Transient public val injectedDefault: String? = null,
 ) : FieldType {
     override val deprecated: Boolean get() = _deprecated != null && _deprecated !is JsonNull
     override val deprecatedMessage: String? get() = (_deprecated as? JsonPrimitive)?.takeIf { it.isString }?.content

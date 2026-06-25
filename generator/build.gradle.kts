@@ -33,6 +33,7 @@ tasks.test {
  */
 val lexiconsDir = layout.projectDirectory.dir("lexicons")
 val overlayDir = layout.projectDirectory.dir("overlay-lexicons")
+val fieldDefaultsFile = layout.projectDirectory.file("field-default-overrides.json")
 val generatedModelsDir = project(":models")
     .layout.buildDirectory.dir("generated/source/lexicon/commonMain/kotlin")
 
@@ -52,6 +53,7 @@ tasks.register<JavaExec>("generateModels") {
         lexiconsDirFile.absolutePath,
         generatedModelsDirFile.absolutePath,
         overlayDir.asFile.absolutePath,
+        fieldDefaultsFile.asFile.absolutePath,
     )
 
     inputs.dir(lexiconsDir)
@@ -61,6 +63,10 @@ tasks.register<JavaExec>("generateModels") {
     inputs.dir(overlayDir)
         .withPathSensitivity(PathSensitivity.RELATIVE)
         .withPropertyName("overlayLexicons")
+        .optional()
+    inputs.file(fieldDefaultsFile)
+        .withPathSensitivity(PathSensitivity.RELATIVE)
+        .withPropertyName("fieldDefaultOverrides")
         .optional()
     outputs.dir(generatedModelsDir).withPropertyName("generatedSources")
 

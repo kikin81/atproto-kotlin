@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "overrides": [
+    {
+      "def": "chat.bsky.actor.defs#profileViewBasic",
+      "defaults": { "handle": "handle.invalid" },
+      "reason": "Bluesky's chat service returns a profileViewBasic with no `handle` for departed/deactivated members embedded in `#memberJoin` system messages, even though the published lexicon marks `handle` required. Without a fallback chat.bsky.convo.getMessages hard-fails deserialization (MissingFieldException) and group threads won't open. Default to `handle.invalid` — the same sentinel app.bsky returns for invalid handles — so `handle` stays non-null and consumers need no null-checks."
+    }
+  ]
+}
