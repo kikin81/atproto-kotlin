@@ -29,7 +29,7 @@ delta is only these two NSIDs.
 ## Goal
 
 Emit typed, fully-wired Kotlin support for gallery and getEmbedExternalView:
-- `EmbedGallery` / `EmbedGalleryView` model classes.
+- `Gallery` / `GalleryView` model classes.
 - `gallery` as a **typed member** of every union that accepts it (so authoring and reading a
   gallery post is typesafe, not relegated to the `Unknown` open-union fallback).
 - The `getEmbedExternalView` XRPC query method on the embed service.
@@ -44,7 +44,7 @@ overridden in place.
 
 | Overlay file | Role | Effect on generated code |
 |---|---|---|
-| `app/bsky/embed/gallery.json` | **new** standalone type | emits `EmbedGallery`, `EmbedGalleryView` |
+| `app/bsky/embed/gallery.json` | **new** standalone type | emits `Gallery`, `GalleryView` |
 | `app/bsky/embed/getEmbedExternalView.json` | **new** query | emits XRPC query method on the embed service |
 | `app/bsky/feed/post.json` | **shadow** | `+ gallery` in post embed authoring union |
 | `app/bsky/embed/recordWithMedia.json` | **shadow** | `+ gallery` / `gallery#view` in both media unions |
@@ -74,7 +74,7 @@ Concretely, each generated open-union serializer gains a typed branch, e.g. in
 ```kotlin
 "app.bsky.embed.gallery" -> Gallery.serializer()   // was: else -> null (Unknown fallback)
 ```
-and `EmbedGallery` comes to implement the union interface.
+and `Gallery` comes to implement the union interface.
 
 ## Manifest semantics (two retire conditions)
 
@@ -107,7 +107,7 @@ and ensure we don't accidentally resurrect or orphan it.
 ## Testing / verification
 
 - Run `:generator:generateModels`; confirm the three union serializers gain a typed `gallery`
-  branch, `EmbedGallery`/`EmbedGalleryView` are emitted, and the `getEmbedExternalView` query
+  branch, `Gallery`/`GalleryView` are emitted, and the `getEmbedExternalView` query
   method appears on the embed service. Confirm only the expected files change.
 - Regenerate golden files if any golden fixture covers these embeds
   (`GOLDEN_UPDATE=1 ./gradlew :generator:test --tests '*GoldenFileTest*'`).
