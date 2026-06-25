@@ -8,6 +8,7 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.STRING
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import io.github.kikin81.atproto.generator.ir.FieldType
@@ -16,6 +17,7 @@ import io.github.kikin81.atproto.generator.ir.ObjectType
 import io.github.kikin81.atproto.generator.ir.ParamsDefTopLevel
 import io.github.kikin81.atproto.generator.ir.ParamsType
 import io.github.kikin81.atproto.generator.ir.RecordDef
+import io.github.kikin81.atproto.generator.ir.StringType
 import io.github.kikin81.atproto.generator.resolved.DefKey
 import io.github.kikin81.atproto.generator.resolved.Nsid
 import io.github.kikin81.atproto.generator.resolved.UsageContext
@@ -163,7 +165,8 @@ public class ModelGenerator(
             val baseType = typeResolver.resolve(ft, origin, fqName, name)
             val isRequired = name in required
             val (propType, defaultCode, extraAnnotations) =
-                fieldShape(baseType, isRequired, shape)
+                injectedDefaultShape(baseType, ft, shape)
+                    ?: fieldShape(baseType, isRequired, shape)
 
             val param = ParameterSpec.builder(name, propType)
             if (defaultCode != null) param.defaultValue(defaultCode)
@@ -192,6 +195,27 @@ public class ModelGenerator(
 
         builder.primaryConstructor(ctor.build())
         return builder.build()
+    }
+
+    /**
+     * A field-default override ([io.github.kikin81.atproto.generator.tools.applyFieldDefaultOverrides])
+     * injects a fallback so a server that omits an over-strict required field still
+     * decodes. Emit the read-side field as its non-null base type defaulted to the
+     * injected value — a property with a Kotlin default is optional to kotlinx, so
+     * there's no `MissingFieldException` and no consumer null-checks. Returns null
+     * (defer to [fieldShape]) for non-string fields, fields without an injected
+     * default, or mutation inputs (which keep their `AtField` three-state).
+     */
+    private fun injectedDefaultShape(
+        baseType: TypeName,
+        ft: FieldType,
+        shape: Shape,
+    ): Triple<TypeName, CodeBlock?, List<AnnotationSpec>>? {
+        if (shape != Shape.ReadShape) return null
+        val value = (ft as? StringType)?.injectedDefault ?: return null
+        // Value classes (e.g. Handle for format=handle) wrap the literal; plain strings don't.
+        val default = if (baseType == STRING) CodeBlock.of("%S", value) else CodeBlock.of("%T(%S)", baseType, value)
+        return Triple(baseType, default, emptyList())
     }
 
     private fun fieldShape(

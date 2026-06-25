@@ -3,12 +3,17 @@ package io.github.kikin81.atproto.generator
 import io.github.kikin81.atproto.generator.emit.CodeGenerator
 import io.github.kikin81.atproto.generator.ir.LexiconDocument
 import io.github.kikin81.atproto.generator.parser.LexiconParser
+import io.github.kikin81.atproto.generator.tools.applyFieldDefaultOverrides
+import io.github.kikin81.atproto.generator.tools.parseFieldDefaultOverrides
 import java.nio.file.Path
 import kotlin.io.path.exists
+import kotlin.io.path.isRegularFile
+import kotlin.io.path.readText
 import kotlin.system.exitProcess
 
 /**
- * CLI entry point: `java -jar generator.jar <lexiconsDir> <outputDir> [overlayDir]`.
+ * CLI entry point:
+ * `java -jar generator.jar <lexiconsDir> <outputDir> [overlayDir] [optionalOverridesFile]`.
  *
  * Parses every `*.json` under [lexiconsDir] and writes Kotlin source files
  * mirroring the AT Protocol lexicon corpus under [outputDir]. Used by the
@@ -18,10 +23,14 @@ import kotlin.system.exitProcess
  * lexicon JSON (for methods Bluesky serves but hasn't published on-network yet).
  * Overlay docs are parsed and merged into the installed corpus by NSID with
  * overlay-wins semantics; shadowing an installed NSID logs a stderr WARN.
+ *
+ * An optional fourth argument points at a field-default-overrides manifest
+ * (see [parseFieldDefaultOverrides]): deliberate, permanent fallbacks for
+ * over-strict `required` fields whose servers violate the published lexicon.
  */
 public fun main(args: Array<String>) {
-    if (args.size !in 2..3) {
-        System.err.println("Usage: <lexiconsDir> <outputDir> [overlayDir]")
+    if (args.size !in 2..4) {
+        System.err.println("Usage: <lexiconsDir> <outputDir> [overlayDir] [fieldDefaultsFile]")
         exitProcess(2)
     }
     val lexiconsDir = Path.of(args[0])
@@ -53,7 +62,14 @@ public fun main(args: Array<String>) {
             )
         }
     }
-    val docs = byId.values.toList()
+    val merged = byId.values.toList()
+    // Deliberate, permanent fallbacks for over-strict `required` fields (see
+    // FieldDefaultOverrides) — applied after overlay merge so they win.
+    val overridesFile = args.getOrNull(3)?.let(Path::of)?.takeIf { it.isRegularFile() }
+    val docs =
+        overridesFile
+            ?.let { applyFieldDefaultOverrides(merged, parseFieldDefaultOverrides(it.readText())) }
+            ?: merged
     CodeGenerator().writeTo(docs, outputDir)
     println("generated lexicon sources for ${docs.size} documents into $outputDir")
 }
