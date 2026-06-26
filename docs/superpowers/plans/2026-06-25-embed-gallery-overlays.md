@@ -47,7 +47,7 @@
 - [ ] **Step 1: Capture the current upstream main sha**
 
 ```bash
-cd /Users/francisco/code/atproto-kotlin
+cd <repo-root>
 SHA=$(gh api repos/bluesky-social/atproto/commits/main -q '.sha')
 echo "$SHA"   # record this; used for every manifest `commit` field below
 ```
@@ -56,7 +56,7 @@ Expected: a 40-char sha (e.g. `fdc8ca8...`). Save it as `$SHA` for the rest of t
 - [ ] **Step 2: Vendor the five files verbatim from main**
 
 ```bash
-cd /Users/francisco/code/atproto-kotlin
+cd <repo-root>
 for p in embed/gallery embed/getEmbedExternalView embed/recordWithMedia feed/post feed/defs; do
   dest="generator/overlay-lexicons/app/bsky/$p.json"
   mkdir -p "$(dirname "$dest")"
@@ -70,7 +70,7 @@ Expected: five "wrote …" lines, no errors.
 - [ ] **Step 3: Sanity-check the vendored content**
 
 ```bash
-cd /Users/francisco/code/atproto-kotlin
+cd <repo-root>
 grep -l '"app.bsky.embed.gallery' generator/overlay-lexicons/app/bsky/feed/post.json \
   generator/overlay-lexicons/app/bsky/embed/recordWithMedia.json
 grep -l 'gallery#view' generator/overlay-lexicons/app/bsky/feed/defs.json
@@ -143,7 +143,7 @@ Replace every `<SHA>` with the Step 1 value.
 - [ ] **Step 5: Validate the manifest parses**
 
 ```bash
-cd /Users/francisco/code/atproto-kotlin
+cd <repo-root>
 python3 -c "import json;d=json.load(open('generator/overlay-lexicons.json'));print('overlays:',[o['nsid'] for o in d['overlays']]);assert {o['nsid'] for o in d['overlays']} >= {'app.bsky.embed.gallery','app.bsky.embed.getEmbedExternalView','app.bsky.feed.post','app.bsky.embed.recordWithMedia','app.bsky.feed.defs'};print('OK')"
 ```
 Expected: lists 6 nsids, prints `OK`.
@@ -151,7 +151,7 @@ Expected: lists 6 nsids, prints `OK`.
 - [ ] **Step 6: Regenerate models and verify the wiring**
 
 ```bash
-cd /Users/francisco/code/atproto-kotlin
+cd <repo-root>
 ./gradlew :generator:generateModels
 gen=models/build/generated/source/lexicon/commonMain/kotlin/io/github/kikin81/atproto/app/bsky/embed
 ls $gen/Gallery*.kt
@@ -165,7 +165,7 @@ Expected: `Gallery.kt`/`GalleryView.kt` exist; the two `grep -c` print `1`; the 
 - [ ] **Step 7: Commit**
 
 ```bash
-cd /Users/francisco/code/atproto-kotlin
+cd <repo-root>
 git add generator/overlay-lexicons/ generator/overlay-lexicons.json
 git commit -m "feat(models): vendor embed.gallery + getEmbedExternalView overlays
 
@@ -234,7 +234,7 @@ class EmbedGalleryUnionTest {
 - [ ] **Step 2: Run the test to verify it passes**
 
 ```bash
-cd /Users/francisco/code/atproto-kotlin
+cd <repo-root>
 ./gradlew :models:jvmTest --tests '*EmbedGalleryUnionTest*'
 ```
 Expected: BUILD SUCCESSFUL, 3 tests passed. (If `assertIs<Gallery>` fails or it routes to `RecordWithMediaMediaUnion.Unknown`, the overlay wiring from Task 1 is wrong — fix before continuing.)
@@ -242,7 +242,7 @@ Expected: BUILD SUCCESSFUL, 3 tests passed. (If `assertIs<Gallery>` fails or it 
 - [ ] **Step 3: If `Gallery`/`GalleryView` field names or the encode helper signature differ from generated output, align the test**
 
 ```bash
-cd /Users/francisco/code/atproto-kotlin
+cd <repo-root>
 gen=models/build/generated/source/lexicon/commonMain/kotlin/io/github/kikin81/atproto/app/bsky/embed
 sed -n '1,40p' $gen/Gallery.kt
 ```
@@ -251,7 +251,7 @@ Expected: confirm the class is `data class Gallery(... items: List<...> ...)`. A
 - [ ] **Step 4: Commit**
 
 ```bash
-cd /Users/francisco/code/atproto-kotlin
+cd <repo-root>
 git add models/src/commonTest/kotlin/io/github/kikin81/atproto/app/bsky/embed/EmbedGalleryUnionTest.kt
 git commit -m "test(models): gallery is a typed member of the recordWithMedia unions
 
@@ -268,7 +268,7 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 - [ ] **Step 1: Confirm `apiCheck` currently fails (new public API undeclared)**
 
 ```bash
-cd /Users/francisco/code/atproto-kotlin
+cd <repo-root>
 ./gradlew :models:apiCheck
 ```
 Expected: FAIL — the report lists added classes such as `Gallery`, `GalleryView`, `GalleryImage`, `GalleryViewImage`, and the `getEmbedExternalView` types as not present in `models/api/models.api`. (If it unexpectedly PASSES, the new types aren't public/generated — revisit Task 1 Step 6.)
@@ -276,7 +276,7 @@ Expected: FAIL — the report lists added classes such as `Gallery`, `GalleryVie
 - [ ] **Step 2: Regenerate the API dump**
 
 ```bash
-cd /Users/francisco/code/atproto-kotlin
+cd <repo-root>
 ./gradlew apiDump
 git diff --stat models/api/models.api
 grep -E 'Gallery|GetEmbedExternalView' models/api/models.api | head
@@ -286,7 +286,7 @@ Expected: `models/api/models.api` changed; grep shows the new gallery + getEmbed
 - [ ] **Step 3: Verify apiCheck now passes**
 
 ```bash
-cd /Users/francisco/code/atproto-kotlin
+cd <repo-root>
 ./gradlew :models:apiCheck
 ```
 Expected: BUILD SUCCESSFUL.
@@ -294,7 +294,7 @@ Expected: BUILD SUCCESSFUL.
 - [ ] **Step 4: Commit**
 
 ```bash
-cd /Users/francisco/code/atproto-kotlin
+cd <repo-root>
 git add models/api/models.api
 git commit -m "chore(models): apiDump for embed.gallery + getEmbedExternalView
 
@@ -328,7 +328,7 @@ Also update the `## Manifest semantics` line that cites commit `85c25efde14c1d03
 - [ ] **Step 2: Commit**
 
 ```bash
-cd /Users/francisco/code/atproto-kotlin
+cd <repo-root>
 git add docs/superpowers/specs/2026-06-25-embed-gallery-overlays-design.md
 git commit -m "docs: mark overlay-dir open-item resolved in gallery spec
 
@@ -342,7 +342,7 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 - [ ] **Step 1: Generator tests (drift/stale + golden) pass**
 
 ```bash
-cd /Users/francisco/code/atproto-kotlin
+cd <repo-root>
 ./gradlew :generator:test
 ```
 Expected: BUILD SUCCESSFUL. `DetectStaleOverlaysTest` and `GoldenFileTest` pass. (Golden fixtures are independent of the real corpus/overlays, so they should be unaffected; if `GoldenFileTest` fails, inspect the diff — it likely indicates an unintended change and should be understood, not blindly `GOLDEN_UPDATE`-ed.)
@@ -350,7 +350,7 @@ Expected: BUILD SUCCESSFUL. `DetectStaleOverlaysTest` and `GoldenFileTest` pass.
 - [ ] **Step 2: Models + runtime compile and test, formatting + API gate clean**
 
 ```bash
-cd /Users/francisco/code/atproto-kotlin
+cd <repo-root>
 ./gradlew :models:jvmTest :runtime:jvmTest spotlessCheck :models:apiCheck
 ```
 Expected: BUILD SUCCESSFUL across all. (Skip iOS sim targets — unavailable on this CLT-only machine per memory `ios-sim-tests-need-xcode`.)
@@ -358,7 +358,7 @@ Expected: BUILD SUCCESSFUL across all. (Skip iOS sim targets — unavailable on 
 - [ ] **Step 3: Push and update the PR**
 
 ```bash
-cd /Users/francisco/code/atproto-kotlin
+cd <repo-root>
 git push
 gh pr ready 150
 ```
