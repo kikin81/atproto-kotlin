@@ -89,20 +89,20 @@ keys off a per-overlay publishable verdict:
    "exists." The `reason` field must state this explicitly so the overlay isn't mis-flagged
    as stale and whoever retires later knows the real condition.
 
-Each entry pins `source` + `commit` (`85c25efde14c1d0383f32bba21b21bdad2ae2619`) +
+Each entry pins `source` + `commit` (the upstream `main` sha captured at vendoring time (recorded in `overlay-lexicons.json`; the vendored commit was `fdc8ca8`)) +
 `vendoredAt: 2026-06-25`.
 
 New files are overlay-only — they do **not** need entries in `lexicons.json` (confirmed by the
 `getConvoMembers` precedent, which is overlay-only).
 
-## Open item to resolve during implementation
+## Resolved during planning
 
-The `generator/overlay-lexicons/` **directory does not currently exist on disk**, yet
-`overlay-lexicons.json` already lists `getConvoMembers`. The generator treats a missing
-overlay dir as an empty overlay set (`takeIf { it.exists() }`), so overlays are presently a
-no-op. Implementation must determine whether the `getConvoMembers` vendored file is expected
-to exist (and is simply missing/retired) or whether the dir is created fresh by this change —
-and ensure we don't accidentally resurrect or orphan it.
+The `generator/overlay-lexicons/` directory **does exist** (it already holds
+`chat/bsky/convo/getConvoMembers.json`); codegen reads the directory while the
+`overlay-lexicons.json` manifest drives drift/staleness tracking. New overlay
+files live at `generator/overlay-lexicons/<nsid-with-slashes>.json`. The three
+shadow entries use `removeWhenPublished: false` so the staleness tool keeps
+them pinned (they are already publishable on-network in their gallery-less form).
 
 ## Testing / verification
 
