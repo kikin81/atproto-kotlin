@@ -2863,6 +2863,12 @@ public final class io/github/kikin81/atproto/app/bsky/embed/AspectRatio$Companio
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class io/github/kikin81/atproto/app/bsky/embed/EmbedService {
+	public fun <init> (Lio/github/kikin81/atproto/runtime/XrpcClient;)V
+	public final fun getEmbedExternalView (Lio/github/kikin81/atproto/app/bsky/embed/GetEmbedExternalViewRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getEmbedExternalView$default (Lio/github/kikin81/atproto/app/bsky/embed/EmbedService;Lio/github/kikin81/atproto/app/bsky/embed/GetEmbedExternalViewRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+
 public final class io/github/kikin81/atproto/app/bsky/embed/External : io/github/kikin81/atproto/app/bsky/actor/StatusEmbedUnion, io/github/kikin81/atproto/app/bsky/embed/RecordWithMediaMediaUnion, io/github/kikin81/atproto/app/bsky/feed/PostEmbedUnion {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/embed/External$Companion;
 	public fun <init> (Lio/github/kikin81/atproto/app/bsky/embed/ExternalExternal;)V
@@ -2982,6 +2988,266 @@ public final synthetic class io/github/kikin81/atproto/app/bsky/embed/ExternalVi
 }
 
 public final class io/github/kikin81/atproto/app/bsky/embed/ExternalViewExternal$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/embed/Gallery : io/github/kikin81/atproto/app/bsky/embed/RecordWithMediaMediaUnion, io/github/kikin81/atproto/app/bsky/feed/PostEmbedUnion {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/embed/Gallery$Companion;
+	public fun <init> (Ljava/util/List;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun copy (Ljava/util/List;)Lio/github/kikin81/atproto/app/bsky/embed/Gallery;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/embed/Gallery;Ljava/util/List;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/embed/Gallery;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getItems ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/embed/Gallery$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/embed/Gallery$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/embed/Gallery;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/embed/Gallery;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/embed/Gallery$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/embed/GalleryImage : io/github/kikin81/atproto/app/bsky/embed/GalleryItemsUnion {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/embed/GalleryImage$Companion;
+	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/app/bsky/embed/AspectRatio;Lio/github/kikin81/atproto/runtime/Blob;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Lio/github/kikin81/atproto/app/bsky/embed/AspectRatio;
+	public final fun component3 ()Lio/github/kikin81/atproto/runtime/Blob;
+	public final fun copy (Ljava/lang/String;Lio/github/kikin81/atproto/app/bsky/embed/AspectRatio;Lio/github/kikin81/atproto/runtime/Blob;)Lio/github/kikin81/atproto/app/bsky/embed/GalleryImage;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/embed/GalleryImage;Ljava/lang/String;Lio/github/kikin81/atproto/app/bsky/embed/AspectRatio;Lio/github/kikin81/atproto/runtime/Blob;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/embed/GalleryImage;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAlt ()Ljava/lang/String;
+	public final fun getAspectRatio ()Lio/github/kikin81/atproto/app/bsky/embed/AspectRatio;
+	public final fun getImage ()Lio/github/kikin81/atproto/runtime/Blob;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/embed/GalleryImage$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/embed/GalleryImage$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/embed/GalleryImage;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/embed/GalleryImage;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/embed/GalleryImage$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public abstract interface class io/github/kikin81/atproto/app/bsky/embed/GalleryItemsUnion : io/github/kikin81/atproto/runtime/OpenUnionMember {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/embed/GalleryItemsUnion$Companion;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/embed/GalleryItemsUnion$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/embed/GalleryItemsUnion$Unknown : io/github/kikin81/atproto/app/bsky/embed/GalleryItemsUnion, io/github/kikin81/atproto/runtime/UnknownOpenUnionMember {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/embed/GalleryItemsUnion$Unknown$Companion;
+	public fun <init> (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Lkotlinx/serialization/json/JsonObject;
+	public final fun copy (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)Lio/github/kikin81/atproto/app/bsky/embed/GalleryItemsUnion$Unknown;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/embed/GalleryItemsUnion$Unknown;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/embed/GalleryItemsUnion$Unknown;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getRaw ()Lkotlinx/serialization/json/JsonObject;
+	public fun getType ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/embed/GalleryItemsUnion$Unknown$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/embed/GalleryItemsUnionSerializer : io/github/kikin81/atproto/runtime/OpenUnionSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/embed/GalleryItemsUnionSerializer;
+	public fun selectKnownDeserializer (Ljava/lang/String;)Lkotlinx/serialization/KSerializer;
+	public fun selectKnownSerializer (Lio/github/kikin81/atproto/app/bsky/embed/GalleryItemsUnion;)Lkotlinx/serialization/KSerializer;
+	public synthetic fun selectKnownSerializer (Lio/github/kikin81/atproto/runtime/OpenUnionMember;)Lkotlinx/serialization/KSerializer;
+	public fun unknownSerializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/embed/GalleryItemsUnionUnknownSerializer : io/github/kikin81/atproto/runtime/UnknownMemberSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/embed/GalleryItemsUnionUnknownSerializer;
+	public fun construct (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)Lio/github/kikin81/atproto/app/bsky/embed/GalleryItemsUnion$Unknown;
+	public synthetic fun construct (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)Lio/github/kikin81/atproto/runtime/UnknownOpenUnionMember;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/embed/GalleryView : io/github/kikin81/atproto/app/bsky/embed/RecordWithMediaViewMediaUnion, io/github/kikin81/atproto/app/bsky/feed/PostViewEmbedUnion {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/embed/GalleryView$Companion;
+	public fun <init> (Ljava/util/List;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun copy (Ljava/util/List;)Lio/github/kikin81/atproto/app/bsky/embed/GalleryView;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/embed/GalleryView;Ljava/util/List;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/embed/GalleryView;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getItems ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/embed/GalleryView$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/embed/GalleryView$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/embed/GalleryView;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/embed/GalleryView;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/embed/GalleryView$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/embed/GalleryViewImage : io/github/kikin81/atproto/app/bsky/embed/GalleryViewItemsUnion {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/embed/GalleryViewImage$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/app/bsky/embed/AspectRatio;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Lio/github/kikin81/atproto/app/bsky/embed/AspectRatio;
+	public final fun component3-jMNtXP8 ()Ljava/lang/String;
+	public final fun component4-jMNtXP8 ()Ljava/lang/String;
+	public final fun copy-1pRRTy0 (Ljava/lang/String;Lio/github/kikin81/atproto/app/bsky/embed/AspectRatio;Ljava/lang/String;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/embed/GalleryViewImage;
+	public static synthetic fun copy-1pRRTy0$default (Lio/github/kikin81/atproto/app/bsky/embed/GalleryViewImage;Ljava/lang/String;Lio/github/kikin81/atproto/app/bsky/embed/AspectRatio;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/embed/GalleryViewImage;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAlt ()Ljava/lang/String;
+	public final fun getAspectRatio ()Lio/github/kikin81/atproto/app/bsky/embed/AspectRatio;
+	public final fun getFullsize-jMNtXP8 ()Ljava/lang/String;
+	public final fun getThumbnail-jMNtXP8 ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/embed/GalleryViewImage$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/embed/GalleryViewImage$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/embed/GalleryViewImage;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/embed/GalleryViewImage;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/embed/GalleryViewImage$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public abstract interface class io/github/kikin81/atproto/app/bsky/embed/GalleryViewItemsUnion : io/github/kikin81/atproto/runtime/OpenUnionMember {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/embed/GalleryViewItemsUnion$Companion;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/embed/GalleryViewItemsUnion$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/embed/GalleryViewItemsUnion$Unknown : io/github/kikin81/atproto/app/bsky/embed/GalleryViewItemsUnion, io/github/kikin81/atproto/runtime/UnknownOpenUnionMember {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/embed/GalleryViewItemsUnion$Unknown$Companion;
+	public fun <init> (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Lkotlinx/serialization/json/JsonObject;
+	public final fun copy (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)Lio/github/kikin81/atproto/app/bsky/embed/GalleryViewItemsUnion$Unknown;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/embed/GalleryViewItemsUnion$Unknown;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/embed/GalleryViewItemsUnion$Unknown;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getRaw ()Lkotlinx/serialization/json/JsonObject;
+	public fun getType ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/embed/GalleryViewItemsUnion$Unknown$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/embed/GalleryViewItemsUnionSerializer : io/github/kikin81/atproto/runtime/OpenUnionSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/embed/GalleryViewItemsUnionSerializer;
+	public fun selectKnownDeserializer (Ljava/lang/String;)Lkotlinx/serialization/KSerializer;
+	public fun selectKnownSerializer (Lio/github/kikin81/atproto/app/bsky/embed/GalleryViewItemsUnion;)Lkotlinx/serialization/KSerializer;
+	public synthetic fun selectKnownSerializer (Lio/github/kikin81/atproto/runtime/OpenUnionMember;)Lkotlinx/serialization/KSerializer;
+	public fun unknownSerializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/embed/GalleryViewItemsUnionUnknownSerializer : io/github/kikin81/atproto/runtime/UnknownMemberSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/embed/GalleryViewItemsUnionUnknownSerializer;
+	public fun construct (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)Lio/github/kikin81/atproto/app/bsky/embed/GalleryViewItemsUnion$Unknown;
+	public synthetic fun construct (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)Lio/github/kikin81/atproto/runtime/UnknownOpenUnionMember;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/embed/GetEmbedExternalViewRequest {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/embed/GetEmbedExternalViewRequest$Companion;
+	public synthetic fun <init> (Ljava/util/List;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun component2-jMNtXP8 ()Ljava/lang/String;
+	public final fun copy-eM3CBdQ (Ljava/util/List;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/embed/GetEmbedExternalViewRequest;
+	public static synthetic fun copy-eM3CBdQ$default (Lio/github/kikin81/atproto/app/bsky/embed/GetEmbedExternalViewRequest;Ljava/util/List;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/embed/GetEmbedExternalViewRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getUris ()Ljava/util/List;
+	public final fun getUrl-jMNtXP8 ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/embed/GetEmbedExternalViewRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/embed/GetEmbedExternalViewRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/embed/GetEmbedExternalViewRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/embed/GetEmbedExternalViewRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/embed/GetEmbedExternalViewRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/embed/GetEmbedExternalViewResponse {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/embed/GetEmbedExternalViewResponse$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/util/List;Ljava/util/List;Lio/github/kikin81/atproto/app/bsky/embed/ExternalView;)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;Lio/github/kikin81/atproto/app/bsky/embed/ExternalView;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun component2 ()Ljava/util/List;
+	public final fun component3 ()Lio/github/kikin81/atproto/app/bsky/embed/ExternalView;
+	public final fun copy (Ljava/util/List;Ljava/util/List;Lio/github/kikin81/atproto/app/bsky/embed/ExternalView;)Lio/github/kikin81/atproto/app/bsky/embed/GetEmbedExternalViewResponse;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/embed/GetEmbedExternalViewResponse;Ljava/util/List;Ljava/util/List;Lio/github/kikin81/atproto/app/bsky/embed/ExternalView;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/embed/GetEmbedExternalViewResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAssociatedRecords ()Ljava/util/List;
+	public final fun getAssociatedRefs ()Ljava/util/List;
+	public final fun getView ()Lio/github/kikin81/atproto/app/bsky/embed/ExternalView;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/embed/GetEmbedExternalViewResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/embed/GetEmbedExternalViewResponse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/embed/GetEmbedExternalViewResponse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/embed/GetEmbedExternalViewResponse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/embed/GetEmbedExternalViewResponse$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
