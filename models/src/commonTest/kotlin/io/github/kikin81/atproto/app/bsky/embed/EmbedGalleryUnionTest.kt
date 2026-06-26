@@ -27,9 +27,19 @@ class EmbedGalleryUnionTest {
 
     @Test
     fun viewUnion_decodesGalleryViewAsTypedMember() {
+        // `#view` is not `#main`, so normalizeDollarType preserves the fragment; the
+        // union's when-clause matches "app.bsky.embed.gallery#view" verbatim.
         val wire = """{"${'$'}type":"app.bsky.embed.gallery#view","items":[]}"""
         val decoded = json.decodeFromString<RecordWithMediaViewMediaUnion>(wire)
         assertIs<GalleryView>(decoded)
+    }
+
+    @Test
+    fun viewUnion_encodesGalleryViewWithNsidFragment() {
+        val value: RecordWithMediaViewMediaUnion = GalleryView(items = emptyList())
+        val encoded = json.encodeToString(value)
+        val type = json.parseToJsonElement(encoded).jsonObject["${'$'}type"]!!.jsonPrimitive.content
+        assertEquals("app.bsky.embed.gallery#view", type)
     }
 
     @Test
