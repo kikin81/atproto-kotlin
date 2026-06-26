@@ -178,9 +178,29 @@ public abstract class OpenUnionSerializer<T : OpenUnionMember>(
         val raw = element.jsonObject[DOLLAR_TYPE]?.jsonPrimitive?.content.orEmpty()
         val normalized = normalizeDollarType(raw)
 
+        // Resolve the known member serializer for this `$type`, falling back to
+        // the Unknown member when the discriminator is unrecognized.
         @Suppress("UNCHECKED_CAST")
-        val serializer = (selectKnownDeserializer(normalized) ?: unknownSerializer()) as KSerializer<T>
-        return jsonDecoder.json.decodeFromJsonElement(serializer, element)
+        val known = selectKnownDeserializer(normalized) as KSerializer<T>?
+        if (known == null) {
+            @Suppress("UNCHECKED_CAST")
+            return jsonDecoder.json.decodeFromJsonElement(unknownSerializer() as KSerializer<T>, element)
+        }
+        return try {
+            jsonDecoder.json.decodeFromJsonElement(known, element)
+        } catch (e: SerializationException) {
+            // Open-union resilience: a recognized `$type` whose wire shape no
+            // longer matches the generated model — e.g. an "under active
+            // development" lexicon the server emits with absent/renamed required
+            // fields, or a field whose ref type the server sends in a reduced
+            // shape — must NOT hard-fail the whole enclosing object. Degrade to
+            // the Unknown member (which preserves the raw JsonObject verbatim
+            // for lossless round-trip), exactly as for an unrecognized `$type`.
+            // This keeps a single drifted event from failing an entire
+            // `getLog`/list response. See OpenUnionSerializerTest.
+            @Suppress("UNCHECKED_CAST")
+            jsonDecoder.json.decodeFromJsonElement(unknownSerializer() as KSerializer<T>, element)
+        }
     }
 
     override fun serialize(encoder: Encoder, value: T) {

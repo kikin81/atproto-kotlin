@@ -162,4 +162,42 @@ class OpenUnionTest {
         val decoded = json.decodeFromString(FakeMediaUnknownSerializer, encoded)
         assertEquals(member, decoded)
     }
+
+    @Test
+    fun decode_knownType_withMissingRequiredField_degradesToUnknown() {
+        // Open-union resilience: a recognized `$type` whose payload no longer
+        // matches the generated model (here `app.bsky.embed.images` missing its
+        // required `count`) must degrade to the Unknown member instead of
+        // throwing — so a single drifted event can't fail an entire enclosing
+        // response. Regression for the chat `getLog` crash where the server
+        // emitted a reduced `systemMessageDataAddMember` shape and one bad
+        // event hard-failed deserialization of the whole logs array.
+        val wire = """{"${'$'}type":"app.bsky.embed.images","unexpected":"x"}"""
+        val decoded = json.decodeFromString(FakeMediaSerializer, wire)
+        assertIs<FakeMedia.Unknown>(decoded)
+        assertEquals("app.bsky.embed.images", decoded.type)
+        assertTrue("unexpected" in decoded.raw)
+    }
+
+    @Test
+    fun decode_knownType_withWrongFieldType_degradesToUnknown() {
+        // Mirrors the real drift: a ref-typed field arriving in an incompatible
+        // shape (here `count`, an Int, arrives as a String). Must degrade, not
+        // throw.
+        val wire = """{"${'$'}type":"app.bsky.embed.images","count":"not-an-int"}"""
+        val decoded = json.decodeFromString(FakeMediaSerializer, wire)
+        assertIs<FakeMedia.Unknown>(decoded)
+        assertEquals("app.bsky.embed.images", decoded.type)
+    }
+
+    @Test
+    fun degradedKnownType_roundTripIsLossless() {
+        // The degraded Unknown carries the raw JsonObject verbatim, so a known
+        // type that failed to decode still round-trips byte-for-byte.
+        val wire = """{"${'$'}type":"app.bsky.embed.images","count":"bad","extra":42}"""
+        val decoded = json.decodeFromString(FakeMediaSerializer, wire)
+        assertIs<FakeMedia.Unknown>(decoded)
+        val reencoded = json.encodeToString(FakeMediaSerializer, decoded)
+        assertEquals(json.parseToJsonElement(wire), json.parseToJsonElement(reencoded))
+    }
 }
