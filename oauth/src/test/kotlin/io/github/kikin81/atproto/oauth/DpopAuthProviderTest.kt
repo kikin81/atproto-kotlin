@@ -8,6 +8,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
 import io.ktor.utils.io.ByteReadChannel
 import kotlinx.coroutines.test.runTest
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.test.Test
@@ -278,6 +279,47 @@ class DpopAuthProviderTest {
         assertFailsWith<OAuthRefreshFailedException> { provider.onUnauthorized(emptyMap()) }
         assertEquals(2, calls, "the nonce-retry must have been attempted")
         assertNotNull(store.session, "a transient 5xx on the nonce retry must NOT clear the session")
+    }
+
+    @Test
+    fun refreshNonceRetryNetworkFailureKeepsSession() = runTest {
+        // The nonce-retry leg must also treat a network failure as transient —
+        // wrap submitForm so it surfaces as retryable, not a raw escape that a
+        // caller might mishandle, and never clear the session.
+        var calls = 0
+        val refreshClient = HttpClient(
+            MockEngine { _ ->
+                calls++
+                if (calls == 1) {
+                    respond(
+                        ByteReadChannel("""{"error":"use_dpop_nonce"}"""),
+                        HttpStatusCode.BadRequest,
+                        headersOf("DPoP-Nonce", "srv-nonce"),
+                    )
+                } else {
+                    throw java.io.IOException("simulated network failure on nonce retry")
+                }
+            },
+        )
+        val (provider, store) = fixtureWithExpiredToken(refreshClient)
+
+        assertFailsWith<OAuthRefreshFailedException> { provider.onUnauthorized(emptyMap()) }
+        assertEquals(2, calls, "the nonce-retry must have been attempted")
+        assertNotNull(store.session, "a network failure on the nonce retry must NOT clear the session")
+    }
+
+    @Test
+    fun refreshDoesNotWrapCancellation() = runTest {
+        // A cancelled coroutine must propagate CancellationException untouched —
+        // wrapping it as OAuthRefreshFailedException would swallow cancellation
+        // and break structured concurrency.
+        val refreshClient = HttpClient(
+            MockEngine { _ -> throw CancellationException("refresh cancelled") },
+        )
+        val (provider, store) = fixtureWithExpiredToken(refreshClient)
+
+        assertFailsWith<CancellationException> { provider.onUnauthorized(emptyMap()) }
+        assertNotNull(store.session, "cancellation must not clear the session")
     }
 
     /**

@@ -14,6 +14,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
@@ -31,8 +32,8 @@ import kotlin.io.encoding.ExperimentalEncodingApi
  *   with the DPoP-bound refresh token, retries
  * - If the refresh token is revoked (`error=invalid_grant`) → clears the
  *   session, throws [OAuthSessionExpiredException]
- * - If the refresh fails transiently (network error, 5xx/429, or an
- *   unparseable/captive-portal response) → throws the retryable
+ * - Otherwise (network error, 5xx/429, unparseable/captive-portal body, or any
+ *   non-`invalid_grant` error) → throws the retryable
  *   [OAuthRefreshFailedException] and LEAVES THE SESSION INTACT, so a flaky
  *   connection can't sign the user out
  *
@@ -149,6 +150,8 @@ class DpopAuthProvider(
             ) {
                 headers.append("DPoP", proof)
             }
+        } catch (e: CancellationException) {
+            throw e // never swallow cooperative cancellation
         } catch (e: Exception) {
             // Transient network failure (no signal, DNS, timeout) — the refresh
             // token isn't necessarily invalid. Retryable; do NOT clear the session.
@@ -187,15 +190,22 @@ class DpopAuthProvider(
             url = session.tokenEndpoint,
             nonce = authServerNonce,
         )
-        val response = refreshClient.submitForm(
-            url = session.tokenEndpoint,
-            formParameters = Parameters.build {
-                append("grant_type", "refresh_token")
-                append("refresh_token", session.refreshToken)
-                append("client_id", session.clientId ?: "")
-            },
-        ) {
-            headers.append("DPoP", proof)
+        val response = try {
+            refreshClient.submitForm(
+                url = session.tokenEndpoint,
+                formParameters = Parameters.build {
+                    append("grant_type", "refresh_token")
+                    append("refresh_token", session.refreshToken)
+                    append("client_id", session.clientId ?: "")
+                },
+            ) {
+                headers.append("DPoP", proof)
+            }
+        } catch (e: CancellationException) {
+            throw e // never swallow cooperative cancellation
+        } catch (e: Exception) {
+            // Same transient contract as the first refresh leg: retryable, no clear.
+            throw OAuthRefreshFailedException("Refresh request failed (nonce retry)", e)
         }
 
         if (response.status != HttpStatusCode.OK) failRefresh(response)
@@ -223,8 +233,11 @@ class DpopAuthProvider(
      * flaky connection from silently signing the user out.
      */
     private suspend fun failRefresh(response: HttpResponse): Nothing {
+        // Read the body first (a suspend call — must not be inside runCatching, which
+        // would swallow CancellationException); only the pure JSON parse is guarded.
+        val body = response.bodyAsText()
         val error = runCatching {
-            json.parseToJsonElement(response.bodyAsText()).jsonObject["error"]?.jsonPrimitive?.content
+            json.parseToJsonElement(body).jsonObject["error"]?.jsonPrimitive?.content
         }.getOrNull()
         if (error == "invalid_grant") {
             sessionStore.clear()
