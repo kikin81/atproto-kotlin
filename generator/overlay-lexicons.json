@@ -48,6 +48,30 @@
       "vendoredAt": "2026-06-25",
       "reason": "PINNED shadow (removeWhenPublished=false). Already published on-network; vendored only to add app.bsky.embed.gallery#view to the postView embed union ahead of the network. RE-VENDOR on drift; retire MANUALLY once the on-network copy includes gallery#view.",
       "removeWhenPublished": false
+    },
+    {
+      "nsid": "chat.bsky.convo.defs",
+      "source": "https://github.com/bluesky-social/atproto/blob/4f1e20387bb2a212e263590ac7a3458e8f939091/lexicons/chat/bsky/convo/defs.json",
+      "commit": "4f1e20387bb2a212e263590ac7a3458e8f939091",
+      "vendoredAt": "2026-07-01",
+      "reason": "PINNED shadow (removeWhenPublished=false). Already published on-network; vendored to add message replies (messageInput/messageView.replyTo, #replyRef, #messageBeforeUserJoinedGroupView) ahead of the network. RE-VENDOR on drift; retire MANUALLY once the on-network convo.defs includes replyTo.",
+      "removeWhenPublished": false
+    },
+    {
+      "nsid": "chat.bsky.convo.sendMessage",
+      "source": "https://github.com/bluesky-social/atproto/blob/4f1e20387bb2a212e263590ac7a3458e8f939091/lexicons/chat/bsky/convo/sendMessage.json",
+      "commit": "4f1e20387bb2a212e263590ac7a3458e8f939091",
+      "vendoredAt": "2026-07-01",
+      "reason": "PINNED shadow (removeWhenPublished=false). Already published on-network; vendored for the ReplyTargetNotFound error that pairs with messageInput.replyTo (see chat.bsky.convo.defs). RE-VENDOR on drift; retire MANUALLY once the on-network sendMessage includes it.",
+      "removeWhenPublished": false
+    },
+    {
+      "nsid": "chat.bsky.convo.sendMessageBatch",
+      "source": "https://github.com/bluesky-social/atproto/blob/4f1e20387bb2a212e263590ac7a3458e8f939091/lexicons/chat/bsky/convo/sendMessageBatch.json",
+      "commit": "4f1e20387bb2a212e263590ac7a3458e8f939091",
+      "vendoredAt": "2026-07-01",
+      "reason": "PINNED shadow (removeWhenPublished=false). Already published on-network; vendored for the ReplyTargetNotFound error that pairs with the batch reply input. RE-VENDOR on drift; retire MANUALLY once the on-network sendMessageBatch includes it.",
+      "removeWhenPublished": false
     }
   ]
 }
