@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
-    <title>CidLink</title>
+    <title>OAuthRefreshFailedException</title>
 <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>
     <script>document.documentElement.classList.replace("no-js", "js");</script>
     <script>const storage = localStorage.getItem("dokka-dark-mode")
@@ -42,7 +42,7 @@
         </div>
         <div class="navigation-controls">
         <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
-                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true" data-filter=":runtime/commonMain">common</button>
+                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true" data-filter=":oauth/main">jvm</button>
             <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
                 <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
                 <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
@@ -53,9 +53,9 @@
                     </div>
                         <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
                             <label class="checkbox">
-                                <input type="checkbox" class="checkbox--input" id=":runtime/commonMain" data-filter=":runtime/commonMain">
+                                <input type="checkbox" class="checkbox--input" id=":oauth/main" data-filter=":oauth/main">
                                 <span class="checkbox--icon"></span>
-                                common
+                                jvm
                             </label>
                         </li>
                 </ul>
@@ -89,28 +89,28 @@
         </nav>
         <div id="resizer" class="resizer" data-item-type="BAR"></div>
         <div id="main" data-item-type="SECTION" role="main">
-<div class="main-content" data-page-type="classlike" id="content" pageids="runtime::io.github.kikin81.atproto.runtime/CidLink///PointingToDeclaration//-1312573867">
-  <div class="breadcrumbs"><a href="../../index.html">runtime</a><span class="delimiter">/</span><a href="../index.html">io.github.kikin81.atproto.runtime</a><span class="delimiter">/</span><span class="current">CidLink</span></div>
+<div class="main-content" data-page-type="classlike" id="content" pageids="oauth::io.github.kikin81.atproto.oauth/OAuthRefreshFailedException///PointingToDeclaration//650462341">
+  <div class="breadcrumbs"><a href="../../index.html">oauth</a><span class="delimiter">/</span><a href="../index.html">io.github.kikin81.atproto.oauth</a><span class="delimiter">/</span><span class="current">OAuthRefreshFailedException</span></div>
   <div class="cover ">
-    <h1 class="cover"><span>Cid</span><wbr><span><span>Link</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":runtime/commonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><span data-unresolved-link="kotlinx.serialization/Serializable///PointingToDeclaration/"><span class="token annotation builtin">Serializable</span></span></div></div><span class="token keyword">data </span><span class="token keyword">class </span><a href="index.html">CidLink</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>link<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div><p class="paragraph">A CID link as encoded by the AT Protocol data model.</p><p class="paragraph">On the wire, a CID link is always a single-key JSON object with the reserved <code class="lang-kotlin">$link</code> key holding the CID string:</p><div class="sample-container"><pre><code class="block lang-json" theme="idea">{ "$link": "bafkreig..." }</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><p class="paragraph">The lexicon spec uses <code class="lang-kotlin">cid-link</code> for this shape. It intentionally differs from a bare <code class="lang-kotlin">cid</code> string so that CBOR/DAG-CBOR round trips preserve the "this is a content-addressed link" signal distinct from an opaque identifier. v1 of this runtime is JSON-only but we keep the distinction so a future CBOR emitter can map <code class="lang-kotlin">CidLink</code> to the CBOR tag-42 link type without touching call sites.</p></div></div>
+    <h1 class="cover"><span>OAuth</span><wbr><span>Refresh</span><wbr><span>Failed</span><wbr><span><span>Exception</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":oauth/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">OAuthRefreshFailedException</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">message<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">cause<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-throwable/index.html">Throwable</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span> : <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/RuntimeException.html">RuntimeException</a></div><p class="paragraph">Thrown when a token refresh could not be completed for a reason that does NOT prove the refresh token is dead — a network failure, a 5xx/429/408, an unparseable (e.g. captive-portal) body, or any non-<code class="lang-kotlin">invalid_grant</code> error response — as opposed to a genuinely revoked/expired refresh token (<code class="lang-kotlin">error=invalid_grant</code>, which is <a href="../-o-auth-session-expired-exception/index.html">OAuthSessionExpiredException</a>).</p><p class="paragraph">The session is deliberately left intact: a later request with real connectivity can refresh cleanly. Callers must treat this as a retryable error, NOT a sign-out — surfacing it as "logged out" is the bug this type exists to prevent.</p></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
     <div class="tabs-section-body">
       <div data-togglable="CONSTRUCTOR">
         <h2 class="tableheader">Constructors</h2>
-        <div class="table"><a data-name="-807832846%2FConstructors%2F-1312573867" anchor-label="CidLink" id="-807832846%2FConstructors%2F-1312573867" data-filterable-set=":runtime/commonMain"></a>
-          <div class="table-row table-row_content" data-togglable="CONSTRUCTOR" data-filterable-current=":runtime/commonMain" data-filterable-set=":runtime/commonMain">
+        <div class="table"><a data-name="446130580%2FConstructors%2F650462341" anchor-label="OAuthRefreshFailedException" id="446130580%2FConstructors%2F650462341" data-filterable-set=":oauth/main"></a>
+          <div class="table-row table-row_content" data-togglable="CONSTRUCTOR" data-filterable-current=":oauth/main" data-filterable-set=":oauth/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="-cid-link.html"><span>Cid</span><wbr><span><span>Link</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-807832846%2FConstructors%2F-1312573867"></span>
+                  <div><a href="-o-auth-refresh-failed-exception.html"><span>OAuth</span><wbr><span>Refresh</span><wbr><span>Failed</span><wbr><span><span>Exception</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="446130580%2FConstructors%2F650462341"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":runtime/commonMain"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">link<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":oauth/main"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">message<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">cause<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-throwable/index.html">Throwable</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
@@ -119,17 +119,32 @@
       </div>
       <div data-togglable="PROPERTY">
         <h2 class="tableheader">Properties</h2>
-        <div class="table"><a data-name="1631825366%2FProperties%2F-1312573867" anchor-label="link" id="1631825366%2FProperties%2F-1312573867" data-filterable-set=":runtime/commonMain"></a>
-          <div class="table-row table-row_content" data-filterable-current=":runtime/commonMain" data-filterable-set=":runtime/commonMain">
+        <div class="table"><a data-name="-654012527%2FProperties%2F650462341" anchor-label="cause" id="-654012527%2FProperties%2F650462341" data-filterable-set=":oauth/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":oauth/main" data-filterable-set=":oauth/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="link.html"><span><span>link</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1631825366%2FProperties%2F-1312573867"></span>
+                  <div><a href="../-o-auth-signup-not-supported-exception/index.html#-654012527%2FProperties%2F650462341"><span><span>cause</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-654012527%2FProperties%2F650462341"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":runtime/commonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><span data-unresolved-link="kotlinx.serialization/SerialName///PointingToDeclaration/"><span class="token annotation builtin">SerialName</span></span><span class="token punctuation">(</span><span>value<span class="token operator"> = </span><span class="breakable-word"><span class="token string">"$link"</span></span></span><wbr><span class="token punctuation">)</span></div></div><span class="token keyword">val </span><a href="link.html">link</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":oauth/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">val </span><a href="../-o-auth-signup-not-supported-exception/index.html#-654012527%2FProperties%2F650462341">cause</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-throwable/index.html">Throwable</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1824300659%2FProperties%2F650462341" anchor-label="message" id="1824300659%2FProperties%2F650462341" data-filterable-set=":oauth/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":oauth/main" data-filterable-set=":oauth/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-o-auth-signup-not-supported-exception/index.html#1824300659%2FProperties%2F650462341"><span><span>message</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1824300659%2FProperties%2F650462341"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":oauth/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">val </span><a href="../-o-auth-signup-not-supported-exception/index.html#1824300659%2FProperties%2F650462341">message</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></div></div></div>
                 </div>
               </div>
             </div>
