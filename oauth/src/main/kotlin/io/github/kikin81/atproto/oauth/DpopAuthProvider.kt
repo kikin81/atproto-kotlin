@@ -161,10 +161,10 @@ class DpopAuthProvider(
         // A rotated DPoP-Nonce on a 401/400 is a recoverable use_dpop_nonce
         // signal — retry once with the new nonce (not a token rejection).
         val nonceHeader = response.headers["DPoP-Nonce"]
-        val canRetryWithNonce = (
+        val isNonceRetryStatus =
             response.status == HttpStatusCode.Unauthorized ||
                 response.status == HttpStatusCode.BadRequest
-            ) && nonceHeader != null
+        val canRetryWithNonce = isNonceRetryStatus && nonceHeader != null
         if (canRetryWithNonce) {
             signer.calibrateClockFromHeader(response.headers["Date"]?.toString())
             authServerNonce = nonceHeader
