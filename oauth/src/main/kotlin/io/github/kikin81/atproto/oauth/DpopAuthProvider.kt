@@ -3,6 +3,7 @@ package io.github.kikin81.atproto.oauth
 import io.github.kikin81.atproto.runtime.AuthProvider
 import io.ktor.client.HttpClient
 import io.ktor.client.request.forms.submitForm
+import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Parameters
@@ -28,8 +29,12 @@ import kotlin.io.encoding.ExperimentalEncodingApi
  * - If `DPoP-Nonce` header is present → stores the nonce, retries
  * - If the access token is expired → refreshes via the token endpoint
  *   with the DPoP-bound refresh token, retries
- * - If the refresh token is revoked → clears the session, throws
- *   [OAuthSessionExpiredException]
+ * - If the refresh token is revoked (`error=invalid_grant`) → clears the
+ *   session, throws [OAuthSessionExpiredException]
+ * - If the refresh fails transiently (network error, 5xx/429, or an
+ *   unparseable/captive-portal response) → throws the retryable
+ *   [OAuthRefreshFailedException] and LEAVES THE SESSION INTACT, so a flaky
+ *   connection can't sign the user out
  *
  * Refresh operations are serialized with a [Mutex] to prevent concurrent
  * refreshes from invalidating the session.
@@ -145,26 +150,25 @@ class DpopAuthProvider(
                 headers.append("DPoP", proof)
             }
         } catch (e: Exception) {
-            throw OAuthSessionExpiredException("Refresh request failed", e)
+            // Transient network failure (no signal, DNS, timeout) — the refresh
+            // token isn't necessarily invalid. Retryable; do NOT clear the session.
+            throw OAuthRefreshFailedException("Refresh request failed", e)
         }
 
-        val needsNonce = response.status == HttpStatusCode.Unauthorized ||
-            response.status == HttpStatusCode.BadRequest
-        if (needsNonce) {
-            val nonceHeader = response.headers["DPoP-Nonce"]
-            if (nonceHeader != null) {
-                signer.calibrateClockFromHeader(response.headers["Date"]?.toString())
-                authServerNonce = nonceHeader
-                return refreshTokensWithNonce()
-            }
-            sessionStore.clear()
-            throw OAuthSessionExpiredException("Refresh token rejected (HTTP ${response.status})")
+        // A rotated DPoP-Nonce on a 401/400 is a recoverable use_dpop_nonce
+        // signal — retry once with the new nonce (not a token rejection).
+        val nonceHeader = response.headers["DPoP-Nonce"]
+        val canRetryWithNonce = (
+            response.status == HttpStatusCode.Unauthorized ||
+                response.status == HttpStatusCode.BadRequest
+            ) && nonceHeader != null
+        if (canRetryWithNonce) {
+            signer.calibrateClockFromHeader(response.headers["Date"]?.toString())
+            authServerNonce = nonceHeader
+            return refreshTokensWithNonce()
         }
 
-        if (response.status != HttpStatusCode.OK) {
-            sessionStore.clear()
-            throw OAuthSessionExpiredException("Refresh failed with HTTP ${response.status}")
-        }
+        if (response.status != HttpStatusCode.OK) failRefresh(response)
 
         val tokenResponse = json.decodeFromString(TokenResponse.serializer(), response.bodyAsText())
         session = session.copy(
@@ -194,10 +198,7 @@ class DpopAuthProvider(
             headers.append("DPoP", proof)
         }
 
-        if (response.status != HttpStatusCode.OK) {
-            sessionStore.clear()
-            throw OAuthSessionExpiredException("Refresh failed after nonce retry (HTTP ${response.status})")
-        }
+        if (response.status != HttpStatusCode.OK) failRefresh(response)
 
         val tokenResponse = json.decodeFromString(TokenResponse.serializer(), response.bodyAsText())
         session = session.copy(
@@ -208,6 +209,30 @@ class DpopAuthProvider(
         )
         sessionStore.save(session)
         return true
+    }
+
+    /**
+     * Terminates a non-OK refresh response. Clears the session and throws
+     * [OAuthSessionExpiredException] ONLY when the token endpoint reports the
+     * refresh token is revoked/expired (`error=invalid_grant`, RFC 6749 §5.2).
+     *
+     * Every other failure — 5xx, 429, 408, a proxy/captive-portal body, or any
+     * non-`invalid_grant` error — is treated as transient: throw the retryable
+     * [OAuthRefreshFailedException] and leave the session intact so a later
+     * request with real connectivity can refresh cleanly. This is what keeps a
+     * flaky connection from silently signing the user out.
+     */
+    private suspend fun failRefresh(response: HttpResponse): Nothing {
+        val error = runCatching {
+            json.parseToJsonElement(response.bodyAsText()).jsonObject["error"]?.jsonPrimitive?.content
+        }.getOrNull()
+        if (error == "invalid_grant") {
+            sessionStore.clear()
+            throw OAuthSessionExpiredException("Refresh token revoked (invalid_grant, HTTP ${response.status})")
+        }
+        throw OAuthRefreshFailedException(
+            "Refresh failed (HTTP ${response.status}${error?.let { ", error=$it" } ?: ""})",
+        )
     }
 
     private suspend fun persistNonces() {

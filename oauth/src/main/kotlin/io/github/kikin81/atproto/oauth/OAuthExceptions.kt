@@ -4,6 +4,19 @@ class OAuthAccountMismatchException(message: String) : RuntimeException(message)
 
 class OAuthSessionExpiredException(message: String, cause: Throwable? = null) : RuntimeException(message, cause)
 
+/**
+ * Thrown when a token refresh could not be completed for a TRANSIENT reason — a
+ * network failure, a 5xx/429/408 from the token endpoint, or an unparseable
+ * (e.g. captive-portal) response — as opposed to a genuinely revoked/expired
+ * refresh token (which is [OAuthSessionExpiredException]).
+ *
+ * The session is deliberately left intact: a later request with real
+ * connectivity can refresh cleanly. Callers must treat this as a retryable
+ * error, NOT a sign-out — surfacing it as "logged out" is the bug this type
+ * exists to prevent.
+ */
+class OAuthRefreshFailedException(message: String, cause: Throwable? = null) : RuntimeException(message, cause)
+
 class OAuthException(message: String, cause: Throwable? = null) : RuntimeException(message, cause)
 
 /**
