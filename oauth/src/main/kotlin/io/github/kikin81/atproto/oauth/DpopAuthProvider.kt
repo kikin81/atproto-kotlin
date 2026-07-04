@@ -41,7 +41,10 @@ import kotlin.io.encoding.ExperimentalEncodingApi
  * refreshes from invalidating the session.
  */
 class DpopAuthProvider(
-    private var session: OAuthSession,
+    // Written under refreshMutex, but read without it (authHeaders,
+    // isAccessTokenExpired, snapshotting) — @Volatile guarantees those
+    // unlocked reads observe the latest rotation across threads.
+    @Volatile private var session: OAuthSession,
     private val signer: DpopSigner,
     private val sessionStore: OAuthSessionStore,
     private val refreshClient: HttpClient,
@@ -49,7 +52,11 @@ class DpopAuthProvider(
 ) : AuthProvider {
 
     private val refreshMutex = Mutex()
+
+    @Volatile
     private var pdsNonce: String? = session.pdsNonce
+
+    @Volatile
     private var authServerNonce: String? = session.authServerNonce
 
     override suspend fun authHeaders(method: String, url: String): Map<String, String> {
@@ -82,6 +89,12 @@ class DpopAuthProvider(
      * 4. Otherwise (no nonce signal: same nonce, no nonce header) refresh.
      */
     override suspend fun onUnauthorized(responseHeaders: Map<String, String>): Boolean {
+        // Snapshot the tokens this 401 was (at the latest) issued against,
+        // before any suspension below — the single-flight check compares
+        // against them to detect a rotation that lands while this call waits.
+        val observedAccessToken = session.accessToken
+        val observedRefreshToken = session.refreshToken
+
         val newNonce = responseHeaders["DPoP-Nonce"] ?: responseHeaders["dpop-nonce"]
         val dateHeader = responseHeaders["Date"] ?: responseHeaders["date"]
         if (dateHeader != null) signer.calibrateClockFromHeader(dateHeader)
@@ -93,12 +106,12 @@ class DpopAuthProvider(
         }
 
         if (isAccessTokenExpired()) {
-            return refreshTokensSingleFlight()
+            return refreshTokensSingleFlight(observedAccessToken, observedRefreshToken)
         }
 
         if (nonceChanged) return true
 
-        return refreshTokensSingleFlight()
+        return refreshTokensSingleFlight(observedAccessToken, observedRefreshToken)
     }
 
     /**
@@ -116,31 +129,41 @@ class DpopAuthProvider(
      *    instance already rotated. Adopt the stored session instead of
      *    replaying this instance's now-consumed token.
      */
-    private suspend fun refreshTokensSingleFlight(): Boolean {
-        // Snapshot BEFORE acquiring the lock: waiters queued behind an
-        // in-flight refresh must observe the pre-refresh tokens to detect it.
-        val observedAccessToken = session.accessToken
-        val observedRefreshToken = session.refreshToken
+    private suspend fun refreshTokensSingleFlight(
+        observedAccessToken: String,
+        observedRefreshToken: String,
+    ): Boolean {
         refreshMutex.withLock {
             val rotatedWhileWaiting =
                 session.accessToken != observedAccessToken ||
                     session.refreshToken != observedRefreshToken
             if (rotatedWhileWaiting) return true
 
-            val stored = sessionStore.load()
-            if (stored != null) {
-                val rotatedByOtherInstance =
-                    stored.did == session.did && stored.refreshToken != session.refreshToken
-                if (rotatedByOtherInstance) {
-                    session = stored
-                    pdsNonce = stored.pdsNonce
-                    authServerNonce = stored.authServerNonce
-                    return true
-                }
+            if (adoptStoredSessionIfRotated()) {
+                pdsNonce = session.pdsNonce
+                return true
             }
 
             return refreshTokens()
         }
+    }
+
+    /**
+     * MUST be called with [refreshMutex] held. If the shared [sessionStore]
+     * holds a same-DID session whose refresh token differs from the in-memory
+     * one, another provider instance already rotated — adopt its tokens (and
+     * its auth-server nonce) instead of ever re-using this instance's
+     * now-consumed refresh token. The caller decides what happens to
+     * [pdsNonce], which may be fresher locally than in the store.
+     */
+    private suspend fun adoptStoredSessionIfRotated(): Boolean {
+        val stored = sessionStore.load() ?: return false
+        val rotatedByOtherInstance =
+            stored.did == session.did && stored.refreshToken != session.refreshToken
+        if (!rotatedByOtherInstance) return false
+        session = stored
+        authServerNonce = stored.authServerNonce
+        return true
     }
 
     /**
@@ -263,9 +286,21 @@ class DpopAuthProvider(
         )
     }
 
+    /**
+     * Persists the freshly-rotated nonces under [refreshMutex]. Adoption runs
+     * first: if another instance sharing the [sessionStore] already rotated
+     * the tokens, saving this instance's in-memory session verbatim would
+     * overwrite the store's only valid refresh token with a consumed one —
+     * re-arming the replay → reuse-detection → `invalid_grant` logout. After
+     * adoption the save is a pure nonce update on top of the latest tokens
+     * ([pdsNonce] stays local: the nonce from this 401 is the freshest).
+     */
     private suspend fun persistNonces() {
-        session = session.copy(authServerNonce = authServerNonce, pdsNonce = pdsNonce)
-        sessionStore.save(session)
+        refreshMutex.withLock {
+            adoptStoredSessionIfRotated()
+            session = session.copy(authServerNonce = authServerNonce, pdsNonce = pdsNonce)
+            sessionStore.save(session)
+        }
     }
 }
 
