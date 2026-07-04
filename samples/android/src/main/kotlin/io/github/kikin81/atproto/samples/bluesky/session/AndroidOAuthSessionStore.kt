@@ -30,7 +30,13 @@ class AndroidOAuthSessionStore(appContext: Context) : OAuthSessionStore {
     }
 
     override suspend fun save(session: OAuthSession) {
-        prefs.edit().putString(KEY, json.encodeToString(OAuthSession.serializer(), session)).apply()
+        // commit(), not apply(): save() runs after the auth server has already
+        // rotated the single-use refresh token (see OAuthSessionStore.save).
+        // apply()'s deferred write can be lost to process death, stranding the
+        // consumed token on disk → invalid_grant (reuse detection) on the next
+        // cold start → the whole session is revoked.
+        @Suppress("ApplySharedPref")
+        prefs.edit().putString(KEY, json.encodeToString(OAuthSession.serializer(), session)).commit()
     }
 
     override suspend fun clear() {

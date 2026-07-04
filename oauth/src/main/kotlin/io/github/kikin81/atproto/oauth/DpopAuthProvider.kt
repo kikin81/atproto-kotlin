@@ -2,6 +2,7 @@ package io.github.kikin81.atproto.oauth
 
 import io.github.kikin81.atproto.runtime.AuthProvider
 import io.ktor.client.HttpClient
+import io.ktor.client.network.sockets.ConnectTimeoutException
 import io.ktor.client.request.forms.submitForm
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
@@ -14,6 +15,9 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
+import java.net.ConnectException
+import java.net.UnknownHostException
+import java.nio.channels.UnresolvedAddressException
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
@@ -49,6 +53,16 @@ class DpopAuthProvider(
     private val sessionStore: OAuthSessionStore,
     private val refreshClient: HttpClient,
     private val json: Json = Json { ignoreUnknownKeys = true },
+    /**
+     * Invoked when persisting a rotated session fails even after one retry.
+     * By then the server has already consumed the old refresh token, so the
+     * in-memory session is the only valid copy: the provider keeps serving it
+     * and reports the durability gap here (e.g. to a crash reporter) instead
+     * of throwing. If the process dies before a later save succeeds, the
+     * persisted refresh token is stale and the next cold-start refresh will
+     * be rejected as reuse (`invalid_grant`).
+     */
+    private val onPersistFailure: (Throwable) -> Unit = {},
 ) : AuthProvider {
 
     private val refreshMutex = Mutex()
@@ -239,11 +253,21 @@ class DpopAuthProvider(
         } catch (e: CancellationException) {
             throw e // never swallow cooperative cancellation
         } catch (e: Exception) {
-            // Transient network failure (no signal, DNS, timeout) — the refresh
-            // token isn't necessarily invalid. Retryable; do NOT clear the session.
-            throw OAuthRefreshFailedException("Refresh request failed$failureContext", e)
+            // Transient network failure — the refresh token isn't necessarily
+            // invalid. Retryable; do NOT clear the session. Pre-send failures
+            // (DNS, connect) are flagged: the request never reached the server,
+            // so the single-use refresh token was provably NOT consumed and a
+            // retry with the same token is safe. Post-send failures (response
+            // lost) stay ambiguous — the server may have already rotated.
+            val notConsumed = if (isPreSendFailure(e)) " (request not sent; refresh token not consumed)" else ""
+            throw OAuthRefreshFailedException("Refresh request failed$failureContext$notConsumed", e)
         }
     }
+
+    private fun isPreSendFailure(e: Exception): Boolean = e is UnknownHostException ||
+        e is ConnectException ||
+        e is UnresolvedAddressException ||
+        e is ConnectTimeoutException
 
     private suspend fun applyRefreshResponse(response: HttpResponse): Boolean {
         if (response.status != HttpStatusCode.OK) failRefresh(response)
@@ -255,8 +279,36 @@ class DpopAuthProvider(
             authServerNonce = authServerNonce,
             pdsNonce = pdsNonce,
         )
-        sessionStore.save(session)
+        persistRotatedSession()
         return true
+    }
+
+    /**
+     * Persists the rotated session, retrying once. A rotation the server has
+     * already performed must never be failed client-side: throwing here would
+     * fail a request that holds a perfectly good token and push callers toward
+     * replaying the consumed refresh token (reuse detection → session
+     * revocation). A persist that fails both attempts is reported through
+     * [onPersistFailure] and otherwise swallowed — the in-memory session
+     * remains the source of truth for this provider's lifetime.
+     */
+    private suspend fun persistRotatedSession() {
+        val firstFailure = try {
+            sessionStore.save(session)
+            return
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            e
+        }
+        try {
+            sessionStore.save(session)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (retryFailure: Exception) {
+            retryFailure.addSuppressed(firstFailure)
+            onPersistFailure(retryFailure)
+        }
     }
 
     /**
