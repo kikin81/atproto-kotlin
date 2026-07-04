@@ -520,15 +520,129 @@ class DpopAuthProviderTest {
         )
     }
 
+    @Test
+    fun persistFailureAfterRotationStillRecoversAndSignalsOnPersistFailure() = runTest {
+        // By the time the token endpoint returns 200 the server has ALREADY
+        // consumed the old refresh token. If persisting the rotated session
+        // fails, the in-memory session is still the only valid one — the
+        // provider must keep serving it (return true) rather than throw,
+        // and surface the persistence gap through onPersistFailure so the
+        // app can report it. Throwing here would fail a request that holds
+        // a perfectly good token and invite a consumed-token replay.
+        val refreshClient = HttpClient(
+            MockEngine { _ ->
+                respond(
+                    ByteReadChannel(
+                        """{"access_token":"at_new","refresh_token":"rt_new","token_type":"DPoP"}""",
+                    ),
+                    HttpStatusCode.OK,
+                    jsonHeaders,
+                )
+            },
+        )
+        val store = object : OAuthSessionStore {
+            var session: OAuthSession? = null
+            var saveAttempts = 0
+            override suspend fun load(): OAuthSession? = session
+            override suspend fun save(session: OAuthSession) {
+                saveAttempts++
+                throw java.io.IOException("simulated persist failure #$saveAttempts")
+            }
+            override suspend fun clear() {
+                session = null
+            }
+        }
+        val persistFailures = mutableListOf<Throwable>()
+        val (provider, _) = fixtureWithExpiredToken(refreshClient, store, persistFailures::add)
+
+        assertTrue(provider.onUnauthorized(emptyMap()), "rotation succeeded server-side — must recover")
+
+        assertEquals(2, store.saveAttempts, "save must be retried exactly once")
+        assertEquals(1, persistFailures.size, "the persist failure must be signalled exactly once")
+        assertTrue(
+            provider.authHeaders("GET", "https://pds.test/xrpc/x")["Authorization"]!!.contains("at_new"),
+            "the in-memory rotated token must be served despite the persist failure",
+        )
+    }
+
+    @Test
+    fun persistRetrySucceedsSilently() = runTest {
+        val refreshClient = HttpClient(
+            MockEngine { _ ->
+                respond(
+                    ByteReadChannel(
+                        """{"access_token":"at_new","refresh_token":"rt_new","token_type":"DPoP"}""",
+                    ),
+                    HttpStatusCode.OK,
+                    jsonHeaders,
+                )
+            },
+        )
+        val store = object : OAuthSessionStore {
+            var session: OAuthSession? = null
+            var saveAttempts = 0
+            override suspend fun load(): OAuthSession? = session
+            override suspend fun save(session: OAuthSession) {
+                saveAttempts++
+                if (saveAttempts == 1) throw java.io.IOException("transient persist hiccup")
+                this.session = session
+            }
+            override suspend fun clear() {
+                session = null
+            }
+        }
+        val persistFailures = mutableListOf<Throwable>()
+        val (provider, _) = fixtureWithExpiredToken(refreshClient, store, persistFailures::add)
+
+        assertTrue(provider.onUnauthorized(emptyMap()))
+
+        assertEquals("rt_new", store.session?.refreshToken, "the retry must persist the rotated token")
+        assertTrue(persistFailures.isEmpty(), "a recovered persist must not be signalled")
+    }
+
+    @Test
+    fun preSendNetworkFailureIsMarkedAsTokenNotConsumed() = runTest {
+        // A DNS / connect-phase failure means the refresh request never
+        // reached the server, so the refresh token was NOT consumed — callers
+        // (and their telemetry) can safely retry with the same token. The
+        // thrown message must carry that distinction; a post-send failure
+        // (response lost) stays ambiguous.
+        val refreshClient = HttpClient(
+            MockEngine { _ -> throw java.net.UnknownHostException("auth.test") },
+        )
+        val (provider, store) = fixtureWithExpiredToken(refreshClient)
+
+        val failure = assertFailsWith<OAuthRefreshFailedException> { provider.onUnauthorized(emptyMap()) }
+
+        assertTrue(
+            failure.message!!.contains("not consumed"),
+            "pre-send failures must state the refresh token was not consumed, got: ${failure.message}",
+        )
+        assertNotNull(store.session, "a pre-send failure must not clear the session")
+    }
+
     /**
      * Builds a [DpopAuthProvider] whose access token is already expired, so
      * `onUnauthorized` routes straight to the token-refresh path. Returns the
      * provider + its store for post-assertions on session survival.
      */
     private fun fixtureWithExpiredToken(refreshClient: HttpClient): Pair<DpopAuthProvider, InMemorySessionStore> {
+        val store = InMemorySessionStore()
+        val (provider, _) = fixtureWithExpiredToken(refreshClient, store) {}
+        return provider to store
+    }
+
+    /**
+     * Variant taking a custom [store] (e.g. one whose `save` fails) and an
+     * [onPersistFailure] hook, for the rotation-persistence hardening tests.
+     */
+    private fun fixtureWithExpiredToken(
+        refreshClient: HttpClient,
+        store: OAuthSessionStore,
+        onPersistFailure: (Throwable) -> Unit,
+    ): Pair<DpopAuthProvider, OAuthSessionStore> {
         val signer = DpopSigner.generate()
         val exported = signer.exportKeyPair()
-        val store = InMemorySessionStore()
         val session = OAuthSession(
             accessToken = makeJwtWithExp((System.currentTimeMillis() / 1000) - 3600),
             refreshToken = "rt",
@@ -541,8 +655,8 @@ class DpopAuthProviderTest {
             dpopPublicKey = exported.publicKeyEncoded,
             pdsNonce = "old-nonce",
         )
-        store.session = session
-        return DpopAuthProvider(session, signer, store, refreshClient) to store
+        (store as? InMemorySessionStore)?.session = session
+        return DpopAuthProvider(session, signer, store, refreshClient, onPersistFailure = onPersistFailure) to store
     }
 
     @OptIn(ExperimentalEncodingApi::class)

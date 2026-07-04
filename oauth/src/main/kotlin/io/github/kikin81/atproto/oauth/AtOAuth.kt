@@ -74,6 +74,12 @@ class AtOAuth(
     private val httpClient: HttpClient,
     private val json: Json = Json { ignoreUnknownKeys = true },
     private val scope: String = "atproto transition:generic",
+    /**
+     * Forwarded to every [DpopAuthProvider] built by [createClient]: invoked
+     * when persisting a rotated session fails even after a retry. See
+     * [DpopAuthProvider]'s `onPersistFailure` for the durability implications.
+     */
+    private val onSessionPersistFailure: (Throwable) -> Unit = {},
 ) {
     // Transient state during the login/signup flow (between beginX and completeLogin)
     private var pendingState: PendingAuthState? = null
@@ -300,6 +306,7 @@ class AtOAuth(
             signer = signer,
             sessionStore = sessionStore,
             refreshClient = httpClient,
+            onPersistFailure = onSessionPersistFailure,
         )
         return XrpcClient(
             baseUrl = pdsUrl,

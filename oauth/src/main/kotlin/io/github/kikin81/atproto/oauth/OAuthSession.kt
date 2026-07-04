@@ -52,6 +52,18 @@ data class OAuthSession(
  */
 interface OAuthSessionStore {
     suspend fun load(): OAuthSession?
+
+    /**
+     * Persists the session. MUST be durable before returning: [save] is
+     * called AFTER the authorization server has already rotated the
+     * single-use refresh token, so a write that is deferred (e.g. Android
+     * `SharedPreferences.apply()`) or lost to process death leaves a
+     * consumed refresh token on disk — the next cold-start refresh is then
+     * rejected as token reuse (`invalid_grant`) and the whole session is
+     * revoked. Prefer synchronous commits (`commit()`, DataStore
+     * `updateData`) over fire-and-forget writes.
+     */
     suspend fun save(session: OAuthSession)
+
     suspend fun clear()
 }

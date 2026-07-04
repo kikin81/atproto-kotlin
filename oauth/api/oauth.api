@@ -1,6 +1,6 @@
 public final class io/github/kikin81/atproto/oauth/AtOAuth {
-	public fun <init> (Ljava/lang/String;Ljava/lang/String;Lio/github/kikin81/atproto/oauth/OAuthSessionStore;Lio/ktor/client/HttpClient;Lkotlinx/serialization/json/Json;Ljava/lang/String;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lio/github/kikin81/atproto/oauth/OAuthSessionStore;Lio/ktor/client/HttpClient;Lkotlinx/serialization/json/Json;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Lio/github/kikin81/atproto/oauth/OAuthSessionStore;Lio/ktor/client/HttpClient;Lkotlinx/serialization/json/Json;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lio/github/kikin81/atproto/oauth/OAuthSessionStore;Lio/ktor/client/HttpClient;Lkotlinx/serialization/json/Json;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun beginLogin (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun beginSignup (Ljava/lang/String;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun beginSignup$default (Lio/github/kikin81/atproto/oauth/AtOAuth;Ljava/lang/String;ZLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
@@ -45,8 +45,8 @@ public final class io/github/kikin81/atproto/oauth/DiscoveryChain {
 }
 
 public final class io/github/kikin81/atproto/oauth/DpopAuthProvider : io/github/kikin81/atproto/runtime/AuthProvider {
-	public fun <init> (Lio/github/kikin81/atproto/oauth/OAuthSession;Lio/github/kikin81/atproto/oauth/DpopSigner;Lio/github/kikin81/atproto/oauth/OAuthSessionStore;Lio/ktor/client/HttpClient;Lkotlinx/serialization/json/Json;)V
-	public synthetic fun <init> (Lio/github/kikin81/atproto/oauth/OAuthSession;Lio/github/kikin81/atproto/oauth/DpopSigner;Lio/github/kikin81/atproto/oauth/OAuthSessionStore;Lio/ktor/client/HttpClient;Lkotlinx/serialization/json/Json;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Lio/github/kikin81/atproto/oauth/OAuthSession;Lio/github/kikin81/atproto/oauth/DpopSigner;Lio/github/kikin81/atproto/oauth/OAuthSessionStore;Lio/ktor/client/HttpClient;Lkotlinx/serialization/json/Json;Lkotlin/jvm/functions/Function1;)V
+	public synthetic fun <init> (Lio/github/kikin81/atproto/oauth/OAuthSession;Lio/github/kikin81/atproto/oauth/DpopSigner;Lio/github/kikin81/atproto/oauth/OAuthSessionStore;Lio/ktor/client/HttpClient;Lkotlinx/serialization/json/Json;Lkotlin/jvm/functions/Function1;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun authHeaders (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun onUnauthorized (Ljava/util/Map;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
