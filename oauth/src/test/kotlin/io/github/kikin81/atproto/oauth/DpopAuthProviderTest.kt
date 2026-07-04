@@ -7,6 +7,9 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
 import io.ktor.utils.io.ByteReadChannel
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.test.runTest
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.io.encoding.Base64
@@ -320,6 +323,201 @@ class DpopAuthProviderTest {
 
         assertFailsWith<CancellationException> { provider.onUnauthorized(emptyMap()) }
         assertNotNull(store.session, "cancellation must not clear the session")
+    }
+
+    @Test
+    fun refreshPersistsTheRotatedRefreshToken() = runTest {
+        // AT Proto refresh tokens are single-use and rotate on every refresh.
+        // The server-issued replacement MUST be what lands in the store — a
+        // stale persisted refresh token is a future invalid_grant (session
+        // revocation via reuse detection) waiting for the next cold start.
+        val refreshClient = HttpClient(
+            MockEngine { _ ->
+                respond(
+                    ByteReadChannel(
+                        """{"access_token":"at_new","refresh_token":"rt_rotated","token_type":"DPoP"}""",
+                    ),
+                    HttpStatusCode.OK,
+                    jsonHeaders,
+                )
+            },
+        )
+        val (provider, store) = fixtureWithExpiredToken(refreshClient)
+
+        assertTrue(provider.onUnauthorized(emptyMap()))
+
+        assertEquals("rt_rotated", store.session?.refreshToken, "rotated refresh token must be persisted")
+        assertEquals("at_new", store.session?.accessToken)
+    }
+
+    @Test
+    fun concurrentUnauthorizedCallsRotateExactlyOnce() = runTest {
+        // Refresh tokens are single-use: every redundant rotation widens the
+        // window where the persisted token is stale. N callers racing into
+        // onUnauthorized must produce exactly ONE token-endpoint POST; the
+        // waiters queued behind the in-flight refresh adopt its result.
+        var tokenCalls = 0
+        val gate = CompletableDeferred<Unit>()
+        val refreshClient = HttpClient(
+            MockEngine { _ ->
+                tokenCalls++
+                gate.await()
+                respond(
+                    ByteReadChannel(
+                        """{"access_token":"at_new","refresh_token":"rt_new","token_type":"DPoP"}""",
+                    ),
+                    HttpStatusCode.OK,
+                    jsonHeaders,
+                )
+            },
+        )
+        val (provider, store) = fixtureWithExpiredToken(refreshClient)
+
+        val results = (1..3).map { async { provider.onUnauthorized(emptyMap()) } }
+        // Let all three callers run up to the mutex / in-flight request...
+        testScheduler.advanceUntilIdle()
+        // ...then release the single in-flight refresh response.
+        gate.complete(Unit)
+        val recovered = results.awaitAll()
+
+        assertEquals(listOf(true, true, true), recovered, "every caller must report recovery")
+        assertEquals(1, tokenCalls, "concurrent 401s must be coalesced into a single rotation")
+        assertEquals("rt_new", store.session?.refreshToken)
+    }
+
+    @Test
+    fun secondProviderSharingTheStoreAdoptsTheRotatedSessionInsteadOfReplayingTheConsumedToken() = runTest {
+        // Two provider instances built from the same persisted session (e.g.
+        // a client cache invalidation window): after A rotates, B still holds
+        // the CONSUMED refresh token in memory. B must adopt the stored
+        // rotated session instead of replaying the consumed token — replaying
+        // trips the auth server's reuse detection and revokes the whole
+        // session (the "user suddenly logged out" bug).
+        var tokenCalls = 0
+        val refreshClient = HttpClient(
+            MockEngine { request ->
+                tokenCalls++
+                val form = (request.body as io.ktor.http.content.OutgoingContent.ByteArrayContent)
+                    .bytes()
+                    .decodeToString()
+                if (form.contains("refresh_token=rt_consumed") && tokenCalls > 1) {
+                    // Simulate server-side single-use reuse detection.
+                    respond(
+                        ByteReadChannel("""{"error":"invalid_grant"}"""),
+                        HttpStatusCode.BadRequest,
+                        jsonHeaders,
+                    )
+                } else {
+                    respond(
+                        ByteReadChannel(
+                            """{"access_token":"at_new","refresh_token":"rt_new","token_type":"DPoP"}""",
+                        ),
+                        HttpStatusCode.OK,
+                        jsonHeaders,
+                    )
+                }
+            },
+        )
+
+        val signer = DpopSigner.generate()
+        val exported = signer.exportKeyPair()
+        val store = InMemorySessionStore()
+        val session = OAuthSession(
+            accessToken = makeJwtWithExp((System.currentTimeMillis() / 1000) - 3600),
+            refreshToken = "rt_consumed",
+            did = "did:plc:x",
+            handle = "x.test",
+            pdsUrl = "https://pds.test",
+            tokenEndpoint = "https://auth.test/token",
+            clientId = "https://app.test/meta.json",
+            dpopPrivateKey = exported.privateKeyEncoded,
+            dpopPublicKey = exported.publicKeyEncoded,
+            pdsNonce = "old-nonce",
+        )
+        store.session = session
+        val providerA = DpopAuthProvider(session, signer, store, refreshClient)
+        val providerB = DpopAuthProvider(session, signer, store, refreshClient)
+
+        assertTrue(providerA.onUnauthorized(emptyMap()), "A performs the real rotation")
+        assertTrue(providerB.onUnauthorized(emptyMap()), "B must recover by adopting the stored session")
+
+        assertEquals(1, tokenCalls, "B must NOT replay the consumed refresh token")
+        assertNotNull(store.session, "the session must survive")
+        assertEquals("rt_new", store.session?.refreshToken)
+        assertTrue(
+            providerB.authHeaders("GET", "https://pds.test/xrpc/x")["Authorization"]!!.contains("at_new"),
+            "B must serve the adopted rotated access token",
+        )
+    }
+
+    @Test
+    fun noncePersistenceMustNotClobberASessionRotatedByAnotherInstance() = runTest {
+        // Instance B holds a stale (already-consumed) refresh token while the
+        // shared store already contains A's rotated session. If B's 401
+        // carries a fresh DPoP-Nonce, the eager nonce persistence must NOT
+        // write B's stale session over the rotated one — that would erase the
+        // only valid refresh token and set up the exact replay → reuse
+        // detection → invalid_grant logout this PR eliminates. B must adopt
+        // the stored rotated tokens and save the new nonce on top of them.
+        var tokenCalls = 0
+        val refreshClient = HttpClient(
+            MockEngine { request ->
+                tokenCalls++
+                val form = (request.body as io.ktor.http.content.OutgoingContent.ByteArrayContent)
+                    .bytes()
+                    .decodeToString()
+                if (form.contains("refresh_token=rt_consumed")) {
+                    // Server-side single-use reuse detection.
+                    respond(
+                        ByteReadChannel("""{"error":"invalid_grant"}"""),
+                        HttpStatusCode.BadRequest,
+                        jsonHeaders,
+                    )
+                } else {
+                    respond(
+                        ByteReadChannel(
+                            """{"access_token":"at_new2","refresh_token":"rt_new2","token_type":"DPoP"}""",
+                        ),
+                        HttpStatusCode.OK,
+                        jsonHeaders,
+                    )
+                }
+            },
+        )
+
+        val signer = DpopSigner.generate()
+        val exported = signer.exportKeyPair()
+        val store = InMemorySessionStore()
+        val staleSession = OAuthSession(
+            accessToken = makeJwtWithExp((System.currentTimeMillis() / 1000) - 3600),
+            refreshToken = "rt_consumed",
+            did = "did:plc:x",
+            handle = "x.test",
+            pdsUrl = "https://pds.test",
+            tokenEndpoint = "https://auth.test/token",
+            clientId = "https://app.test/meta.json",
+            dpopPrivateKey = exported.privateKeyEncoded,
+            dpopPublicKey = exported.publicKeyEncoded,
+            pdsNonce = "old-nonce",
+        )
+        // Another instance already rotated: the store holds the fresh session.
+        store.session = staleSession.copy(accessToken = "at_rotated", refreshToken = "rt_rotated")
+        val providerB = DpopAuthProvider(staleSession, signer, store, refreshClient)
+
+        val recovered = providerB.onUnauthorized(mapOf("DPoP-Nonce" to "fresh-nonce"))
+
+        assertTrue(recovered, "B must recover via adoption")
+        assertEquals(0, tokenCalls, "B must neither replay the consumed token nor rotate redundantly")
+        assertEquals(
+            "rt_rotated",
+            store.session?.refreshToken,
+            "the rotated refresh token must survive B's nonce persistence",
+        )
+        assertEquals("fresh-nonce", store.session?.pdsNonce, "the fresh nonce must be saved on top of the rotated tokens")
+        assertTrue(
+            providerB.authHeaders("GET", "https://pds.test/xrpc/x")["Authorization"]!!.contains("at_rotated"),
+            "B must serve the adopted rotated access token",
+        )
     }
 
     /**
