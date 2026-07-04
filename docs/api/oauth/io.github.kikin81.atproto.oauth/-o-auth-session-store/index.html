@@ -38,7 +38,7 @@
             </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
         </button>
         <div class="navigation-controls--break ui-kit_mobile-only"></div>
-        <div class="library-version" id="library-version">9.7.1
+        <div class="library-version" id="library-version">9.7.3
         </div>
         <div class="navigation-controls">
         <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
@@ -140,7 +140,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":oauth/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="save.html"><span class="token function">save</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">session<span class="token operator">: </span><a href="../-o-auth-session/index.html">OAuthSession</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":oauth/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="save.html"><span class="token function">save</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">session<span class="token operator">: </span><a href="../-o-auth-session/index.html">OAuthSession</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Persists the session. MUST be durable before returning: <a href="save.html">save</a> is called AFTER the authorization server has already rotated the single-use refresh token, so a write that is deferred (e.g. Android <code class="lang-kotlin">SharedPreferences.apply()</code>) or lost to process death leaves a consumed refresh token on disk — the next cold-start refresh is then rejected as token reuse (<code class="lang-kotlin">invalid_grant</code>) and the whole session is revoked. Prefer synchronous commits (<code class="lang-kotlin">commit()</code>, DataStore <code class="lang-kotlin">updateData</code>) over fire-and-forget writes.</p></div></div></div>
                 </div>
               </div>
             </div>
