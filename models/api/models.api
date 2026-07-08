@@ -10488,6 +10488,35 @@ public final class io/github/kikin81/atproto/chat/bsky/convo/AddReactionResponse
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class io/github/kikin81/atproto/chat/bsky/convo/ConvoRef {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/convo/ConvoRef$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2-UyB9Nic ()Ljava/lang/String;
+	public final fun copy-aB4ouW8 (Ljava/lang/String;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/ConvoRef;
+	public static synthetic fun copy-aB4ouW8$default (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoRef;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/ConvoRef;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getConvoId ()Ljava/lang/String;
+	public final fun getDid-UyB9Nic ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/convo/ConvoRef$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/convo/ConvoRef$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/convo/ConvoRef;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/convo/ConvoRef;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/convo/ConvoRef$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class io/github/kikin81/atproto/chat/bsky/convo/ConvoService {
 	public fun <init> (Lio/github/kikin81/atproto/runtime/XrpcClient;Ljava/lang/String;)V
 	public synthetic fun <init> (Lio/github/kikin81/atproto/runtime/XrpcClient;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -11230,17 +11259,29 @@ public final class io/github/kikin81/atproto/chat/bsky/convo/GetMessagesResponse
 
 public final class io/github/kikin81/atproto/chat/bsky/convo/GroupConvo : io/github/kikin81/atproto/chat/bsky/convo/ConvoViewKindUnion {
 	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/convo/GroupConvo$Companion;
-	public fun <init> (Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkView;Ljava/lang/String;Ljava/lang/String;)V
-	public synthetic fun <init> (Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkView;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkView;
-	public final fun component2 ()Ljava/lang/String;
-	public final fun component3 ()Ljava/lang/String;
-	public final fun copy (Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkView;Ljava/lang/String;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/GroupConvo;
-	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/GroupConvo;Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkView;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/GroupConvo;
+	public synthetic fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkView;Ljava/lang/Long;Ljava/lang/String;ZJJLjava/lang/String;Ljava/lang/Long;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkView;Ljava/lang/Long;Ljava/lang/String;ZJJLjava/lang/String;Ljava/lang/Long;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-DnBUIck ()Ljava/lang/String;
+	public final fun component2 ()Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkView;
+	public final fun component3 ()Ljava/lang/Long;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Z
+	public final fun component6 ()J
+	public final fun component7 ()J
+	public final fun component8 ()Ljava/lang/String;
+	public final fun component9 ()Ljava/lang/Long;
+	public final fun copy-nfOqpjM (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkView;Ljava/lang/Long;Ljava/lang/String;ZJJLjava/lang/String;Ljava/lang/Long;)Lio/github/kikin81/atproto/chat/bsky/convo/GroupConvo;
+	public static synthetic fun copy-nfOqpjM$default (Lio/github/kikin81/atproto/chat/bsky/convo/GroupConvo;Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkView;Ljava/lang/Long;Ljava/lang/String;ZJJLjava/lang/String;Ljava/lang/Long;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/GroupConvo;
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCreatedAt-DnBUIck ()Ljava/lang/String;
 	public final fun getJoinLink ()Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkView;
+	public final fun getJoinRequestCount ()Ljava/lang/Long;
 	public final fun getLockStatus ()Ljava/lang/String;
+	public final fun getLockStatusModerationOverride ()Z
+	public final fun getMemberCount ()J
+	public final fun getMemberLimit ()J
 	public final fun getName ()Ljava/lang/String;
+	public final fun getUnreadJoinRequestCount ()Ljava/lang/Long;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -11569,15 +11610,17 @@ public final class io/github/kikin81/atproto/chat/bsky/convo/LogAcceptConvo$Comp
 
 public final class io/github/kikin81/atproto/chat/bsky/convo/LogAddMember : io/github/kikin81/atproto/chat/bsky/convo/GetLogResponseLogsUnion {
 	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/convo/LogAddMember$Companion;
-	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataAddMember;Ljava/lang/String;)V
+	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;Ljava/util/List;Ljava/lang/String;)V
 	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataAddMember;
-	public final fun component3 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataAddMember;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/LogAddMember;
-	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/LogAddMember;Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataAddMember;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/LogAddMember;
+	public final fun component2 ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;
+	public final fun component3 ()Ljava/util/List;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;Ljava/util/List;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/LogAddMember;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/LogAddMember;Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;Ljava/util/List;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/LogAddMember;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getConvoId ()Ljava/lang/String;
-	public final fun getMessage ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataAddMember;
+	public final fun getMessage ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;
+	public final fun getRelatedProfiles ()Ljava/util/List;
 	public final fun getRev ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -11600,17 +11643,20 @@ public final class io/github/kikin81/atproto/chat/bsky/convo/LogAddMember$Compan
 
 public final class io/github/kikin81/atproto/chat/bsky/convo/LogAddReaction : io/github/kikin81/atproto/chat/bsky/convo/GetLogResponseLogsUnion {
 	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/convo/LogAddReaction$Companion;
-	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/LogAddReactionMessageUnion;Lio/github/kikin81/atproto/chat/bsky/convo/ReactionView;Ljava/lang/String;)V
+	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/LogAddReactionMessageUnion;Lio/github/kikin81/atproto/chat/bsky/convo/ReactionView;Ljava/util/List;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/LogAddReactionMessageUnion;Lio/github/kikin81/atproto/chat/bsky/convo/ReactionView;Ljava/util/List;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component2 ()Lio/github/kikin81/atproto/chat/bsky/convo/LogAddReactionMessageUnion;
 	public final fun component3 ()Lio/github/kikin81/atproto/chat/bsky/convo/ReactionView;
-	public final fun component4 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/LogAddReactionMessageUnion;Lio/github/kikin81/atproto/chat/bsky/convo/ReactionView;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/LogAddReaction;
-	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/LogAddReaction;Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/LogAddReactionMessageUnion;Lio/github/kikin81/atproto/chat/bsky/convo/ReactionView;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/LogAddReaction;
+	public final fun component4 ()Ljava/util/List;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/LogAddReactionMessageUnion;Lio/github/kikin81/atproto/chat/bsky/convo/ReactionView;Ljava/util/List;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/LogAddReaction;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/LogAddReaction;Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/LogAddReactionMessageUnion;Lio/github/kikin81/atproto/chat/bsky/convo/ReactionView;Ljava/util/List;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/LogAddReaction;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getConvoId ()Ljava/lang/String;
 	public final fun getMessage ()Lio/github/kikin81/atproto/chat/bsky/convo/LogAddReactionMessageUnion;
 	public final fun getReaction ()Lio/github/kikin81/atproto/chat/bsky/convo/ReactionView;
+	public final fun getRelatedProfiles ()Ljava/util/List;
 	public final fun getRev ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -11733,15 +11779,15 @@ public final class io/github/kikin81/atproto/chat/bsky/convo/LogBeginConvo$Compa
 
 public final class io/github/kikin81/atproto/chat/bsky/convo/LogCreateJoinLink : io/github/kikin81/atproto/chat/bsky/convo/GetLogResponseLogsUnion {
 	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/convo/LogCreateJoinLink$Companion;
-	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataCreateJoinLink;Ljava/lang/String;)V
+	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;Ljava/lang/String;)V
 	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataCreateJoinLink;
+	public final fun component2 ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;
 	public final fun component3 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataCreateJoinLink;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/LogCreateJoinLink;
-	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/LogCreateJoinLink;Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataCreateJoinLink;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/LogCreateJoinLink;
+	public final fun copy (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/LogCreateJoinLink;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/LogCreateJoinLink;Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/LogCreateJoinLink;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getConvoId ()Ljava/lang/String;
-	public final fun getMessage ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataCreateJoinLink;
+	public final fun getMessage ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;
 	public final fun getRev ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -11764,15 +11810,18 @@ public final class io/github/kikin81/atproto/chat/bsky/convo/LogCreateJoinLink$C
 
 public final class io/github/kikin81/atproto/chat/bsky/convo/LogCreateMessage : io/github/kikin81/atproto/chat/bsky/convo/GetLogResponseLogsUnion {
 	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/convo/LogCreateMessage$Companion;
-	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/LogCreateMessageMessageUnion;Ljava/lang/String;)V
+	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/LogCreateMessageMessageUnion;Ljava/util/List;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/LogCreateMessageMessageUnion;Ljava/util/List;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component2 ()Lio/github/kikin81/atproto/chat/bsky/convo/LogCreateMessageMessageUnion;
-	public final fun component3 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/LogCreateMessageMessageUnion;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/LogCreateMessage;
-	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/LogCreateMessage;Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/LogCreateMessageMessageUnion;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/LogCreateMessage;
+	public final fun component3 ()Ljava/util/List;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/LogCreateMessageMessageUnion;Ljava/util/List;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/LogCreateMessage;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/LogCreateMessage;Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/LogCreateMessageMessageUnion;Ljava/util/List;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/LogCreateMessage;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getConvoId ()Ljava/lang/String;
 	public final fun getMessage ()Lio/github/kikin81/atproto/chat/bsky/convo/LogCreateMessageMessageUnion;
+	public final fun getRelatedProfiles ()Ljava/util/List;
 	public final fun getRev ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -11906,15 +11955,15 @@ public final class io/github/kikin81/atproto/chat/bsky/convo/LogDeleteMessageMes
 
 public final class io/github/kikin81/atproto/chat/bsky/convo/LogDisableJoinLink : io/github/kikin81/atproto/chat/bsky/convo/GetLogResponseLogsUnion {
 	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/convo/LogDisableJoinLink$Companion;
-	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataDisableJoinLink;Ljava/lang/String;)V
+	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;Ljava/lang/String;)V
 	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataDisableJoinLink;
+	public final fun component2 ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;
 	public final fun component3 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataDisableJoinLink;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/LogDisableJoinLink;
-	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/LogDisableJoinLink;Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataDisableJoinLink;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/LogDisableJoinLink;
+	public final fun copy (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/LogDisableJoinLink;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/LogDisableJoinLink;Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/LogDisableJoinLink;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getConvoId ()Ljava/lang/String;
-	public final fun getMessage ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataDisableJoinLink;
+	public final fun getMessage ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;
 	public final fun getRev ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -11937,15 +11986,15 @@ public final class io/github/kikin81/atproto/chat/bsky/convo/LogDisableJoinLink$
 
 public final class io/github/kikin81/atproto/chat/bsky/convo/LogEditGroup : io/github/kikin81/atproto/chat/bsky/convo/GetLogResponseLogsUnion {
 	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/convo/LogEditGroup$Companion;
-	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataEditGroup;Ljava/lang/String;)V
+	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;Ljava/lang/String;)V
 	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataEditGroup;
+	public final fun component2 ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;
 	public final fun component3 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataEditGroup;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/LogEditGroup;
-	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/LogEditGroup;Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataEditGroup;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/LogEditGroup;
+	public final fun copy (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/LogEditGroup;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/LogEditGroup;Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/LogEditGroup;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getConvoId ()Ljava/lang/String;
-	public final fun getMessage ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataEditGroup;
+	public final fun getMessage ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;
 	public final fun getRev ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -11968,15 +12017,15 @@ public final class io/github/kikin81/atproto/chat/bsky/convo/LogEditGroup$Compan
 
 public final class io/github/kikin81/atproto/chat/bsky/convo/LogEditJoinLink : io/github/kikin81/atproto/chat/bsky/convo/GetLogResponseLogsUnion {
 	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/convo/LogEditJoinLink$Companion;
-	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataEditJoinLink;Ljava/lang/String;)V
+	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;Ljava/lang/String;)V
 	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataEditJoinLink;
+	public final fun component2 ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;
 	public final fun component3 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataEditJoinLink;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/LogEditJoinLink;
-	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/LogEditJoinLink;Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataEditJoinLink;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/LogEditJoinLink;
+	public final fun copy (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/LogEditJoinLink;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/LogEditJoinLink;Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/LogEditJoinLink;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getConvoId ()Ljava/lang/String;
-	public final fun getMessage ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataEditJoinLink;
+	public final fun getMessage ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;
 	public final fun getRev ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -11999,15 +12048,15 @@ public final class io/github/kikin81/atproto/chat/bsky/convo/LogEditJoinLink$Com
 
 public final class io/github/kikin81/atproto/chat/bsky/convo/LogEnableJoinLink : io/github/kikin81/atproto/chat/bsky/convo/GetLogResponseLogsUnion {
 	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/convo/LogEnableJoinLink$Companion;
-	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataEnableJoinLink;Ljava/lang/String;)V
+	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;Ljava/lang/String;)V
 	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataEnableJoinLink;
+	public final fun component2 ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;
 	public final fun component3 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataEnableJoinLink;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/LogEnableJoinLink;
-	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/LogEnableJoinLink;Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataEnableJoinLink;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/LogEnableJoinLink;
+	public final fun copy (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/LogEnableJoinLink;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/LogEnableJoinLink;Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/LogEnableJoinLink;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getConvoId ()Ljava/lang/String;
-	public final fun getMessage ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataEnableJoinLink;
+	public final fun getMessage ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;
 	public final fun getRev ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -12090,15 +12139,17 @@ public final class io/github/kikin81/atproto/chat/bsky/convo/LogLeaveConvo$Compa
 
 public final class io/github/kikin81/atproto/chat/bsky/convo/LogLockConvo : io/github/kikin81/atproto/chat/bsky/convo/GetLogResponseLogsUnion {
 	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/convo/LogLockConvo$Companion;
-	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataLockConvo;Ljava/lang/String;)V
+	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;Ljava/util/List;Ljava/lang/String;)V
 	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataLockConvo;
-	public final fun component3 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataLockConvo;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/LogLockConvo;
-	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/LogLockConvo;Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataLockConvo;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/LogLockConvo;
+	public final fun component2 ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;
+	public final fun component3 ()Ljava/util/List;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;Ljava/util/List;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/LogLockConvo;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/LogLockConvo;Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;Ljava/util/List;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/LogLockConvo;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getConvoId ()Ljava/lang/String;
-	public final fun getMessage ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataLockConvo;
+	public final fun getMessage ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;
+	public final fun getRelatedProfiles ()Ljava/util/List;
 	public final fun getRev ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -12121,15 +12172,17 @@ public final class io/github/kikin81/atproto/chat/bsky/convo/LogLockConvo$Compan
 
 public final class io/github/kikin81/atproto/chat/bsky/convo/LogLockConvoPermanently : io/github/kikin81/atproto/chat/bsky/convo/GetLogResponseLogsUnion {
 	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/convo/LogLockConvoPermanently$Companion;
-	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataLockConvoPermanently;Ljava/lang/String;)V
+	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;Ljava/util/List;Ljava/lang/String;)V
 	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataLockConvoPermanently;
-	public final fun component3 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataLockConvoPermanently;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/LogLockConvoPermanently;
-	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/LogLockConvoPermanently;Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataLockConvoPermanently;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/LogLockConvoPermanently;
+	public final fun component2 ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;
+	public final fun component3 ()Ljava/util/List;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;Ljava/util/List;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/LogLockConvoPermanently;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/LogLockConvoPermanently;Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;Ljava/util/List;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/LogLockConvoPermanently;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getConvoId ()Ljava/lang/String;
-	public final fun getMessage ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataLockConvoPermanently;
+	public final fun getMessage ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;
+	public final fun getRelatedProfiles ()Ljava/util/List;
 	public final fun getRev ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -12152,15 +12205,17 @@ public final class io/github/kikin81/atproto/chat/bsky/convo/LogLockConvoPermane
 
 public final class io/github/kikin81/atproto/chat/bsky/convo/LogMemberJoin : io/github/kikin81/atproto/chat/bsky/convo/GetLogResponseLogsUnion {
 	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/convo/LogMemberJoin$Companion;
-	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataMemberJoin;Ljava/lang/String;)V
+	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;Ljava/util/List;Ljava/lang/String;)V
 	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataMemberJoin;
-	public final fun component3 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataMemberJoin;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/LogMemberJoin;
-	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/LogMemberJoin;Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataMemberJoin;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/LogMemberJoin;
+	public final fun component2 ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;
+	public final fun component3 ()Ljava/util/List;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;Ljava/util/List;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/LogMemberJoin;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/LogMemberJoin;Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;Ljava/util/List;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/LogMemberJoin;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getConvoId ()Ljava/lang/String;
-	public final fun getMessage ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataMemberJoin;
+	public final fun getMessage ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;
+	public final fun getRelatedProfiles ()Ljava/util/List;
 	public final fun getRev ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -12183,15 +12238,17 @@ public final class io/github/kikin81/atproto/chat/bsky/convo/LogMemberJoin$Compa
 
 public final class io/github/kikin81/atproto/chat/bsky/convo/LogMemberLeave : io/github/kikin81/atproto/chat/bsky/convo/GetLogResponseLogsUnion {
 	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/convo/LogMemberLeave$Companion;
-	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataMemberLeave;Ljava/lang/String;)V
+	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;Ljava/util/List;Ljava/lang/String;)V
 	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataMemberLeave;
-	public final fun component3 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataMemberLeave;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/LogMemberLeave;
-	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/LogMemberLeave;Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataMemberLeave;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/LogMemberLeave;
+	public final fun component2 ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;
+	public final fun component3 ()Ljava/util/List;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;Ljava/util/List;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/LogMemberLeave;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/LogMemberLeave;Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;Ljava/util/List;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/LogMemberLeave;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getConvoId ()Ljava/lang/String;
-	public final fun getMessage ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataMemberLeave;
+	public final fun getMessage ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;
+	public final fun getRelatedProfiles ()Ljava/util/List;
 	public final fun getRev ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -12341,6 +12398,35 @@ public final class io/github/kikin81/atproto/chat/bsky/convo/LogReadConvoMessage
 	public synthetic fun construct (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)Lio/github/kikin81/atproto/runtime/UnknownOpenUnionMember;
 }
 
+public final class io/github/kikin81/atproto/chat/bsky/convo/LogReadJoinRequests {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/convo/LogReadJoinRequests$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/LogReadJoinRequests;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/LogReadJoinRequests;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/LogReadJoinRequests;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getConvoId ()Ljava/lang/String;
+	public final fun getRev ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/convo/LogReadJoinRequests$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/convo/LogReadJoinRequests$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/convo/LogReadJoinRequests;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/convo/LogReadJoinRequests;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/convo/LogReadJoinRequests$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class io/github/kikin81/atproto/chat/bsky/convo/LogReadMessage : io/github/kikin81/atproto/chat/bsky/convo/GetLogResponseLogsUnion {
 	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/convo/LogReadMessage$Companion;
 	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/LogReadMessageMessageUnion;Ljava/lang/String;)V
@@ -12445,15 +12531,17 @@ public final class io/github/kikin81/atproto/chat/bsky/convo/LogRejectJoinReques
 
 public final class io/github/kikin81/atproto/chat/bsky/convo/LogRemoveMember : io/github/kikin81/atproto/chat/bsky/convo/GetLogResponseLogsUnion {
 	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/convo/LogRemoveMember$Companion;
-	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataRemoveMember;Ljava/lang/String;)V
+	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;Ljava/util/List;Ljava/lang/String;)V
 	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataRemoveMember;
-	public final fun component3 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataRemoveMember;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/LogRemoveMember;
-	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/LogRemoveMember;Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataRemoveMember;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/LogRemoveMember;
+	public final fun component2 ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;
+	public final fun component3 ()Ljava/util/List;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;Ljava/util/List;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/LogRemoveMember;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/LogRemoveMember;Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;Ljava/util/List;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/LogRemoveMember;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getConvoId ()Ljava/lang/String;
-	public final fun getMessage ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataRemoveMember;
+	public final fun getMessage ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;
+	public final fun getRelatedProfiles ()Ljava/util/List;
 	public final fun getRev ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -12476,17 +12564,20 @@ public final class io/github/kikin81/atproto/chat/bsky/convo/LogRemoveMember$Com
 
 public final class io/github/kikin81/atproto/chat/bsky/convo/LogRemoveReaction : io/github/kikin81/atproto/chat/bsky/convo/GetLogResponseLogsUnion {
 	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/convo/LogRemoveReaction$Companion;
-	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/LogRemoveReactionMessageUnion;Lio/github/kikin81/atproto/chat/bsky/convo/ReactionView;Ljava/lang/String;)V
+	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/LogRemoveReactionMessageUnion;Lio/github/kikin81/atproto/chat/bsky/convo/ReactionView;Ljava/util/List;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/LogRemoveReactionMessageUnion;Lio/github/kikin81/atproto/chat/bsky/convo/ReactionView;Ljava/util/List;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component2 ()Lio/github/kikin81/atproto/chat/bsky/convo/LogRemoveReactionMessageUnion;
 	public final fun component3 ()Lio/github/kikin81/atproto/chat/bsky/convo/ReactionView;
-	public final fun component4 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/LogRemoveReactionMessageUnion;Lio/github/kikin81/atproto/chat/bsky/convo/ReactionView;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/LogRemoveReaction;
-	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/LogRemoveReaction;Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/LogRemoveReactionMessageUnion;Lio/github/kikin81/atproto/chat/bsky/convo/ReactionView;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/LogRemoveReaction;
+	public final fun component4 ()Ljava/util/List;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/LogRemoveReactionMessageUnion;Lio/github/kikin81/atproto/chat/bsky/convo/ReactionView;Ljava/util/List;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/LogRemoveReaction;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/LogRemoveReaction;Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/LogRemoveReactionMessageUnion;Lio/github/kikin81/atproto/chat/bsky/convo/ReactionView;Ljava/util/List;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/LogRemoveReaction;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getConvoId ()Ljava/lang/String;
 	public final fun getMessage ()Lio/github/kikin81/atproto/chat/bsky/convo/LogRemoveReactionMessageUnion;
 	public final fun getReaction ()Lio/github/kikin81/atproto/chat/bsky/convo/ReactionView;
+	public final fun getRelatedProfiles ()Ljava/util/List;
 	public final fun getRev ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -12549,15 +12640,17 @@ public final class io/github/kikin81/atproto/chat/bsky/convo/LogRemoveReactionMe
 
 public final class io/github/kikin81/atproto/chat/bsky/convo/LogUnlockConvo : io/github/kikin81/atproto/chat/bsky/convo/GetLogResponseLogsUnion {
 	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/convo/LogUnlockConvo$Companion;
-	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataUnlockConvo;Ljava/lang/String;)V
+	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;Ljava/util/List;Ljava/lang/String;)V
 	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataUnlockConvo;
-	public final fun component3 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataUnlockConvo;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/LogUnlockConvo;
-	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/LogUnlockConvo;Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataUnlockConvo;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/LogUnlockConvo;
+	public final fun component2 ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;
+	public final fun component3 ()Ljava/util/List;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;Ljava/util/List;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/LogUnlockConvo;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/LogUnlockConvo;Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;Ljava/util/List;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/LogUnlockConvo;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getConvoId ()Ljava/lang/String;
-	public final fun getMessage ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataUnlockConvo;
+	public final fun getMessage ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageView;
+	public final fun getRelatedProfiles ()Ljava/util/List;
 	public final fun getRev ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -12604,6 +12697,66 @@ public final synthetic class io/github/kikin81/atproto/chat/bsky/convo/LogUnmute
 }
 
 public final class io/github/kikin81/atproto/chat/bsky/convo/LogUnmuteConvo$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/convo/LogWithdrawIncomingJoinRequest {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/convo/LogWithdrawIncomingJoinRequest$Companion;
+	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/LogWithdrawIncomingJoinRequest;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/LogWithdrawIncomingJoinRequest;Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/LogWithdrawIncomingJoinRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getConvoId ()Ljava/lang/String;
+	public final fun getMember ()Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;
+	public final fun getRev ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/convo/LogWithdrawIncomingJoinRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/convo/LogWithdrawIncomingJoinRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/convo/LogWithdrawIncomingJoinRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/convo/LogWithdrawIncomingJoinRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/convo/LogWithdrawIncomingJoinRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/convo/LogWithdrawOutgoingJoinRequest {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/convo/LogWithdrawOutgoingJoinRequest$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/LogWithdrawOutgoingJoinRequest;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/LogWithdrawOutgoingJoinRequest;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/LogWithdrawOutgoingJoinRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getConvoId ()Ljava/lang/String;
+	public final fun getRev ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/convo/LogWithdrawOutgoingJoinRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/convo/LogWithdrawOutgoingJoinRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/convo/LogWithdrawOutgoingJoinRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/convo/LogWithdrawOutgoingJoinRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/convo/LogWithdrawOutgoingJoinRequest$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
@@ -13223,15 +13376,15 @@ public final class io/github/kikin81/atproto/chat/bsky/convo/SendMessageRequest$
 
 public final class io/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataAddMember : io/github/kikin81/atproto/chat/bsky/convo/SystemMessageViewDataUnion {
 	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataAddMember$Companion;
-	public fun <init> (Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;Ljava/lang/String;)V
-	public final fun component1 ()Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;
-	public final fun component2 ()Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;
+	public fun <init> (Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;Ljava/lang/String;)V
+	public final fun component1 ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;
+	public final fun component2 ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;
 	public final fun component3 ()Ljava/lang/String;
-	public final fun copy (Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataAddMember;
-	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataAddMember;Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataAddMember;
+	public final fun copy (Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataAddMember;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataAddMember;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataAddMember;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getAddedBy ()Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;
-	public final fun getMember ()Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;
+	public final fun getAddedBy ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;
+	public final fun getMember ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;
 	public final fun getRole ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -13365,12 +13518,12 @@ public final class io/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataEn
 
 public final class io/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataLockConvo : io/github/kikin81/atproto/chat/bsky/convo/SystemMessageViewDataUnion {
 	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataLockConvo$Companion;
-	public fun <init> (Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;)V
-	public final fun component1 ()Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;
-	public final fun copy (Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;)Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataLockConvo;
-	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataLockConvo;Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataLockConvo;
+	public fun <init> (Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;)V
+	public final fun component1 ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;
+	public final fun copy (Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;)Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataLockConvo;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataLockConvo;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataLockConvo;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getLockedBy ()Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;
+	public final fun getLockedBy ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -13392,12 +13545,12 @@ public final class io/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataLo
 
 public final class io/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataLockConvoPermanently : io/github/kikin81/atproto/chat/bsky/convo/SystemMessageViewDataUnion {
 	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataLockConvoPermanently$Companion;
-	public fun <init> (Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;)V
-	public final fun component1 ()Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;
-	public final fun copy (Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;)Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataLockConvoPermanently;
-	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataLockConvoPermanently;Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataLockConvoPermanently;
+	public fun <init> (Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;)V
+	public final fun component1 ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;
+	public final fun copy (Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;)Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataLockConvoPermanently;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataLockConvoPermanently;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataLockConvoPermanently;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getLockedBy ()Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;
+	public final fun getLockedBy ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -13419,16 +13572,16 @@ public final class io/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataLo
 
 public final class io/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataMemberJoin : io/github/kikin81/atproto/chat/bsky/convo/SystemMessageViewDataUnion {
 	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataMemberJoin$Companion;
-	public fun <init> (Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;Ljava/lang/String;)V
-	public synthetic fun <init> (Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;
-	public final fun component2 ()Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;
+	public fun <init> (Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;Ljava/lang/String;)V
+	public synthetic fun <init> (Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;
+	public final fun component2 ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;
 	public final fun component3 ()Ljava/lang/String;
-	public final fun copy (Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataMemberJoin;
-	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataMemberJoin;Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataMemberJoin;
+	public final fun copy (Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataMemberJoin;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataMemberJoin;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataMemberJoin;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getApprovedBy ()Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;
-	public final fun getMember ()Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;
+	public final fun getApprovedBy ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;
+	public final fun getMember ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;
 	public final fun getRole ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -13451,12 +13604,12 @@ public final class io/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataMe
 
 public final class io/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataMemberLeave : io/github/kikin81/atproto/chat/bsky/convo/SystemMessageViewDataUnion {
 	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataMemberLeave$Companion;
-	public fun <init> (Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;)V
-	public final fun component1 ()Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;
-	public final fun copy (Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;)Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataMemberLeave;
-	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataMemberLeave;Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataMemberLeave;
+	public fun <init> (Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;)V
+	public final fun component1 ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;
+	public final fun copy (Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;)Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataMemberLeave;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataMemberLeave;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataMemberLeave;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getMember ()Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;
+	public final fun getMember ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -13478,14 +13631,14 @@ public final class io/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataMe
 
 public final class io/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataRemoveMember : io/github/kikin81/atproto/chat/bsky/convo/SystemMessageViewDataUnion {
 	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataRemoveMember$Companion;
-	public fun <init> (Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;)V
-	public final fun component1 ()Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;
-	public final fun component2 ()Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;
-	public final fun copy (Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;)Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataRemoveMember;
-	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataRemoveMember;Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataRemoveMember;
+	public fun <init> (Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;)V
+	public final fun component1 ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;
+	public final fun component2 ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;
+	public final fun copy (Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;)Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataRemoveMember;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataRemoveMember;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataRemoveMember;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getMember ()Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;
-	public final fun getRemovedBy ()Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;
+	public final fun getMember ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;
+	public final fun getRemovedBy ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -13507,12 +13660,12 @@ public final class io/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataRe
 
 public final class io/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataUnlockConvo : io/github/kikin81/atproto/chat/bsky/convo/SystemMessageViewDataUnion {
 	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataUnlockConvo$Companion;
-	public fun <init> (Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;)V
-	public final fun component1 ()Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;
-	public final fun copy (Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;)Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataUnlockConvo;
-	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataUnlockConvo;Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataUnlockConvo;
+	public fun <init> (Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;)V
+	public final fun component1 ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;
+	public final fun copy (Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;)Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataUnlockConvo;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataUnlockConvo;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataUnlockConvo;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getUnlockedBy ()Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;
+	public final fun getUnlockedBy ()Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -13529,6 +13682,33 @@ public final synthetic class io/github/kikin81/atproto/chat/bsky/convo/SystemMes
 }
 
 public final class io/github/kikin81/atproto/chat/bsky/convo/SystemMessageDataUnlockConvo$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-UyB9Nic ()Ljava/lang/String;
+	public final fun copy-OoJ1cAE (Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;
+	public static synthetic fun copy-OoJ1cAE$default (Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDid-UyB9Nic ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/convo/SystemMessageReferredUser$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
@@ -13826,6 +14006,100 @@ public final class io/github/kikin81/atproto/chat/bsky/convo/UpdateReadResponse$
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class io/github/kikin81/atproto/chat/bsky/embed/JoinLink : io/github/kikin81/atproto/chat/bsky/convo/MessageInputEmbedUnion {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/embed/JoinLink$Companion;
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/embed/JoinLink;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/embed/JoinLink;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/embed/JoinLink;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCode ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/embed/JoinLink$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/embed/JoinLink$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/embed/JoinLink;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/embed/JoinLink;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/embed/JoinLink$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/embed/JoinLinkView : io/github/kikin81/atproto/chat/bsky/convo/MessageViewEmbedUnion {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/embed/JoinLinkView$Companion;
+	public fun <init> (Lio/github/kikin81/atproto/chat/bsky/embed/JoinLinkViewJoinLinkPreviewUnion;)V
+	public final fun component1 ()Lio/github/kikin81/atproto/chat/bsky/embed/JoinLinkViewJoinLinkPreviewUnion;
+	public final fun copy (Lio/github/kikin81/atproto/chat/bsky/embed/JoinLinkViewJoinLinkPreviewUnion;)Lio/github/kikin81/atproto/chat/bsky/embed/JoinLinkView;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/embed/JoinLinkView;Lio/github/kikin81/atproto/chat/bsky/embed/JoinLinkViewJoinLinkPreviewUnion;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/embed/JoinLinkView;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getJoinLinkPreview ()Lio/github/kikin81/atproto/chat/bsky/embed/JoinLinkViewJoinLinkPreviewUnion;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/embed/JoinLinkView$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/embed/JoinLinkView$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/embed/JoinLinkView;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/embed/JoinLinkView;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/embed/JoinLinkView$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public abstract interface class io/github/kikin81/atproto/chat/bsky/embed/JoinLinkViewJoinLinkPreviewUnion : io/github/kikin81/atproto/runtime/OpenUnionMember {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/embed/JoinLinkViewJoinLinkPreviewUnion$Companion;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/embed/JoinLinkViewJoinLinkPreviewUnion$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/embed/JoinLinkViewJoinLinkPreviewUnion$Unknown : io/github/kikin81/atproto/chat/bsky/embed/JoinLinkViewJoinLinkPreviewUnion, io/github/kikin81/atproto/runtime/UnknownOpenUnionMember {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/embed/JoinLinkViewJoinLinkPreviewUnion$Unknown$Companion;
+	public fun <init> (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Lkotlinx/serialization/json/JsonObject;
+	public final fun copy (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)Lio/github/kikin81/atproto/chat/bsky/embed/JoinLinkViewJoinLinkPreviewUnion$Unknown;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/embed/JoinLinkViewJoinLinkPreviewUnion$Unknown;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/embed/JoinLinkViewJoinLinkPreviewUnion$Unknown;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getRaw ()Lkotlinx/serialization/json/JsonObject;
+	public fun getType ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/embed/JoinLinkViewJoinLinkPreviewUnion$Unknown$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/embed/JoinLinkViewJoinLinkPreviewUnionSerializer : io/github/kikin81/atproto/runtime/OpenUnionSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/embed/JoinLinkViewJoinLinkPreviewUnionSerializer;
+	public fun selectKnownDeserializer (Ljava/lang/String;)Lkotlinx/serialization/KSerializer;
+	public fun selectKnownSerializer (Lio/github/kikin81/atproto/chat/bsky/embed/JoinLinkViewJoinLinkPreviewUnion;)Lkotlinx/serialization/KSerializer;
+	public synthetic fun selectKnownSerializer (Lio/github/kikin81/atproto/runtime/OpenUnionMember;)Lkotlinx/serialization/KSerializer;
+	public fun unknownSerializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/embed/JoinLinkViewJoinLinkPreviewUnionUnknownSerializer : io/github/kikin81/atproto/runtime/UnknownMemberSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/embed/JoinLinkViewJoinLinkPreviewUnionUnknownSerializer;
+	public fun construct (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)Lio/github/kikin81/atproto/chat/bsky/embed/JoinLinkViewJoinLinkPreviewUnion$Unknown;
+	public synthetic fun construct (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)Lio/github/kikin81/atproto/runtime/UnknownOpenUnionMember;
+}
+
 public final class io/github/kikin81/atproto/chat/bsky/group/AddMembersRequest {
 	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/group/AddMembersRequest$Companion;
 	public fun <init> (Ljava/lang/String;Ljava/util/List;)V
@@ -14104,6 +14378,33 @@ public final synthetic class io/github/kikin81/atproto/chat/bsky/group/DisableJo
 }
 
 public final class io/github/kikin81/atproto/chat/bsky/group/DisableJoinLinkResponse$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/DisabledJoinLinkPreviewView : io/github/kikin81/atproto/chat/bsky/embed/JoinLinkViewJoinLinkPreviewUnion {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/group/DisabledJoinLinkPreviewView$Companion;
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/group/DisabledJoinLinkPreviewView;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/group/DisabledJoinLinkPreviewView;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/group/DisabledJoinLinkPreviewView;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCode ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/group/DisabledJoinLinkPreviewView$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/group/DisabledJoinLinkPreviewView$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/group/DisabledJoinLinkPreviewView;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/group/DisabledJoinLinkPreviewView;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/DisabledJoinLinkPreviewView$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
@@ -14399,6 +14700,79 @@ public final class io/github/kikin81/atproto/chat/bsky/group/GroupServiceKt {
 	public static final fun listJoinRequestsPageFlow (Lio/github/kikin81/atproto/chat/bsky/group/GroupService;Lio/github/kikin81/atproto/chat/bsky/group/ListJoinRequestsRequest;)Lkotlinx/coroutines/flow/Flow;
 }
 
+public final class io/github/kikin81/atproto/chat/bsky/group/InvalidJoinLinkPreviewView : io/github/kikin81/atproto/chat/bsky/embed/JoinLinkViewJoinLinkPreviewUnion {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/group/InvalidJoinLinkPreviewView$Companion;
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/group/InvalidJoinLinkPreviewView;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/group/InvalidJoinLinkPreviewView;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/group/InvalidJoinLinkPreviewView;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCode ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/group/InvalidJoinLinkPreviewView$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/group/InvalidJoinLinkPreviewView$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/group/InvalidJoinLinkPreviewView;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/group/InvalidJoinLinkPreviewView;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/InvalidJoinLinkPreviewView$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/JoinLinkPreviewView : io/github/kikin81/atproto/chat/bsky/embed/JoinLinkViewJoinLinkPreviewUnion {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkPreviewView$Companion;
+	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;Ljava/lang/String;Ljava/lang/String;JJLjava/lang/String;Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;ZLio/github/kikin81/atproto/chat/bsky/group/JoinLinkViewerState;)V
+	public synthetic fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;Ljava/lang/String;Ljava/lang/String;JJLjava/lang/String;Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;ZLio/github/kikin81/atproto/chat/bsky/group/JoinLinkViewerState;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component10 ()Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkViewerState;
+	public final fun component2 ()Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()J
+	public final fun component6 ()J
+	public final fun component7 ()Ljava/lang/String;
+	public final fun component8 ()Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;
+	public final fun component9 ()Z
+	public final fun copy (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;Ljava/lang/String;Ljava/lang/String;JJLjava/lang/String;Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;ZLio/github/kikin81/atproto/chat/bsky/group/JoinLinkViewerState;)Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkPreviewView;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkPreviewView;Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;Ljava/lang/String;Ljava/lang/String;JJLjava/lang/String;Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;ZLio/github/kikin81/atproto/chat/bsky/group/JoinLinkViewerState;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkPreviewView;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCode ()Ljava/lang/String;
+	public final fun getConvo ()Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;
+	public final fun getConvoId ()Ljava/lang/String;
+	public final fun getJoinRule ()Ljava/lang/String;
+	public final fun getMemberCount ()J
+	public final fun getMemberLimit ()J
+	public final fun getName ()Ljava/lang/String;
+	public final fun getOwner ()Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;
+	public final fun getRequireApproval ()Z
+	public final fun getViewer ()Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkViewerState;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/group/JoinLinkPreviewView$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkPreviewView$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkPreviewView;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkPreviewView;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/JoinLinkPreviewView$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class io/github/kikin81/atproto/chat/bsky/group/JoinLinkView {
 	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkView$Companion;
 	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -14431,6 +14805,71 @@ public final synthetic class io/github/kikin81/atproto/chat/bsky/group/JoinLinkV
 }
 
 public final class io/github/kikin81/atproto/chat/bsky/group/JoinLinkView$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/JoinLinkViewerState {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkViewerState$Companion;
+	public synthetic fun <init> (Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-G5DCnlA ()Ljava/lang/String;
+	public final fun copy-hp3wcX0 (Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkViewerState;
+	public static synthetic fun copy-hp3wcX0$default (Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkViewerState;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkViewerState;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getRequestedAt-G5DCnlA ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/group/JoinLinkViewerState$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkViewerState$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkViewerState;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkViewerState;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/JoinLinkViewerState$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/JoinRequestConvoView {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/group/JoinRequestConvoView$Companion;
+	public fun <init> (Ljava/lang/String;JJLjava/lang/String;Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkViewerState;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()J
+	public final fun component3 ()J
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;
+	public final fun component6 ()Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkViewerState;
+	public final fun copy (Ljava/lang/String;JJLjava/lang/String;Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkViewerState;)Lio/github/kikin81/atproto/chat/bsky/group/JoinRequestConvoView;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/group/JoinRequestConvoView;Ljava/lang/String;JJLjava/lang/String;Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkViewerState;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/group/JoinRequestConvoView;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getConvoId ()Ljava/lang/String;
+	public final fun getMemberCount ()J
+	public final fun getMemberLimit ()J
+	public final fun getName ()Ljava/lang/String;
+	public final fun getOwner ()Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;
+	public final fun getViewer ()Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkViewerState;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/group/JoinRequestConvoView$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/group/JoinRequestConvoView$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/group/JoinRequestConvoView;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/group/JoinRequestConvoView;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/group/JoinRequestConvoView$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 

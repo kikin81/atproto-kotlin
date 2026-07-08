@@ -51,26 +51,42 @@
     },
     {
       "nsid": "chat.bsky.convo.defs",
-      "source": "https://github.com/bluesky-social/atproto/blob/4f1e20387bb2a212e263590ac7a3458e8f939091/lexicons/chat/bsky/convo/defs.json",
-      "commit": "4f1e20387bb2a212e263590ac7a3458e8f939091",
-      "vendoredAt": "2026-07-01",
+      "source": "https://github.com/bluesky-social/atproto/blob/9b05af9168fb11131160980a373415262aadf549/lexicons/chat/bsky/convo/defs.json",
+      "commit": "9b05af9168fb11131160980a373415262aadf549",
+      "vendoredAt": "2026-07-07",
       "reason": "PINNED shadow (removeWhenPublished=false). Already published on-network; vendored to add message replies (messageInput/messageView.replyTo, #replyRef, #messageBeforeUserJoinedGroupView) ahead of the network. RE-VENDOR on drift; retire MANUALLY once the on-network convo.defs includes replyTo.",
       "removeWhenPublished": false
     },
     {
       "nsid": "chat.bsky.convo.sendMessage",
-      "source": "https://github.com/bluesky-social/atproto/blob/4f1e20387bb2a212e263590ac7a3458e8f939091/lexicons/chat/bsky/convo/sendMessage.json",
-      "commit": "4f1e20387bb2a212e263590ac7a3458e8f939091",
-      "vendoredAt": "2026-07-01",
+      "source": "https://github.com/bluesky-social/atproto/blob/9b05af9168fb11131160980a373415262aadf549/lexicons/chat/bsky/convo/sendMessage.json",
+      "commit": "9b05af9168fb11131160980a373415262aadf549",
+      "vendoredAt": "2026-07-07",
       "reason": "PINNED shadow (removeWhenPublished=false). Already published on-network; vendored for the ReplyTargetNotFound error that pairs with messageInput.replyTo (see chat.bsky.convo.defs). RE-VENDOR on drift; retire MANUALLY once the on-network sendMessage includes it.",
       "removeWhenPublished": false
     },
     {
       "nsid": "chat.bsky.convo.sendMessageBatch",
-      "source": "https://github.com/bluesky-social/atproto/blob/4f1e20387bb2a212e263590ac7a3458e8f939091/lexicons/chat/bsky/convo/sendMessageBatch.json",
-      "commit": "4f1e20387bb2a212e263590ac7a3458e8f939091",
-      "vendoredAt": "2026-07-01",
+      "source": "https://github.com/bluesky-social/atproto/blob/9b05af9168fb11131160980a373415262aadf549/lexicons/chat/bsky/convo/sendMessageBatch.json",
+      "commit": "9b05af9168fb11131160980a373415262aadf549",
+      "vendoredAt": "2026-07-07",
       "reason": "PINNED shadow (removeWhenPublished=false). Already published on-network; vendored for the ReplyTargetNotFound error that pairs with the batch reply input. RE-VENDOR on drift; retire MANUALLY once the on-network sendMessageBatch includes it.",
+      "removeWhenPublished": false
+    },
+    {
+      "nsid": "chat.bsky.embed.joinLink",
+      "source": "https://github.com/bluesky-social/atproto/blob/9b05af9168fb11131160980a373415262aadf549/lexicons/chat/bsky/embed/joinLink.json",
+      "commit": "9b05af9168fb11131160980a373415262aadf549",
+      "vendoredAt": "2026-07-07",
+      "reason": "New group join-link message embed, pulled in as a dependency of the re-vendored chat.bsky.convo.defs message/messageView embed unions. Present in bluesky-social/atproto main but unpublished on-network (npx lex install -> RecordNotFound). Its #view refs the join-link preview defs added to the chat.bsky.group.defs superset shadow. Retire once publishable.",
+      "removeWhenPublished": true
+    },
+    {
+      "nsid": "chat.bsky.group.defs",
+      "source": "https://github.com/bluesky-social/atproto/blob/9b05af9168fb11131160980a373415262aadf549/lexicons/chat/bsky/group/defs.json",
+      "commit": "9b05af9168fb11131160980a373415262aadf549",
+      "vendoredAt": "2026-07-07",
+      "reason": "PINNED SUPERSET shadow (removeWhenPublished=false). Merges upstream main's new join-link preview defs (joinLinkPreviewView / disabledJoinLinkPreviewView / invalidJoinLinkPreviewView / joinLinkViewerState / joinRequestConvoView — needed by chat.bsky.embed.joinLink#view) with our still-on-network groupPublicView, which main deleted alongside chat.bsky.group.getGroupPublicInfo even though both remain published on-network. Intentionally NOT byte-equal to main (it re-adds groupPublicView), so it will always read as DRIFTED here — that is expected. RE-VENDOR by re-merging upstream + groupPublicView on drift; retire MANUALLY once the network catches up (join-links published AND getGroupPublicInfo removed).",
       "removeWhenPublished": false
     }
   ]
