@@ -1,5 +1,5 @@
 [versions]
-kotlin = "2.3.21"
+kotlin = "2.4.0"
 kotlinx-coroutines = "1.11.0"
 kotlinx-datetime = "0.8.0-0.6.x-compat"
 kotlinx-serialization = "1.11.0"
@@ -14,7 +14,7 @@ binary-compatibility-validator = "0.18.1"
 
 # Android sample
 agp = "9.2.1"
-ksp = "2.3.9"
+ksp = "2.3.10"
 hilt = "2.60.1"
 androidx-activity-compose = "1.13.0"
 androidx-browser = "1.10.0"
