@@ -26,7 +26,7 @@ import kotlin.system.exitProcess
  * An overlay is a lexicon we ship from `generator/overlay-lexicons/` because
  * the real record isn't yet resolvable on-network via `npx lex install`
  * (so it can't go in `generator/lexicons.json`). Each overlay carries a
- * manifest entry in `generator/overlay-lexicons.json`. This tool flags two
+ * manifest entry in `generator/overlay-lexicons.json`. This tool flags three
  * conditions per overlay:
  *
  *   - **publishable** — the on-network record now exists (the workflow probed
@@ -38,6 +38,18 @@ import kotlin.system.exitProcess
  *     `bluesky-social/atproto@main` copy (or upstream removed the path). The
  *     overlay should be RE-VENDORED: re-copy the upstream JSON + bump the
  *     manifest commit.
+ *   - **redundant** — the vendored JSON is byte-identical (after
+ *     canonicalization) to the document `npx lex install` actually fetches
+ *     from the network (passed in via `OVERLAY_REDUNDANT_JSON`). The overlay
+ *     contributes nothing and should be RETIRED, regardless of
+ *     `removeWhenPublished` — this is the only signal that catches a pinned
+ *     shadow whose local additions upstream has since absorbed.
+ *
+ * An overlay's manifest entry may also set `expectDrift: true` for a
+ * deliberate, permanent superset of upstream (see `chat.bsky.group.defs`).
+ * That flag suppresses the ordinary DRIFTED nag for exactly as long as the
+ * overlay is actually drifted — see `isStale` below for how it stays honest
+ * once the situation changes.
  *
  * Runnable locally (prints a markdown report to stdout) and from
  * `.github/workflows/overlay-staleness.yaml` (writes `has_stale`,
@@ -170,6 +182,11 @@ internal data class OverlayStatus(
      * removal), or re-vendor (drifted/removed). A pinned overlay
      * (removeWhenPublished=false) still surfaces drift — we just never tell the
      * maintainer to retire it.
+     *
+     * An `expectDrift` overlay inverts this: it is quiet ONLY while it is actually
+     * drifted (that is the point of the flag). It becomes stale again if it reads
+     * in-sync (upstream absorbed the local addition) or upstream-removed — both mean
+     * the drift the flag was suppressing is no longer the current situation.
      */
     val isStale: Boolean get() = when {
         redundant -> true
@@ -205,7 +222,10 @@ internal fun renderReport(
     appendLine("## Overlays needing attention (${stale.size})")
     appendLine()
     if (stale.isEmpty()) {
-        appendLine("_(none — every overlay is still required and in sync with upstream.)_")
+        appendLine(
+            "_(none — see \"All overlays\" below; an expected-drift superset can " +
+                "make this list empty even while drifted by design.)_",
+        )
         appendLine()
     } else {
         for (status in stale.sortedBy { it.nsid }) {

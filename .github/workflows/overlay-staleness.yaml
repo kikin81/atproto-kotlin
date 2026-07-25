@@ -96,14 +96,16 @@ jobs:
             # additions upstream has already absorbed. `del(.["$type"])` strips the
             # com.atproto.lexicon.schema wrapper key that lex install adds and the
             # vendored copies lack; -S sorts keys so re-ordering isn't a difference.
-            path="${nsid//./\/}"
-            fetched="$tmp_dir/$path.json"
-            vendored="overlay-lexicons/$path.json"
+            nsid_path="$(printf '%s' "$nsid" | tr '.' '/')"
+            fetched="$tmp_dir/$nsid_path.json"
+            vendored="overlay-lexicons/$nsid_path.json"
             redundant=false
             if [ "$publishable" = true ] && [ -f "$fetched" ] && [ -f "$vendored" ] &&
                diff -q <(jq -S 'del(.["$type"])' "$fetched") \
                        <(jq -S . "$vendored") >/dev/null 2>&1; then
               redundant=true
+            elif [ "$publishable" = true ] && [ ! -f "$fetched" ]; then
+              echo "WARN: $nsid probed publishable but $fetched is missing; redundancy unknown (treating as not redundant)"
             fi
             echo "probe: $nsid -> publishable=$publishable redundant=$redundant"
             map="$(jq --arg n "$nsid" --argjson v "$publishable" \
@@ -125,7 +127,8 @@ jobs:
         # GITHUB_TOKEN intentionally NOT exposed here either — the detector
         # makes one HTTPS request per overlay against public
         # raw.githubusercontent.com; unauthenticated suffices at our weekly
-        # cadence. It reads OVERLAY_PUBLISHABLE_JSON from the probe step.
+        # cadence. It reads OVERLAY_PUBLISHABLE_JSON and OVERLAY_REDUNDANT_JSON
+        # from the probe step.
         run: ./gradlew :generator:detectStaleOverlays --quiet --no-configuration-cache
 
       - name: Ensure overlay-stale label exists

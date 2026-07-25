@@ -139,7 +139,11 @@ class DetectStaleOverlaysTest {
 
         assertContains(body, "_Generated 2026-06-20 12:00 UTC")
         assertContains(body, "## Overlays needing attention (0)")
-        assertContains(body, "_(none — every overlay is still required and in sync with upstream.)_")
+        assertContains(
+            body,
+            "_(none — see \"All overlays\" below; an expected-drift superset can " +
+                "make this list empty even while drifted by design.)_",
+        )
         assertContains(body, "## All overlays (1)")
         assertContains(body, "- `chat.bsky.convo.getConvoMembers` — not-yet-publishable, in-sync")
     }

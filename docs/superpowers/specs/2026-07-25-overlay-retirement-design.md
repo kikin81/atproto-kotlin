@@ -107,8 +107,21 @@ A direct ref is load-bearing for resolution — if upstream deletes the target,
 upstream can drop it from the union and every remaining document still resolves,
 so the only visible effect is public types silently vanishing from
 `models/api/models.api`. That is precisely the breaking change this work exists
-to avoid, so union-member-only NSIDs get pinned into `lexicons[]` to convert
-that silent deletion into a `lex install` failure.
+to avoid, so union-member-only NSIDs get pinned into `lexicons[]`.
+
+Pinning does **not** turn that deletion into a `lex install` failure — `--ci`
+fails when the *schema record itself* is deleted on-network, which is a
+different event from upstream dropping the NSID from a union while the record
+keeps resolving on its own (e.g. if `app.bsky.embed.gallery` were dropped from
+`feed/post.json`'s embed union while the `gallery` record still resolved,
+`--ci` would pass and the union member would vanish silently). What pinning
+actually buys is smaller blast radius: with the CID pinned in `lexicons[]`,
+the generated types for a dropped-from-union NSID survive as an orphaned
+def instead of disappearing entirely — shrinking the failure from "types
+vanish" to "union membership changes", which is exactly what
+`./gradlew apiCheck` (already run by CI, `.github/workflows/ci.yaml:87`) is
+built to catch: it fails on any `models.api` diff, including a union losing
+a member.
 
 Applying the rule to the transitive-only NSIDs (verified by grepping the
 installed corpus for `"ref": "<nsid>` versus bare union-member occurrences):
