@@ -84,18 +84,20 @@ public final class io/github/kikin81/atproto/app/bsky/actor/BskyAppProgressGuide
 public final class io/github/kikin81/atproto/app/bsky/actor/BskyAppStatePref : io/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponsePreferencesUnion, io/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequestPreferencesUnion {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/actor/BskyAppStatePref$Companion;
 	public fun <init> ()V
-	public fun <init> (Lio/github/kikin81/atproto/app/bsky/actor/BskyAppProgressGuide;Ljava/util/List;Ljava/util/List;)V
-	public synthetic fun <init> (Lio/github/kikin81/atproto/app/bsky/actor/BskyAppProgressGuide;Ljava/util/List;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Lio/github/kikin81/atproto/app/bsky/actor/BskyAppProgressGuide;Ljava/lang/Boolean;Ljava/util/List;Ljava/util/List;)V
+	public synthetic fun <init> (Lio/github/kikin81/atproto/app/bsky/actor/BskyAppProgressGuide;Ljava/lang/Boolean;Ljava/util/List;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Lio/github/kikin81/atproto/app/bsky/actor/BskyAppProgressGuide;
-	public final fun component2 ()Ljava/util/List;
+	public final fun component2 ()Ljava/lang/Boolean;
 	public final fun component3 ()Ljava/util/List;
-	public final fun copy (Lio/github/kikin81/atproto/app/bsky/actor/BskyAppProgressGuide;Ljava/util/List;Ljava/util/List;)Lio/github/kikin81/atproto/app/bsky/actor/BskyAppStatePref;
-	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/actor/BskyAppStatePref;Lio/github/kikin81/atproto/app/bsky/actor/BskyAppProgressGuide;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/actor/BskyAppStatePref;
+	public final fun component4 ()Ljava/util/List;
+	public final fun copy (Lio/github/kikin81/atproto/app/bsky/actor/BskyAppProgressGuide;Ljava/lang/Boolean;Ljava/util/List;Ljava/util/List;)Lio/github/kikin81/atproto/app/bsky/actor/BskyAppStatePref;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/actor/BskyAppStatePref;Lio/github/kikin81/atproto/app/bsky/actor/BskyAppProgressGuide;Ljava/lang/Boolean;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/actor/BskyAppStatePref;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getActiveProgressGuide ()Lio/github/kikin81/atproto/app/bsky/actor/BskyAppProgressGuide;
 	public final fun getNuxs ()Ljava/util/List;
 	public final fun getQueuedNudges ()Ljava/util/List;
 	public fun hashCode ()I
+	public final fun isBetaUser ()Ljava/lang/Boolean;
 	public fun toString ()Ljava/lang/String;
 }
 
@@ -971,11 +973,14 @@ public final class io/github/kikin81/atproto/app/bsky/actor/ProfileAssociatedAct
 
 public final class io/github/kikin81/atproto/app/bsky/actor/ProfileAssociatedChat {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/actor/ProfileAssociatedChat$Companion;
-	public fun <init> (Ljava/lang/String;)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/actor/ProfileAssociatedChat;
-	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/actor/ProfileAssociatedChat;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/actor/ProfileAssociatedChat;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/actor/ProfileAssociatedChat;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/actor/ProfileAssociatedChat;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/actor/ProfileAssociatedChat;
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAllowGroupInvites ()Ljava/lang/String;
 	public final fun getAllowIncoming ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -1770,16 +1775,21 @@ public final class io/github/kikin81/atproto/app/bsky/actor/VerificationState$Co
 
 public final class io/github/kikin81/atproto/app/bsky/actor/VerificationView {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/actor/VerificationView$Companion;
-	public synthetic fun <init> (Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-DnBUIck ()Ljava/lang/String;
 	public final fun component2 ()Z
 	public final fun component3-UyB9Nic ()Ljava/lang/String;
-	public final fun component4-GUXd3rc ()Ljava/lang/String;
-	public final fun copy-ZPm9goA (Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/actor/VerificationView;
-	public static synthetic fun copy-ZPm9goA$default (Lio/github/kikin81/atproto/app/bsky/actor/VerificationView;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/actor/VerificationView;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5-LcUzKSo ()Ljava/lang/String;
+	public final fun component6-GUXd3rc ()Ljava/lang/String;
+	public final fun copy-RLho6hE (Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/actor/VerificationView;
+	public static synthetic fun copy-RLho6hE$default (Lio/github/kikin81/atproto/app/bsky/actor/VerificationView;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/actor/VerificationView;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getCreatedAt-DnBUIck ()Ljava/lang/String;
 	public final fun getIssuer-UyB9Nic ()Ljava/lang/String;
+	public final fun getIssuerDisplayName ()Ljava/lang/String;
+	public final fun getIssuerHandle-LcUzKSo ()Ljava/lang/String;
 	public final fun getUri-GUXd3rc ()Ljava/lang/String;
 	public fun hashCode ()I
 	public final fun isValid ()Z
@@ -2253,7 +2263,74 @@ public final class io/github/kikin81/atproto/app/bsky/draft/DraftEmbedExternal$C
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class io/github/kikin81/atproto/app/bsky/draft/DraftEmbedImage {
+public final class io/github/kikin81/atproto/app/bsky/draft/DraftEmbedGallery {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/draft/DraftEmbedGallery$Companion;
+	public fun <init> (Ljava/util/List;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun copy (Ljava/util/List;)Lio/github/kikin81/atproto/app/bsky/draft/DraftEmbedGallery;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/draft/DraftEmbedGallery;Ljava/util/List;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/draft/DraftEmbedGallery;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getItems ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/draft/DraftEmbedGallery$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/draft/DraftEmbedGallery$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/draft/DraftEmbedGallery;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/draft/DraftEmbedGallery;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/draft/DraftEmbedGallery$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public abstract interface class io/github/kikin81/atproto/app/bsky/draft/DraftEmbedGalleryItemsUnion : io/github/kikin81/atproto/runtime/OpenUnionMember {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/draft/DraftEmbedGalleryItemsUnion$Companion;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/draft/DraftEmbedGalleryItemsUnion$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/draft/DraftEmbedGalleryItemsUnion$Unknown : io/github/kikin81/atproto/app/bsky/draft/DraftEmbedGalleryItemsUnion, io/github/kikin81/atproto/runtime/UnknownOpenUnionMember {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/draft/DraftEmbedGalleryItemsUnion$Unknown$Companion;
+	public fun <init> (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Lkotlinx/serialization/json/JsonObject;
+	public final fun copy (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)Lio/github/kikin81/atproto/app/bsky/draft/DraftEmbedGalleryItemsUnion$Unknown;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/draft/DraftEmbedGalleryItemsUnion$Unknown;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/draft/DraftEmbedGalleryItemsUnion$Unknown;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getRaw ()Lkotlinx/serialization/json/JsonObject;
+	public fun getType ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/draft/DraftEmbedGalleryItemsUnion$Unknown$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/draft/DraftEmbedGalleryItemsUnionSerializer : io/github/kikin81/atproto/runtime/OpenUnionSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/draft/DraftEmbedGalleryItemsUnionSerializer;
+	public fun selectKnownDeserializer (Ljava/lang/String;)Lkotlinx/serialization/KSerializer;
+	public fun selectKnownSerializer (Lio/github/kikin81/atproto/app/bsky/draft/DraftEmbedGalleryItemsUnion;)Lkotlinx/serialization/KSerializer;
+	public synthetic fun selectKnownSerializer (Lio/github/kikin81/atproto/runtime/OpenUnionMember;)Lkotlinx/serialization/KSerializer;
+	public fun unknownSerializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/draft/DraftEmbedGalleryItemsUnionUnknownSerializer : io/github/kikin81/atproto/runtime/UnknownMemberSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/draft/DraftEmbedGalleryItemsUnionUnknownSerializer;
+	public fun construct (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)Lio/github/kikin81/atproto/app/bsky/draft/DraftEmbedGalleryItemsUnion$Unknown;
+	public synthetic fun construct (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)Lio/github/kikin81/atproto/runtime/UnknownOpenUnionMember;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/draft/DraftEmbedImage : io/github/kikin81/atproto/app/bsky/draft/DraftEmbedGalleryItemsUnion {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/draft/DraftEmbedImage$Companion;
 	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/app/bsky/draft/DraftEmbedLocalRef;)V
 	public synthetic fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/app/bsky/draft/DraftEmbedLocalRef;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -2471,18 +2548,20 @@ public final class io/github/kikin81/atproto/app/bsky/draft/DraftInput$Companion
 
 public final class io/github/kikin81/atproto/app/bsky/draft/DraftPost {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/draft/DraftPost$Companion;
-	public fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lio/github/kikin81/atproto/app/bsky/draft/DraftPostLabelsUnion;Ljava/lang/String;)V
-	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lio/github/kikin81/atproto/app/bsky/draft/DraftPostLabelsUnion;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/util/List;Lio/github/kikin81/atproto/app/bsky/draft/DraftEmbedGallery;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lio/github/kikin81/atproto/app/bsky/draft/DraftPostLabelsUnion;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/util/List;Lio/github/kikin81/atproto/app/bsky/draft/DraftEmbedGallery;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lio/github/kikin81/atproto/app/bsky/draft/DraftPostLabelsUnion;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/util/List;
-	public final fun component2 ()Ljava/util/List;
+	public final fun component2 ()Lio/github/kikin81/atproto/app/bsky/draft/DraftEmbedGallery;
 	public final fun component3 ()Ljava/util/List;
 	public final fun component4 ()Ljava/util/List;
-	public final fun component5 ()Lio/github/kikin81/atproto/app/bsky/draft/DraftPostLabelsUnion;
-	public final fun component6 ()Ljava/lang/String;
-	public final fun copy (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lio/github/kikin81/atproto/app/bsky/draft/DraftPostLabelsUnion;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/draft/DraftPost;
-	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/draft/DraftPost;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lio/github/kikin81/atproto/app/bsky/draft/DraftPostLabelsUnion;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/draft/DraftPost;
+	public final fun component5 ()Ljava/util/List;
+	public final fun component6 ()Lio/github/kikin81/atproto/app/bsky/draft/DraftPostLabelsUnion;
+	public final fun component7 ()Ljava/lang/String;
+	public final fun copy (Ljava/util/List;Lio/github/kikin81/atproto/app/bsky/draft/DraftEmbedGallery;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lio/github/kikin81/atproto/app/bsky/draft/DraftPostLabelsUnion;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/draft/DraftPost;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/draft/DraftPost;Ljava/util/List;Lio/github/kikin81/atproto/app/bsky/draft/DraftEmbedGallery;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lio/github/kikin81/atproto/app/bsky/draft/DraftPostLabelsUnion;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/draft/DraftPost;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getEmbedExternals ()Ljava/util/List;
+	public final fun getEmbedGallery ()Lio/github/kikin81/atproto/app/bsky/draft/DraftEmbedGallery;
 	public final fun getEmbedImages ()Ljava/util/List;
 	public final fun getEmbedRecords ()Ljava/util/List;
 	public final fun getEmbedVideos ()Ljava/util/List;
@@ -2509,18 +2588,20 @@ public final class io/github/kikin81/atproto/app/bsky/draft/DraftPost$Companion 
 
 public final class io/github/kikin81/atproto/app/bsky/draft/DraftPostInput {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/draft/DraftPostInput$Companion;
-	public fun <init> (Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Ljava/lang/String;)V
-	public synthetic fun <init> (Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Ljava/lang/String;)V
+	public synthetic fun <init> (Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Lio/github/kikin81/atproto/runtime/AtField;
 	public final fun component2 ()Lio/github/kikin81/atproto/runtime/AtField;
 	public final fun component3 ()Lio/github/kikin81/atproto/runtime/AtField;
 	public final fun component4 ()Lio/github/kikin81/atproto/runtime/AtField;
 	public final fun component5 ()Lio/github/kikin81/atproto/runtime/AtField;
-	public final fun component6 ()Ljava/lang/String;
-	public final fun copy (Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/draft/DraftPostInput;
-	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/draft/DraftPostInput;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/draft/DraftPostInput;
+	public final fun component6 ()Lio/github/kikin81/atproto/runtime/AtField;
+	public final fun component7 ()Ljava/lang/String;
+	public final fun copy (Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/draft/DraftPostInput;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/draft/DraftPostInput;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/draft/DraftPostInput;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getEmbedExternals ()Lio/github/kikin81/atproto/runtime/AtField;
+	public final fun getEmbedGallery ()Lio/github/kikin81/atproto/runtime/AtField;
 	public final fun getEmbedImages ()Lio/github/kikin81/atproto/runtime/AtField;
 	public final fun getEmbedRecords ()Lio/github/kikin81/atproto/runtime/AtField;
 	public final fun getEmbedVideos ()Lio/github/kikin81/atproto/runtime/AtField;
@@ -2896,17 +2977,50 @@ public final class io/github/kikin81/atproto/app/bsky/embed/External$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class io/github/kikin81/atproto/app/bsky/embed/ExternalColorRGB {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/embed/ExternalColorRGB$Companion;
+	public fun <init> (JJJ)V
+	public final fun component1 ()J
+	public final fun component2 ()J
+	public final fun component3 ()J
+	public final fun copy (JJJ)Lio/github/kikin81/atproto/app/bsky/embed/ExternalColorRGB;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/embed/ExternalColorRGB;JJJILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/embed/ExternalColorRGB;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getB ()J
+	public final fun getG ()J
+	public final fun getR ()J
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/embed/ExternalColorRGB$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/embed/ExternalColorRGB$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/embed/ExternalColorRGB;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/embed/ExternalColorRGB;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/embed/ExternalColorRGB$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class io/github/kikin81/atproto/app/bsky/embed/ExternalExternal {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/embed/ExternalExternal$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/runtime/AtField;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/runtime/AtField;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Lio/github/kikin81/atproto/runtime/AtField;
-	public final fun component3 ()Ljava/lang/String;
-	public final fun component4-jMNtXP8 ()Ljava/lang/String;
-	public final fun copy-2RW-_b8 (Ljava/lang/String;Lio/github/kikin81/atproto/runtime/AtField;Ljava/lang/String;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/embed/ExternalExternal;
-	public static synthetic fun copy-2RW-_b8$default (Lio/github/kikin81/atproto/app/bsky/embed/ExternalExternal;Ljava/lang/String;Lio/github/kikin81/atproto/runtime/AtField;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/embed/ExternalExternal;
+	public synthetic fun <init> (Lio/github/kikin81/atproto/runtime/AtField;Ljava/lang/String;Lio/github/kikin81/atproto/runtime/AtField;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Lio/github/kikin81/atproto/runtime/AtField;Ljava/lang/String;Lio/github/kikin81/atproto/runtime/AtField;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lio/github/kikin81/atproto/runtime/AtField;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Lio/github/kikin81/atproto/runtime/AtField;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5-jMNtXP8 ()Ljava/lang/String;
+	public final fun copy-d7gggOk (Lio/github/kikin81/atproto/runtime/AtField;Ljava/lang/String;Lio/github/kikin81/atproto/runtime/AtField;Ljava/lang/String;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/embed/ExternalExternal;
+	public static synthetic fun copy-d7gggOk$default (Lio/github/kikin81/atproto/app/bsky/embed/ExternalExternal;Lio/github/kikin81/atproto/runtime/AtField;Ljava/lang/String;Lio/github/kikin81/atproto/runtime/AtField;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/embed/ExternalExternal;
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAssociatedRefs ()Lio/github/kikin81/atproto/runtime/AtField;
 	public final fun getDescription ()Ljava/lang/String;
 	public final fun getThumb ()Lio/github/kikin81/atproto/runtime/AtField;
 	public final fun getTitle ()Ljava/lang/String;
@@ -2959,18 +3073,32 @@ public final class io/github/kikin81/atproto/app/bsky/embed/ExternalView$Compani
 
 public final class io/github/kikin81/atproto/app/bsky/embed/ExternalViewExternal {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/embed/ExternalViewExternal$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()Ljava/lang/String;
-	public final fun component2-Eo6btPk ()Ljava/lang/String;
-	public final fun component3 ()Ljava/lang/String;
-	public final fun component4-jMNtXP8 ()Ljava/lang/String;
-	public final fun copy-gl96lsk (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/embed/ExternalViewExternal;
-	public static synthetic fun copy-gl96lsk$default (Lio/github/kikin81/atproto/app/bsky/embed/ExternalViewExternal;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/embed/ExternalViewExternal;
+	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/Long;Lio/github/kikin81/atproto/app/bsky/embed/ExternalViewExternalSource;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/Long;Lio/github/kikin81/atproto/app/bsky/embed/ExternalViewExternalSource;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun component10-G5DCnlA ()Ljava/lang/String;
+	public final fun component11-jMNtXP8 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/util/List;
+	public final fun component3-G5DCnlA ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/util/List;
+	public final fun component6 ()Ljava/lang/Long;
+	public final fun component7 ()Lio/github/kikin81/atproto/app/bsky/embed/ExternalViewExternalSource;
+	public final fun component8-Eo6btPk ()Ljava/lang/String;
+	public final fun component9 ()Ljava/lang/String;
+	public final fun copy-TiLV5vE (Ljava/util/List;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/Long;Lio/github/kikin81/atproto/app/bsky/embed/ExternalViewExternalSource;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/embed/ExternalViewExternal;
+	public static synthetic fun copy-TiLV5vE$default (Lio/github/kikin81/atproto/app/bsky/embed/ExternalViewExternal;Ljava/util/List;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/Long;Lio/github/kikin81/atproto/app/bsky/embed/ExternalViewExternalSource;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/embed/ExternalViewExternal;
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAssociatedProfiles ()Ljava/util/List;
+	public final fun getAssociatedRefs ()Ljava/util/List;
+	public final fun getCreatedAt-G5DCnlA ()Ljava/lang/String;
 	public final fun getDescription ()Ljava/lang/String;
+	public final fun getLabels ()Ljava/util/List;
+	public final fun getReadingTime ()Ljava/lang/Long;
+	public final fun getSource ()Lio/github/kikin81/atproto/app/bsky/embed/ExternalViewExternalSource;
 	public final fun getThumb-Eo6btPk ()Ljava/lang/String;
 	public final fun getTitle ()Ljava/lang/String;
+	public final fun getUpdatedAt-G5DCnlA ()Ljava/lang/String;
 	public final fun getUri-jMNtXP8 ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -2988,6 +3116,77 @@ public final synthetic class io/github/kikin81/atproto/app/bsky/embed/ExternalVi
 }
 
 public final class io/github/kikin81/atproto/app/bsky/embed/ExternalViewExternal$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/embed/ExternalViewExternalSource {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/embed/ExternalViewExternalSource$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lio/github/kikin81/atproto/app/bsky/embed/ExternalViewExternalSourceTheme;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lio/github/kikin81/atproto/app/bsky/embed/ExternalViewExternalSourceTheme;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2-Eo6btPk ()Ljava/lang/String;
+	public final fun component3 ()Lio/github/kikin81/atproto/app/bsky/embed/ExternalViewExternalSourceTheme;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5-jMNtXP8 ()Ljava/lang/String;
+	public final fun copy-ruPNdvU (Ljava/lang/String;Ljava/lang/String;Lio/github/kikin81/atproto/app/bsky/embed/ExternalViewExternalSourceTheme;Ljava/lang/String;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/embed/ExternalViewExternalSource;
+	public static synthetic fun copy-ruPNdvU$default (Lio/github/kikin81/atproto/app/bsky/embed/ExternalViewExternalSource;Ljava/lang/String;Ljava/lang/String;Lio/github/kikin81/atproto/app/bsky/embed/ExternalViewExternalSourceTheme;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/embed/ExternalViewExternalSource;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDescription ()Ljava/lang/String;
+	public final fun getIcon-Eo6btPk ()Ljava/lang/String;
+	public final fun getTheme ()Lio/github/kikin81/atproto/app/bsky/embed/ExternalViewExternalSourceTheme;
+	public final fun getTitle ()Ljava/lang/String;
+	public final fun getUri-jMNtXP8 ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/embed/ExternalViewExternalSource$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/embed/ExternalViewExternalSource$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/embed/ExternalViewExternalSource;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/embed/ExternalViewExternalSource;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/embed/ExternalViewExternalSource$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/embed/ExternalViewExternalSourceTheme {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/embed/ExternalViewExternalSourceTheme$Companion;
+	public fun <init> ()V
+	public fun <init> (Lio/github/kikin81/atproto/app/bsky/embed/ExternalColorRGB;Lio/github/kikin81/atproto/app/bsky/embed/ExternalColorRGB;Lio/github/kikin81/atproto/app/bsky/embed/ExternalColorRGB;Lio/github/kikin81/atproto/app/bsky/embed/ExternalColorRGB;)V
+	public synthetic fun <init> (Lio/github/kikin81/atproto/app/bsky/embed/ExternalColorRGB;Lio/github/kikin81/atproto/app/bsky/embed/ExternalColorRGB;Lio/github/kikin81/atproto/app/bsky/embed/ExternalColorRGB;Lio/github/kikin81/atproto/app/bsky/embed/ExternalColorRGB;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lio/github/kikin81/atproto/app/bsky/embed/ExternalColorRGB;
+	public final fun component2 ()Lio/github/kikin81/atproto/app/bsky/embed/ExternalColorRGB;
+	public final fun component3 ()Lio/github/kikin81/atproto/app/bsky/embed/ExternalColorRGB;
+	public final fun component4 ()Lio/github/kikin81/atproto/app/bsky/embed/ExternalColorRGB;
+	public final fun copy (Lio/github/kikin81/atproto/app/bsky/embed/ExternalColorRGB;Lio/github/kikin81/atproto/app/bsky/embed/ExternalColorRGB;Lio/github/kikin81/atproto/app/bsky/embed/ExternalColorRGB;Lio/github/kikin81/atproto/app/bsky/embed/ExternalColorRGB;)Lio/github/kikin81/atproto/app/bsky/embed/ExternalViewExternalSourceTheme;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/embed/ExternalViewExternalSourceTheme;Lio/github/kikin81/atproto/app/bsky/embed/ExternalColorRGB;Lio/github/kikin81/atproto/app/bsky/embed/ExternalColorRGB;Lio/github/kikin81/atproto/app/bsky/embed/ExternalColorRGB;Lio/github/kikin81/atproto/app/bsky/embed/ExternalColorRGB;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/embed/ExternalViewExternalSourceTheme;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAccentForegroundRGB ()Lio/github/kikin81/atproto/app/bsky/embed/ExternalColorRGB;
+	public final fun getAccentRGB ()Lio/github/kikin81/atproto/app/bsky/embed/ExternalColorRGB;
+	public final fun getBackgroundRGB ()Lio/github/kikin81/atproto/app/bsky/embed/ExternalColorRGB;
+	public final fun getForegroundRGB ()Lio/github/kikin81/atproto/app/bsky/embed/ExternalColorRGB;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/embed/ExternalViewExternalSourceTheme$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/embed/ExternalViewExternalSourceTheme$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/embed/ExternalViewExternalSourceTheme;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/embed/ExternalViewExternalSourceTheme;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/embed/ExternalViewExternalSourceTheme$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
@@ -3089,7 +3288,7 @@ public final class io/github/kikin81/atproto/app/bsky/embed/GalleryItemsUnionUnk
 	public synthetic fun construct (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)Lio/github/kikin81/atproto/runtime/UnknownOpenUnionMember;
 }
 
-public final class io/github/kikin81/atproto/app/bsky/embed/GalleryView : io/github/kikin81/atproto/app/bsky/embed/RecordWithMediaViewMediaUnion, io/github/kikin81/atproto/app/bsky/feed/PostViewEmbedUnion {
+public final class io/github/kikin81/atproto/app/bsky/embed/GalleryView : io/github/kikin81/atproto/app/bsky/embed/RecordViewRecordEmbedsUnion, io/github/kikin81/atproto/app/bsky/embed/RecordWithMediaViewMediaUnion, io/github/kikin81/atproto/app/bsky/feed/PostViewEmbedUnion {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/embed/GalleryView$Companion;
 	public fun <init> (Ljava/util/List;)V
 	public final fun component1 ()Ljava/util/List;
@@ -10286,6 +10485,26 @@ public final class io/github/kikin81/atproto/chat/bsky/actor/GroupConvoMember$Co
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class io/github/kikin81/atproto/chat/bsky/actor/PastGroupConvoMember : io/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasicKindUnion {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/actor/PastGroupConvoMember$Companion;
+	public fun <init> ()V
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/actor/PastGroupConvoMember$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/actor/PastGroupConvoMember$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/actor/PastGroupConvoMember;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/actor/PastGroupConvoMember;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/actor/PastGroupConvoMember$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class io/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic {
 	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic$Companion;
 	public synthetic fun <init> (Lio/github/kikin81/atproto/app/bsky/actor/ProfileAssociated;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasicKindUnion;Ljava/util/List;Lio/github/kikin81/atproto/app/bsky/actor/VerificationState;Lio/github/kikin81/atproto/app/bsky/actor/ViewerState;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -10579,8 +10798,6 @@ public final class io/github/kikin81/atproto/chat/bsky/convo/ConvoServiceKt {
 	public static synthetic fun logFlow$default (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/GetLogRequest;ILjava/lang/Object;)Lkotlinx/coroutines/flow/Flow;
 	public static final fun logPageFlow (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/GetLogRequest;)Lkotlinx/coroutines/flow/Flow;
 	public static synthetic fun logPageFlow$default (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/GetLogRequest;ILjava/lang/Object;)Lkotlinx/coroutines/flow/Flow;
-	public static final fun messagesFlow (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/GetMessagesRequest;)Lkotlinx/coroutines/flow/Flow;
-	public static final fun messagesPageFlow (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoService;Lio/github/kikin81/atproto/chat/bsky/convo/GetMessagesRequest;)Lkotlinx/coroutines/flow/Flow;
 }
 
 public final class io/github/kikin81/atproto/chat/bsky/convo/ConvoView : io/github/kikin81/atproto/chat/bsky/convo/ListConvoRequestsResponseRequestsUnion {
@@ -11189,15 +11406,17 @@ public final class io/github/kikin81/atproto/chat/bsky/convo/GetMessagesRequest$
 
 public final class io/github/kikin81/atproto/chat/bsky/convo/GetMessagesResponse {
 	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/convo/GetMessagesResponse$Companion;
-	public fun <init> (Ljava/lang/String;Ljava/util/List;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/lang/String;Ljava/util/List;Ljava/util/List;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/util/List;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component2 ()Ljava/util/List;
-	public final fun copy (Ljava/lang/String;Ljava/util/List;)Lio/github/kikin81/atproto/chat/bsky/convo/GetMessagesResponse;
-	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/GetMessagesResponse;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/GetMessagesResponse;
+	public final fun component3 ()Ljava/util/List;
+	public final fun copy (Ljava/lang/String;Ljava/util/List;Ljava/util/List;)Lio/github/kikin81/atproto/chat/bsky/convo/GetMessagesResponse;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/GetMessagesResponse;Ljava/lang/String;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/GetMessagesResponse;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getCursor ()Ljava/lang/String;
 	public final fun getMessages ()Ljava/util/List;
+	public final fun getRelatedProfiles ()Ljava/util/List;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -11461,19 +11680,21 @@ public final class io/github/kikin81/atproto/chat/bsky/convo/ListConvoRequestsRe
 public final class io/github/kikin81/atproto/chat/bsky/convo/ListConvosRequest {
 	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/convo/ListConvosRequest$Companion;
 	public fun <init> ()V
-	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component2 ()Ljava/lang/String;
 	public final fun component3 ()Ljava/lang/Long;
 	public final fun component4 ()Ljava/lang/String;
 	public final fun component5 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/ListConvosRequest;
-	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/ListConvosRequest;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/ListConvosRequest;
+	public final fun component6 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lio/github/kikin81/atproto/chat/bsky/convo/ListConvosRequest;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/convo/ListConvosRequest;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/convo/ListConvosRequest;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getCursor ()Ljava/lang/String;
 	public final fun getKind ()Ljava/lang/String;
 	public final fun getLimit ()Ljava/lang/Long;
+	public final fun getLockStatus ()Ljava/lang/String;
 	public final fun getReadState ()Ljava/lang/String;
 	public final fun getStatus ()Ljava/lang/String;
 	public fun hashCode ()I
@@ -12398,7 +12619,7 @@ public final class io/github/kikin81/atproto/chat/bsky/convo/LogReadConvoMessage
 	public synthetic fun construct (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)Lio/github/kikin81/atproto/runtime/UnknownOpenUnionMember;
 }
 
-public final class io/github/kikin81/atproto/chat/bsky/convo/LogReadJoinRequests {
+public final class io/github/kikin81/atproto/chat/bsky/convo/LogReadJoinRequests : io/github/kikin81/atproto/chat/bsky/convo/GetLogResponseLogsUnion {
 	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/convo/LogReadJoinRequests$Companion;
 	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
 	public final fun component1 ()Ljava/lang/String;
@@ -12700,7 +12921,7 @@ public final class io/github/kikin81/atproto/chat/bsky/convo/LogUnmuteConvo$Comp
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class io/github/kikin81/atproto/chat/bsky/convo/LogWithdrawIncomingJoinRequest {
+public final class io/github/kikin81/atproto/chat/bsky/convo/LogWithdrawIncomingJoinRequest : io/github/kikin81/atproto/chat/bsky/convo/GetLogResponseLogsUnion {
 	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/convo/LogWithdrawIncomingJoinRequest$Companion;
 	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;Ljava/lang/String;)V
 	public final fun component1 ()Ljava/lang/String;
@@ -12731,7 +12952,7 @@ public final class io/github/kikin81/atproto/chat/bsky/convo/LogWithdrawIncoming
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class io/github/kikin81/atproto/chat/bsky/convo/LogWithdrawOutgoingJoinRequest {
+public final class io/github/kikin81/atproto/chat/bsky/convo/LogWithdrawOutgoingJoinRequest : io/github/kikin81/atproto/chat/bsky/convo/GetLogResponseLogsUnion {
 	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/convo/LogWithdrawOutgoingJoinRequest$Companion;
 	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
 	public final fun component1 ()Ljava/lang/String;
@@ -14131,11 +14352,14 @@ public final class io/github/kikin81/atproto/chat/bsky/group/AddMembersRequest$C
 
 public final class io/github/kikin81/atproto/chat/bsky/group/AddMembersResponse {
 	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/group/AddMembersResponse$Companion;
-	public fun <init> (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;)V
-	public final fun component1 ()Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;
-	public final fun copy (Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;)Lio/github/kikin81/atproto/chat/bsky/group/AddMembersResponse;
-	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/group/AddMembersResponse;Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/group/AddMembersResponse;
+	public fun <init> (Ljava/util/List;Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;)V
+	public synthetic fun <init> (Ljava/util/List;Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun component2 ()Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;
+	public final fun copy (Ljava/util/List;Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;)Lio/github/kikin81/atproto/chat/bsky/group/AddMembersResponse;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/group/AddMembersResponse;Ljava/util/List;Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/group/AddMembersResponse;
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAddedMembers ()Ljava/util/List;
 	public final fun getConvo ()Lio/github/kikin81/atproto/chat/bsky/convo/ConvoView;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -14836,7 +15060,7 @@ public final class io/github/kikin81/atproto/chat/bsky/group/JoinLinkViewerState
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class io/github/kikin81/atproto/chat/bsky/group/JoinRequestConvoView {
+public final class io/github/kikin81/atproto/chat/bsky/group/JoinRequestConvoView : io/github/kikin81/atproto/chat/bsky/convo/ListConvoRequestsResponseRequestsUnion {
 	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/group/JoinRequestConvoView$Companion;
 	public fun <init> (Ljava/lang/String;JJLjava/lang/String;Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkViewerState;)V
 	public final fun component1 ()Ljava/lang/String;
@@ -14873,7 +15097,7 @@ public final class io/github/kikin81/atproto/chat/bsky/group/JoinRequestConvoVie
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class io/github/kikin81/atproto/chat/bsky/group/JoinRequestView : io/github/kikin81/atproto/chat/bsky/convo/ListConvoRequestsResponseRequestsUnion {
+public final class io/github/kikin81/atproto/chat/bsky/group/JoinRequestView {
 	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/group/JoinRequestView$Companion;
 	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lio/github/kikin81/atproto/chat/bsky/actor/ProfileViewBasic;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
