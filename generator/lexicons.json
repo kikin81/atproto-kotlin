@@ -140,6 +140,7 @@
     "com.atproto.server.createSession",
     "com.atproto.server.deleteSession",
     "com.atproto.server.describeServer",
+    "com.atproto.server.getServiceAuth",
     "com.atproto.server.getSession",
     "com.atproto.server.refreshSession",
     "com.atproto.sync.getLatestCommit",
@@ -793,6 +794,10 @@
     "com.atproto.server.describeServer": {
       "uri": "at://did:plc:6msi3pj7krzih5qxqtryxlzw/com.atproto.lexicon.schema/com.atproto.server.describeServer",
       "cid": "bafyreidjve4qbhebxzppq23ogsto6luddd63mmn7a57rmml6qi3yf7n3ee"
+    },
+    "com.atproto.server.getServiceAuth": {
+      "uri": "at://did:plc:6msi3pj7krzih5qxqtryxlzw/com.atproto.lexicon.schema/com.atproto.server.getServiceAuth",
+      "cid": "bafyreigjuxsvldkifmwzdrzvziq2ldomzoqizsv5umwgumjv77ld56wxyi"
     },
     "com.atproto.server.getSession": {
       "uri": "at://did:plc:6msi3pj7krzih5qxqtryxlzw/com.atproto.lexicon.schema/com.atproto.server.getSession",
