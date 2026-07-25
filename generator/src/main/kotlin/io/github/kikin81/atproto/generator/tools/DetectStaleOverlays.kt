@@ -63,6 +63,11 @@ internal data class OverlayEntry(
     val vendoredAt: String = "",
     val reason: String = "",
     val removeWhenPublished: Boolean = false,
+    // The vendored copy is INTENTIONALLY not byte-equal to upstream@main (e.g. it
+    // re-adds a def upstream deleted that is still published on-network). Suppresses
+    // the RE-VENDOR nag; see the isStale inversion below for how it stays honest.
+    val expectDrift: Boolean = false,
+    val driftReason: String = "",
 )
 
 @Serializable
@@ -156,6 +161,9 @@ internal data class OverlayStatus(
     // removeWhenPublished: a pinned shadow whose local additions upstream has since
     // absorbed is exactly the case the drift-only comparison could never see.
     val redundant: Boolean = false,
+    // Drift against upstream@main is EXPECTED for this overlay, so it must not nag.
+    val expectDrift: Boolean = false,
+    val driftReason: String = "",
 ) {
     /**
      * Stale = actionable: redundant (delete it), retire (publishable AND opted in to
@@ -163,8 +171,15 @@ internal data class OverlayStatus(
      * (removeWhenPublished=false) still surfaces drift — we just never tell the
      * maintainer to retire it.
      */
-    val isStale: Boolean get() =
-        redundant || (publishable && removeWhenPublished) || drift != DriftStatus.InSync
+    val isStale: Boolean get() = when {
+        redundant -> true
+        publishable && removeWhenPublished -> true
+        // An expected-drift superset is quiet ONLY while it is actually drifted.
+        // If it reads in-sync, upstream absorbed the local addition and the flag
+        // itself is now the stale thing — so this inverts rather than mutes.
+        expectDrift -> drift != DriftStatus.Drifted
+        else -> drift != DriftStatus.InSync
+    }
 }
 
 internal fun renderReport(
@@ -211,10 +226,12 @@ internal fun renderReport(
                 status.publishable -> "publishable"
                 else -> "not-yet-publishable"
             }
-            val drift = when (status.drift) {
-                DriftStatus.InSync -> "in-sync"
-                DriftStatus.Drifted -> "DRIFTED"
-                DriftStatus.UpstreamRemoved -> "UPSTREAM-REMOVED"
+            val drift = when {
+                status.expectDrift && status.drift == DriftStatus.Drifted ->
+                    "SUPERSET (expected drift): ${status.driftReason}"
+                status.drift == DriftStatus.InSync -> "in-sync"
+                status.drift == DriftStatus.Drifted -> "DRIFTED"
+                else -> "UPSTREAM-REMOVED"
             }
             val redundant = if (status.redundant) ", REDUNDANT" else ""
             appendLine("- `${status.nsid}` — $pub, $drift$redundant")
@@ -250,6 +267,12 @@ private fun renderStaleLine(status: OverlayStatus): String {
                 "`rm generator/overlay-lexicons/$path.json` + its manifest entry, " +
                 "`./gradlew :generator:generateModels apiDump`, then confirm " +
                 "`git diff --exit-code models/api/models.api` is empty."
+        }
+        status.expectDrift && status.drift == DriftStatus.InSync -> {
+            "🔄 `$nsid` — upstream `main` now matches the vendored superset, so " +
+                "the local addition is no longer needed. **ACTION:** drop " +
+                "`expectDrift` from its `generator/overlay-lexicons.json` entry " +
+                "and re-evaluate the overlay for retirement."
         }
         status.publishable && status.removeWhenPublished -> {
             "✅ `$nsid` — now resolvable on-network. **RETIRE:** add to " +
@@ -361,6 +384,8 @@ public fun main(args: Array<String>) {
             publishable = publishable[overlay.nsid] == true,
             drift = drift,
             removeWhenPublished = overlay.removeWhenPublished,
+            expectDrift = overlay.expectDrift,
+            driftReason = overlay.driftReason,
         )
     }
 
