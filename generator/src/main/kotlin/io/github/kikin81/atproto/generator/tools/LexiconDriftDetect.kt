@@ -20,10 +20,15 @@ import kotlin.system.exitProcess
 /**
  * Detects upstream lexicon drift against `generator/lexicons.json`.
  *
- * Compares NSIDs declared in this repo's manifest against the
+ * Compares NSIDs covered by this repo's manifest against the
  * `bluesky-social/atproto` upstream lexicon corpus at main, and reports:
- *   - new upstream NSIDs not yet in our manifest (coverage gap)
+ *   - new upstream NSIDs we don't cover at all (coverage gap)
  *   - manifest NSIDs no longer present upstream (deprecations / renames)
+ *
+ * "Covered" spans both manifest sections: the `lexicons` opt-in array *and*
+ * the `resolutions` lockfile, which pins the transitive closure `lex install`
+ * walked to. A transitively-resolved NSID is installed and generated just like
+ * an opted-in one, so it is not a gap.
  *
  * Runnable locally (prints a markdown report to stdout) and from
  * `.github/workflows/lexicon-drift-detect.yaml` (writes `has_drift`,
@@ -48,8 +53,21 @@ internal data class TreeResponse(
 internal data class TreeEntry(val path: String, val type: String = "")
 
 @Serializable
-internal data class Manifest(val lexicons: List<String> = emptyList())
+internal data class Manifest(
+    val lexicons: List<String> = emptyList(),
+    val resolutions: Map<String, ResolutionRef> = emptyMap(),
+)
 
+@Serializable
+internal data class ResolutionRef(val uri: String = "", val cid: String = "")
+
+/**
+ * Every NSID upstream publishes, including `*.defs` documents.
+ *
+ * This is the set to diff *manifest* NSIDs against — the manifest may name a
+ * `*.defs` document explicitly (nothing opted-in refs it), and stripping defs
+ * from only one side of that difference would report it missing forever.
+ */
 internal fun parseUpstreamNsids(treeJson: String): Set<String> {
     val parsed = json.decodeFromString<TreeResponse>(treeJson)
     if (parsed.truncated) {
@@ -63,11 +81,32 @@ internal fun parseUpstreamNsids(treeJson: String): Set<String> {
         .map {
             it.path.removePrefix("lexicons/").removeSuffix(".json").replace('/', '.')
         }
-        .filterNot { it.endsWith(".defs") }
         .toSet()
 }
 
+/**
+ * Upstream NSIDs that are plausible opt-in targets.
+ *
+ * `*.defs` documents are never opted into directly — they arrive transitively
+ * as refs of whatever names them — so listing one as a coverage gap is always
+ * noise. Applies to the "new upstream" side of the diff only.
+ */
+internal fun optInCandidates(upstream: Set<String>): Set<String> = upstream.filterNot { it.endsWith(".defs") }.toSet()
+
+/** NSIDs explicitly opted into via the manifest's `lexicons` array. */
 internal fun parseManifestNsids(manifestJson: String): Set<String> = json.decodeFromString<Manifest>(manifestJson).lexicons.toSet()
+
+/**
+ * NSIDs pinned in the manifest's `resolutions` lockfile.
+ *
+ * A superset of the `lexicons` array: `lex install` walks refs and pins every
+ * document it resolves, so transitive dependencies (`app.bsky.embed.images`
+ * via `app.bsky.feed.post`, `com.atproto.repo.strongRef`, the `*.defs`
+ * documents) land here without ever being opted into. They are installed,
+ * generated, and published — reporting them as a coverage gap is a false
+ * positive, so the "new upstream" diff subtracts them.
+ */
+internal fun parseResolvedNsids(manifestJson: String): Set<String> = json.decodeFromString<Manifest>(manifestJson).resolutions.keys
 
 @Serializable
 internal data class OverlayManifestRef(val overlays: List<OverlayRef> = emptyList())
@@ -116,6 +155,7 @@ internal fun renderReport(
     removedNsids: Set<String>,
     now: OffsetDateTime,
     overlayCount: Int = 0,
+    transitiveCount: Int = 0,
 ): String = buildString {
     appendLine(
         "_Generated ${timestampFormatter.format(now)} by " +
@@ -132,6 +172,14 @@ internal fun renderReport(
         appendLine(
             "_($overlayCount NSID(s) handled by overlays — excluded here; " +
                 "see the `overlay-stale` tracking issue.)_",
+        )
+        appendLine()
+    }
+    if (transitiveCount > 0) {
+        appendLine(
+            "_($transitiveCount NSID(s) covered transitively via `resolutions` " +
+                "— installed and generated without being opted into, so " +
+                "excluded here.)_",
         )
         appendLine()
     }
@@ -264,9 +312,18 @@ public fun main(args: Array<String>) {
     }
 
     val upstream = parseUpstreamNsids(fetchUpstreamTree(System.getenv("GITHUB_TOKEN")))
-    val manifest = parseManifestNsids(Files.readString(manifestPath))
-    val newNsids = upstream - manifest - overlayNsids
-    val removedNsids = manifest - upstream
+    val manifestJson = Files.readString(manifestPath)
+    val declared = parseManifestNsids(manifestJson)
+    // `resolutions` pins everything lex install walked to, so it already
+    // contains `declared`; the difference is what we cover transitively.
+    val resolved = parseResolvedNsids(manifestJson)
+    val transitive = resolved - declared
+
+    val newNsids = optInCandidates(upstream) - declared - resolved - overlayNsids
+    // Diffed against the unfiltered upstream set: the manifest names a few
+    // `*.defs` documents directly, and those exist upstream.
+    val removedNsids = declared - upstream
+
     val hasDrift = newNsids.isNotEmpty() || removedNsids.isNotEmpty()
     val body =
         renderReport(
@@ -274,6 +331,7 @@ public fun main(args: Array<String>) {
             removedNsids,
             OffsetDateTime.now(ZoneOffset.UTC),
             overlayNsids.size,
+            transitive.size,
         )
 
     println(body)
