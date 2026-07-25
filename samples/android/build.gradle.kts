@@ -8,7 +8,12 @@ plugins {
 
 android {
     namespace = "io.github.kikin81.atproto.samples.bluesky"
-    compileSdk = 36
+    // 37 is required by androidx.core:core-ktx 1.19.0 (and the 1.4.0 hilt-navigation
+    // / 2.11.0 lifecycle artifacts), which publish an AAR metadata floor of
+    // compileSdk 37. targetSdk stays at 36 deliberately — raising it opts the app
+    // into Android 17 runtime behavior changes, which is a separate decision from
+    // being able to compile against the newer APIs.
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "io.github.kikin81.atproto.samples.bluesky"

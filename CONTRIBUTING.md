@@ -19,7 +19,7 @@ cd atproto-kotlin/generator && npx lex install --ci && cd -
 
 - **JDK 17** (tracked by `.java-version` / `.sdkmanrc`)
 - **Node 22+** (for `npx lex install`)
-- **Android SDK** (API 36+, only if you're touching `:samples:android`)
+- **Android SDK** (API 37+, only if you're touching `:samples:android`)
 
 Gradle 9.3.1 ships via the wrapper — no separate install needed.
 
