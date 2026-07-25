@@ -168,15 +168,15 @@ class LexiconDriftDetectTest {
     }
 
     @Test
-    fun `parseManifestNsids reads the lexicons array only`() {
+    fun `parseManifest reads the opt-in lexicons array`() {
         assertEquals(
-            setOf("app.bsky.feed.getTimeline", "com.atproto.repo.createRecord"),
-            parseManifestNsids(MANIFEST_WITH_TRANSITIVE),
+            listOf("app.bsky.feed.getTimeline", "com.atproto.repo.createRecord"),
+            parseManifest(MANIFEST_WITH_TRANSITIVE).lexicons,
         )
     }
 
     @Test
-    fun `parseResolvedNsids reads every pinned NSID including transitive ones`() {
+    fun `parseManifest reads every pinned NSID including transitive ones`() {
         assertEquals(
             setOf(
                 "app.bsky.feed.getTimeline",
@@ -184,15 +184,18 @@ class LexiconDriftDetectTest {
                 "app.bsky.embed.images",
                 "app.bsky.feed.defs",
             ),
-            parseResolvedNsids(MANIFEST_WITH_TRANSITIVE),
+            parseManifest(MANIFEST_WITH_TRANSITIVE).resolutions.keys,
         )
     }
 
     @Test
-    fun `parseResolvedNsids returns empty for a manifest with no resolutions`() {
+    fun `parseManifest tolerates a manifest with no resolutions`() {
         val payload = """{"version": 1, "lexicons": ["app.bsky.feed.post"]}"""
 
-        assertEquals(emptySet(), parseResolvedNsids(payload))
+        val manifest = parseManifest(payload)
+
+        assertEquals(listOf("app.bsky.feed.post"), manifest.lexicons)
+        assertEquals(emptySet(), manifest.resolutions.keys)
     }
 
     @Test
@@ -205,8 +208,9 @@ class LexiconDriftDetectTest {
             "app.bsky.embed.images",
             "app.bsky.graph.follow",
         )
-        val declared = parseManifestNsids(MANIFEST_WITH_TRANSITIVE)
-        val resolved = parseResolvedNsids(MANIFEST_WITH_TRANSITIVE)
+        val manifest = parseManifest(MANIFEST_WITH_TRANSITIVE)
+        val declared = manifest.lexicons.toSet()
+        val resolved = manifest.resolutions.keys
 
         val newNsids = optInCandidates(upstream) - declared - resolved
 

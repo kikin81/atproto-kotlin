@@ -52,6 +52,18 @@ internal data class TreeResponse(
 @Serializable
 internal data class TreeEntry(val path: String, val type: String = "")
 
+/**
+ * The `generator/lexicons.json` manifest.
+ *
+ * @property lexicons NSIDs explicitly opted into.
+ * @property resolutions Pinned NSID -> `at://` URI + CID lockfile, a superset
+ *   of [lexicons]: `lex install` walks refs and pins every document it
+ *   resolves, so transitive dependencies (`app.bsky.embed.images` via
+ *   `app.bsky.feed.post`, `com.atproto.repo.strongRef`, the `*.defs`
+ *   documents) land here without ever being opted into. They are installed,
+ *   generated, and published — reporting one as a coverage gap is a false
+ *   positive, so the "new upstream" diff subtracts these too.
+ */
 @Serializable
 internal data class Manifest(
     val lexicons: List<String> = emptyList(),
@@ -60,6 +72,8 @@ internal data class Manifest(
 
 @Serializable
 internal data class ResolutionRef(val uri: String = "", val cid: String = "")
+
+internal fun parseManifest(manifestJson: String): Manifest = json.decodeFromString<Manifest>(manifestJson)
 
 /**
  * Every NSID upstream publishes, including `*.defs` documents.
@@ -92,21 +106,6 @@ internal fun parseUpstreamNsids(treeJson: String): Set<String> {
  * noise. Applies to the "new upstream" side of the diff only.
  */
 internal fun optInCandidates(upstream: Set<String>): Set<String> = upstream.filterNot { it.endsWith(".defs") }.toSet()
-
-/** NSIDs explicitly opted into via the manifest's `lexicons` array. */
-internal fun parseManifestNsids(manifestJson: String): Set<String> = json.decodeFromString<Manifest>(manifestJson).lexicons.toSet()
-
-/**
- * NSIDs pinned in the manifest's `resolutions` lockfile.
- *
- * A superset of the `lexicons` array: `lex install` walks refs and pins every
- * document it resolves, so transitive dependencies (`app.bsky.embed.images`
- * via `app.bsky.feed.post`, `com.atproto.repo.strongRef`, the `*.defs`
- * documents) land here without ever being opted into. They are installed,
- * generated, and published — reporting them as a coverage gap is a false
- * positive, so the "new upstream" diff subtracts them.
- */
-internal fun parseResolvedNsids(manifestJson: String): Set<String> = json.decodeFromString<Manifest>(manifestJson).resolutions.keys
 
 @Serializable
 internal data class OverlayManifestRef(val overlays: List<OverlayRef> = emptyList())
@@ -312,11 +311,11 @@ public fun main(args: Array<String>) {
     }
 
     val upstream = parseUpstreamNsids(fetchUpstreamTree(System.getenv("GITHUB_TOKEN")))
-    val manifestJson = Files.readString(manifestPath)
-    val declared = parseManifestNsids(manifestJson)
+    val manifest = parseManifest(Files.readString(manifestPath))
+    val declared = manifest.lexicons.toSet()
     // `resolutions` pins everything lex install walked to, so it already
     // contains `declared`; the difference is what we cover transitively.
-    val resolved = parseResolvedNsids(manifestJson)
+    val resolved = manifest.resolutions.keys
     val transitive = resolved - declared
 
     val newNsids = optInCandidates(upstream) - declared - resolved - overlayNsids
