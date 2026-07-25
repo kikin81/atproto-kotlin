@@ -19,6 +19,9 @@
     "app.bsky.draft.deleteDraft",
     "app.bsky.draft.getDrafts",
     "app.bsky.draft.updateDraft",
+    "app.bsky.embed.gallery",
+    "app.bsky.embed.getEmbedExternalView",
+    "app.bsky.embed.recordWithMedia",
     "app.bsky.feed.describeFeedGenerator",
     "app.bsky.feed.generator",
     "app.bsky.feed.getActorFeeds",
@@ -97,6 +100,7 @@
     "chat.bsky.convo.getConvo",
     "chat.bsky.convo.getConvoAvailability",
     "chat.bsky.convo.getConvoForMembers",
+    "chat.bsky.convo.getConvoMembers",
     "chat.bsky.convo.getLog",
     "chat.bsky.convo.getMessages",
     "chat.bsky.convo.leaveConvo",
@@ -111,6 +115,7 @@
     "chat.bsky.convo.unmuteConvo",
     "chat.bsky.convo.updateAllRead",
     "chat.bsky.convo.updateRead",
+    "chat.bsky.embed.joinLink",
     "chat.bsky.group.addMembers",
     "chat.bsky.group.approveJoinRequest",
     "chat.bsky.group.createGroup",
@@ -234,6 +239,10 @@
     "app.bsky.embed.gallery": {
       "uri": "at://did:plc:4v4y5r3lwsbtmsxhile2ljac/com.atproto.lexicon.schema/app.bsky.embed.gallery",
       "cid": "bafyreia4tixag4sadkirfo63qfma6fz3ifbqanify4e6ce6swkl5lwjnfq"
+    },
+    "app.bsky.embed.getEmbedExternalView": {
+      "uri": "at://did:plc:4v4y5r3lwsbtmsxhile2ljac/com.atproto.lexicon.schema/app.bsky.embed.getEmbedExternalView",
+      "cid": "bafyreicnv2umobvrfrlo6tqw7umcsxv77owcwit3vld7l46fphpy5uuzky"
     },
     "app.bsky.embed.images": {
       "uri": "at://did:plc:4v4y5r3lwsbtmsxhile2ljac/com.atproto.lexicon.schema/app.bsky.embed.images",
@@ -590,6 +599,10 @@
     "chat.bsky.convo.getConvoForMembers": {
       "uri": "at://did:plc:4v4y5r3lwsbtmsxhile2ljac/com.atproto.lexicon.schema/chat.bsky.convo.getConvoForMembers",
       "cid": "bafyreicheufh7jkrstr6hgpggylildyh3k5tihbh5747dumqe5nabp24fi"
+    },
+    "chat.bsky.convo.getConvoMembers": {
+      "uri": "at://did:plc:4v4y5r3lwsbtmsxhile2ljac/com.atproto.lexicon.schema/chat.bsky.convo.getConvoMembers",
+      "cid": "bafyreigup3axpdj3r3p4s3x7qgarrysft3vognwzgetl4bn3n2bgocxl4m"
     },
     "chat.bsky.convo.getLog": {
       "uri": "at://did:plc:4v4y5r3lwsbtmsxhile2ljac/com.atproto.lexicon.schema/chat.bsky.convo.getLog",
