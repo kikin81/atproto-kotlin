@@ -712,7 +712,17 @@ cd generator && npx lex install && npx lex install --ci && cd -
 
 Two invocations, because they do different jobs: `--ci` is **verify-only** — it errors when the installed lexicons don't match the manifest's pinned CIDs, and it cannot mint the two new pins this step needs. Running it alone fails with `Lexicons manifest is out of date`. The plain install resolves and writes the new pins; the `--ci` pass then proves the result is self-consistent, which is what CI will check.
 
-Expected: both exit 0. If the `--ci` pass fails, or the plain install moves a CID for an NSID you did not touch, **stop** — that is a pending `lexicon-bump`, and the remedy is to wait for its PR to land and rebase, never to hand-edit `resolutions`. See Global Constraints.
+Expected: both exit 0.
+
+Then immediately run the abort gate — the plain install is *not* verify-only, so it will silently absorb an upstream republish if one is pending, and this is the check that catches it:
+
+```bash
+git diff --numstat generator/lexicons.json
+```
+
+Expected: `13	0	generator/lexicons.json` — thirteen insertions and **zero deletions**. Zero deletions is the load-bearing number: it forecloses any movement of an existing CID pin in a single value. A non-zero deletion count means a pending `lexicon-bump` was just absorbed — **stop**, and wait for that PR to land and rebase onto it rather than hand-editing `resolutions`. See Global Constraints.
+
+(Thirteen = five added `lexicons[]` entries + four lines for each of the two new `resolutions` pins.)
 
 - [ ] **Step 4: Verify the two install-time NSIDs match their vendored copies**
 
