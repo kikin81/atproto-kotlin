@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-25
 **Issue:** [#165 — Overlay staleness: 5 overlay(s) need attention](https://github.com/kikin81/atproto-kotlin/issues/165)
-**Status:** approved, ready for implementation planning
+**Status:** revised after review; ready for implementation planning
 
 ## Problem
 
@@ -87,21 +87,45 @@ delete their JSON files. Prune the directories that this empties
 `overlay-lexicons/chat/bsky/embed`); only
 `overlay-lexicons/chat/bsky/group/defs.json` remains.
 
-Add all four formerly-overlay-only NSIDs to the `lexicons` array in
-`generator/lexicons.json`:
+Add five NSIDs to the `lexicons` array in `generator/lexicons.json`:
 
 - `app.bsky.embed.gallery`
 - `app.bsky.embed.getEmbedExternalView`
+- `app.bsky.embed.recordWithMedia`
 - `chat.bsky.convo.getConvoMembers`
 - `chat.bsky.embed.joinLink`
 
-`getEmbedExternalView` and `getConvoMembers` must be listed or they disappear
-entirely. `gallery` and `joinLink` are listed as a tripwire rather than a
-necessity: they currently arrive only through the `app.bsky.feed.post` /
-`app.bsky.embed.recordWithMedia` / `app.bsky.feed.defs` / `chat.bsky.convo.defs`
-embed unions. Listing them explicitly turns a future upstream removal from those
-unions into a loud `lex install` failure instead of a silent deletion of public
-types — the exact breaking change this work exists to avoid.
+**Necessity.** `getEmbedExternalView` and `getConvoMembers` are leaf queries that
+nothing refs. Unlisted, they resolve via nothing and disappear entirely.
+
+**Tripwire.** The other three are listed by an explicit rule: *an NSID that is
+reachable only as a union member gets an explicit listing; an NSID reachable by
+a direct `"ref"` from a listed lexicon does not.*
+
+A direct ref is load-bearing for resolution — if upstream deletes the target,
+`lex install` or `RefResolver` fails loudly on its own. A union member is not:
+upstream can drop it from the union and every remaining document still resolves,
+so the only visible effect is public types silently vanishing from
+`models/api/models.api`. That is precisely the breaking change this work exists
+to avoid, so union-member-only NSIDs get pinned into `lexicons[]` to convert
+that silent deletion into a `lex install` failure.
+
+Applying the rule to the transitive-only NSIDs (verified by grepping the
+installed corpus for `"ref": "<nsid>` versus bare union-member occurrences):
+
+| NSID | Reachability | Listed? |
+|---|---|---|
+| `app.bsky.embed.gallery` | union member only | yes |
+| `chat.bsky.embed.joinLink` | union member only (`chat.bsky.convo.defs:205`) | yes |
+| `app.bsky.embed.recordWithMedia` | union member only (`embed/record.json:72`, `feed/defs.json:33`) | yes |
+| `app.bsky.feed.defs` | direct ref (`graph/defs.json:259`, `embed/record.json:115`) | no |
+| `chat.bsky.convo.defs` | direct ref (`getConvo.json:19` and ~8 more) | no |
+
+`app.bsky.embed.recordWithMedia` is included on review. It was originally left
+out on the assumption that it patterned with `feed.defs` and `convo.defs`, but
+it has no direct `"ref"` anywhere in the corpus — it appears only inside embed
+unions, exactly like `gallery` and `joinLink`. Leaving it out would have made
+the rule look arbitrary and left a real gap.
 
 `npx lex install --ci` then repins `resolutions`.
 
@@ -111,7 +135,50 @@ and only then delete the overlay. If the copies differ, that NSID does not
 retire in this change — it is re-vendored from the fetched copy instead, and the
 divergence is documented in its manifest `reason`.
 
-### 2. Teach the detector about intentional supersets
+### 2a. Close the false-negative: detect redundant overlays
+
+The detector only ever compares a vendored file against
+`bluesky-social/atproto@main`. A shadow that matches `main` reads as "in-sync"
+even when the network has fully absorbed it and the overlay now contributes
+nothing. That blind spot is why six redundant overlays went unreported while
+#165 named five, and it is the more dangerous half: a false positive is noise, a
+false negative is an NSID silently frozen at a vendored snapshot.
+
+Fixing it does not need a new network fetch. The workflow's probe step
+(`.github/workflows/overlay-staleness.yaml:62-100`) already runs the real
+`npx lex install` per overlay NSID into `$tmp_dir`, then discards the fetched
+document. Keep it and compare:
+
+```bash
+# inside the existing probe loop, when publishable=true
+fetched="$tmp_dir/$(nsid_to_path "$nsid").json"
+if [ -f "$fetched" ] && \
+   diff -q <(jq -S 'del(.["$type"])' "$fetched") \
+           <(jq -S . "overlay-lexicons/$(nsid_to_path "$nsid").json") >/dev/null
+then redundant=true; else redundant=false; fi
+```
+
+The `del(.["$type"])` strips the `com.atproto.lexicon.schema` wrapper key that
+`lex install` adds and the vendored copies lack. The per-NSID booleans are
+exported as `OVERLAY_REDUNDANT_JSON` alongside the existing
+`OVERLAY_PUBLISHABLE_JSON`, and `DetectStaleOverlays` reads it into a third
+verdict:
+
+- `redundant` → **counted as stale**: `♻️ REDUNDANT — vendored copy is identical
+  to the on-network document; retire it.` This fires regardless of
+  `removeWhenPublished`, which is what makes it catch pinned shadows.
+
+Absent the env var (local runs), redundancy reads as unknown and is simply not
+reported — the same degradation the publishable signal already has locally.
+
+**Caveat to state in the report:** the probe resolves the *latest* on-network
+document, whereas the build installs the CID pinned in `lexicons.json`. A
+`REDUNDANT` verdict therefore means "redundant against the network as of this
+run", which can lead the pins. That is the correct signal for a retirement
+decision, but the `models.api` gate in §3 — which runs against the pinned
+corpus — remains the thing that actually authorizes a retirement.
+
+### 2b. Teach the detector about intentional supersets
 
 `OverlayEntry` in
 `generator/src/main/kotlin/io/github/kikin81/atproto/generator/tools/DetectStaleOverlays.kt`
@@ -172,15 +239,26 @@ fails on a Command Line Tools-only machine without a full Xcode install.
 types survive their overlay's retirement.
 
 Expected diff in `generator/lexicons.json`: new `resolutions` CID pins for the
-four added NSIDs. CID churn on any other entry is out of scope for this change
-and gets investigated before merging.
+five added NSIDs, three of which (`gallery`, `joinLink`, `recordWithMedia`)
+already have pins and should therefore show only an added `lexicons[]` entry, not
+a changed pin. CID churn on any other entry means a pending `lexicon-bump` — see
+Risks.
 
 ### 4. Rollout
 
-Single PR, conventional commit `chore(lexicons): retire 10 overlays adopted
-on-network (#165)`. `chore` is the accurate type — with `models.api`
-byte-identical there is no API change to release, and semantic-release
-correctly produces no version bump. Closes #165.
+Single PR, two commits so the mechanical retirement stays reviewable
+independently of the detector logic:
+
+1. `chore(generator): detect redundant overlays + expected-drift supersets` —
+   §2a and §2b, with their tests. Landing this first means the detector can be
+   run against the *pre*-retirement tree and should independently name the same
+   ten overlays, which is a free cross-check on the manual diffing in Findings.
+2. `chore(lexicons): retire 10 overlays adopted on-network (#165)` — §1, plus
+   the `expectDrift` manifest entry for `chat.bsky.group.defs`.
+
+`chore` is the accurate type for both — `:generator` is unpublished, and with
+`models.api` byte-identical there is no API change to release, so
+semantic-release correctly produces no version bump. Closes #165.
 
 ## Risks
 
@@ -189,9 +267,20 @@ network copies are unverified until `lex install` runs. Contingency is per-NSID:
 keep and re-vendor that single overlay, and land the other nine retirements.
 
 **`resolutions` repinning may pull unrelated CID updates.** `lex install`
-refreshes what it resolves. If unrelated pins move, that is drift belonging to
-the `lexicon-bump` workflow, not to this change; revert those hunks and let the
-dedicated workflow handle them.
+refreshes what it resolves, so adding five NSIDs can surface CID movement on
+entries this change never touched.
+
+Do **not** revert those hunks. `resolutions` is a lockfile, and `--ci` is
+documented as *"error if the installed lexicons do not match the CIDs in the
+lexicons.json manifest"* — a manifest with drift hunks reverted is by definition
+out of date, so `lex install --ci` rejects it. That is the exact failure that
+held `main` red for 12 days and blocked #170, #174 and two Renovate PRs.
+
+The remedy is to let the `lexicon-bump` workflow land its own PR, then rebase
+this branch onto it and re-run `lex install --ci`. Unrelated CID movement is a
+signal to wait for that bump, never to hand-edit the lockfile. If the rebase
+changes `models.api`, that change belongs to the bump, not to this retirement —
+evaluate it there.
 
 ## Out of scope
 
