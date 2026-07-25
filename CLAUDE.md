@@ -26,7 +26,7 @@ unions, typed value classes, XRPC service interfaces, and KDoc documentation.
 
 - **JDK 17** (tracked by `.java-version`)
 - **Node 22+** (for `npx lex install` — installs the Lexicon corpus)
-- **Android SDK** (API 36+, only needed for `:samples:android`)
+- **Android SDK** (API 37+, only needed for `:samples:android`)
 - **Gradle 9.3.1** (wrapper included)
 
 ## Key commands

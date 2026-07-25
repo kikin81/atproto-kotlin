@@ -19,7 +19,7 @@ One-Activity Compose app with Hilt DI and two screens:
 
 ### Prerequisites
 
-- A local Android SDK with at least API 36 installed.
+- A local Android SDK with at least API 37 installed.
 - A Bluesky account (any handle -- no app password needed, OAuth handles auth).
 - The generator's lexicon corpus installed:
 
