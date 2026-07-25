@@ -6,8 +6,10 @@
       "source": "https://github.com/bluesky-social/atproto/blob/9b05af9168fb11131160980a373415262aadf549/lexicons/chat/bsky/group/defs.json",
       "commit": "9b05af9168fb11131160980a373415262aadf549",
       "vendoredAt": "2026-07-07",
-      "reason": "PINNED SUPERSET shadow (removeWhenPublished=false). Merges upstream main's new join-link preview defs (joinLinkPreviewView / disabledJoinLinkPreviewView / invalidJoinLinkPreviewView / joinLinkViewerState / joinRequestConvoView — needed by chat.bsky.embed.joinLink#view) with our still-on-network groupPublicView, which main deleted alongside chat.bsky.group.getGroupPublicInfo even though both remain published on-network. Intentionally NOT byte-equal to main (it re-adds groupPublicView), so it will always read as DRIFTED here — that is expected. RE-VENDOR by re-merging upstream + groupPublicView on drift; retire MANUALLY once the network catches up (join-links published AND getGroupPublicInfo removed).",
-      "removeWhenPublished": false
+      "reason": "PINNED SUPERSET shadow (removeWhenPublished=false). The on-network copy has caught up on the join-link preview defs, so the only remaining local addition is groupPublicView, which upstream main deleted alongside chat.bsky.group.getGroupPublicInfo even though both remain published on-network and chat.bsky.group.getGroupPublicInfo (listed in generator/lexicons.json) refs chat.bsky.group.defs#groupPublicView. Retiring or re-vendoring from main would drop the GroupPublicView symbols from models.api. RE-VENDOR by re-merging upstream + groupPublicView on drift; retire MANUALLY once the network drops getGroupPublicInfo.",
+      "removeWhenPublished": false,
+      "expectDrift": true,
+      "driftReason": "Re-adds groupPublicView, which upstream main deleted but which is still published on-network and reffed by chat.bsky.group.getGroupPublicInfo."
     }
   ]
 }
