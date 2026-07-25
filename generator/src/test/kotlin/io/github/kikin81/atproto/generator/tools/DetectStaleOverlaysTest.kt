@@ -34,18 +34,10 @@ class DetectStaleOverlaysTest {
     }
 
     @Test
-    fun `parsePublishableMap parses a nsid-to-bool map`() {
-        val map = parsePublishableMap("""{"a.b.c": true, "d.e.f": false}""")
-
-        assertEquals(true, map["a.b.c"])
-        assertEquals(false, map["d.e.f"])
-    }
-
-    @Test
-    fun `parsePublishableMap returns empty for null or blank`() {
-        assertTrue(parsePublishableMap(null).isEmpty())
-        assertTrue(parsePublishableMap("").isEmpty())
-        assertTrue(parsePublishableMap("   ").isEmpty())
+    fun `parseNsidBoolMap returns empty for null or blank`() {
+        assertTrue(parseNsidBoolMap(null).isEmpty())
+        assertTrue(parseNsidBoolMap("").isEmpty())
+        assertTrue(parseNsidBoolMap("   ").isEmpty())
     }
 
     @Test
@@ -147,7 +139,11 @@ class DetectStaleOverlaysTest {
 
         assertContains(body, "_Generated 2026-06-20 12:00 UTC")
         assertContains(body, "## Overlays needing attention (0)")
-        assertContains(body, "_(none — every overlay is still required and in sync with upstream.)_")
+        assertContains(
+            body,
+            "_(none — see \"All overlays\" below; an expected-drift superset can " +
+                "make this list empty even while drifted by design.)_",
+        )
         assertContains(body, "## All overlays (1)")
         assertContains(body, "- `chat.bsky.convo.getConvoMembers` — not-yet-publishable, in-sync")
     }
@@ -196,5 +192,176 @@ class DetectStaleOverlaysTest {
 
         assertContains(body, "⚠️ `app.bsky.feed.gone` — upstream removed")
         assertContains(body, "**TRIAGE:**")
+    }
+
+    @Test
+    fun `redundant overlay is stale even when pinned`() {
+        val status = OverlayStatus(
+            nsid = "app.bsky.feed.post",
+            publishable = true,
+            drift = DriftStatus.InSync,
+            removeWhenPublished = false,
+            redundant = true,
+        )
+
+        assertTrue(status.isStale)
+    }
+
+    @Test
+    fun `renderReport emits a REDUNDANT line for a pinned redundant overlay`() {
+        val body = renderReport(
+            listOf(
+                OverlayStatus(
+                    nsid = "app.bsky.feed.post",
+                    publishable = true,
+                    drift = DriftStatus.InSync,
+                    removeWhenPublished = false,
+                    redundant = true,
+                ),
+            ),
+            fixedNow,
+        )
+
+        assertContains(body, "## Overlays needing attention (1)")
+        assertContains(body, "♻️ `app.bsky.feed.post`")
+        assertContains(body, "byte-identical to the on-network document")
+        assertContains(body, "rm generator/overlay-lexicons/app/bsky/feed/post.json")
+        assertContains(body, "- `app.bsky.feed.post` — publishable (pinned: removeWhenPublished=false), in-sync, REDUNDANT")
+    }
+
+    @Test
+    fun `non-redundant pinned in-sync overlay stays quiet`() {
+        val status = OverlayStatus(
+            nsid = "chat.bsky.group.defs",
+            publishable = true,
+            drift = DriftStatus.InSync,
+            removeWhenPublished = false,
+            redundant = false,
+        )
+
+        assertFalse(status.isStale)
+    }
+
+    @Test
+    fun `parseNsidBoolMap parses a nsid-to-bool map`() {
+        val map = parseNsidBoolMap("""{"a.b.c": true, "d.e.f": false}""")
+
+        assertEquals(true, map["a.b.c"])
+        assertEquals(false, map["d.e.f"])
+    }
+
+    @Test
+    fun `parseOverlayManifest reads expectDrift and driftReason`() {
+        val payload = """
+            {
+              "version": 1,
+              "overlays": [
+                {
+                  "nsid": "chat.bsky.group.defs",
+                  "removeWhenPublished": false,
+                  "expectDrift": true,
+                  "driftReason": "Superset: re-adds groupPublicView."
+                }
+              ]
+            }
+        """.trimIndent()
+
+        val manifest = parseOverlayManifest(payload)
+
+        assertTrue(manifest.overlays[0].expectDrift)
+        assertEquals("Superset: re-adds groupPublicView.", manifest.overlays[0].driftReason)
+    }
+
+    @Test
+    fun `parseOverlayManifest defaults expectDrift to false`() {
+        val payload = """
+            {"version": 1, "overlays": [{"nsid": "a.b.c"}]}
+        """.trimIndent()
+
+        assertFalse(parseOverlayManifest(payload).overlays[0].expectDrift)
+        assertEquals("", parseOverlayManifest(payload).overlays[0].driftReason)
+    }
+
+    @Test
+    fun `expectDrift suppresses drift staleness`() {
+        val status = OverlayStatus(
+            nsid = "chat.bsky.group.defs",
+            publishable = true,
+            drift = DriftStatus.Drifted,
+            removeWhenPublished = false,
+            expectDrift = true,
+            driftReason = "Superset: re-adds groupPublicView.",
+        )
+
+        assertFalse(status.isStale)
+    }
+
+    @Test
+    fun `expectDrift becomes stale when upstream catches up`() {
+        val status = OverlayStatus(
+            nsid = "chat.bsky.group.defs",
+            publishable = true,
+            drift = DriftStatus.InSync,
+            removeWhenPublished = false,
+            expectDrift = true,
+            driftReason = "Superset: re-adds groupPublicView.",
+        )
+
+        assertTrue(status.isStale)
+    }
+
+    @Test
+    fun `expectDrift still triages an upstream removal`() {
+        val status = OverlayStatus(
+            nsid = "chat.bsky.group.defs",
+            publishable = true,
+            drift = DriftStatus.UpstreamRemoved,
+            removeWhenPublished = false,
+            expectDrift = true,
+        )
+
+        assertTrue(status.isStale)
+    }
+
+    @Test
+    fun `renderReport labels an expected-drift superset instead of flagging it`() {
+        val body = renderReport(
+            listOf(
+                OverlayStatus(
+                    nsid = "chat.bsky.group.defs",
+                    publishable = true,
+                    drift = DriftStatus.Drifted,
+                    removeWhenPublished = false,
+                    expectDrift = true,
+                    driftReason = "Superset: re-adds groupPublicView.",
+                ),
+            ),
+            fixedNow,
+        )
+
+        assertContains(body, "## Overlays needing attention (0)")
+        assertContains(body, "SUPERSET (expected drift)")
+        assertContains(body, "Superset: re-adds groupPublicView.")
+    }
+
+    @Test
+    fun `renderReport tells the maintainer to drop a no-longer-needed expectDrift`() {
+        val body = renderReport(
+            listOf(
+                OverlayStatus(
+                    nsid = "chat.bsky.group.defs",
+                    publishable = true,
+                    drift = DriftStatus.InSync,
+                    removeWhenPublished = false,
+                    expectDrift = true,
+                    driftReason = "Superset: re-adds groupPublicView.",
+                ),
+            ),
+            fixedNow,
+        )
+
+        assertContains(body, "## Overlays needing attention (1)")
+        assertContains(body, "🔄 `chat.bsky.group.defs`")
+        assertContains(body, "drop `expectDrift`")
     }
 }

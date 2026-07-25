@@ -105,7 +105,8 @@ tasks.register<JavaExec>("detectLexiconDrift") {
  * retired (now resolvable on-network) or re-vendored (drifted from upstream).
  *
  * Reads the per-overlay publishable verdict from the `OVERLAY_PUBLISHABLE_JSON`
- * env var (a `{nsid: bool}` map produced by the workflow's `npx lex install`
+ * env var and the per-overlay redundancy verdict from `OVERLAY_REDUNDANT_JSON`
+ * (both `{nsid: bool}` maps produced by the workflow's `npx lex install`
  * probe); does its own upstream-drift HTTP comparison.
  *
  *   ./gradlew :generator:detectStaleOverlays
@@ -120,6 +121,17 @@ tasks.register<JavaExec>("detectStaleOverlays") {
     classpath = sourceSets.main.get().runtimeClasspath
     mainClass.set("io.github.kikin81.atproto.generator.tools.DetectStaleOverlaysKt")
     args = listOf(overlayManifestFile.asFile.absolutePath)
+
+    // Forwarded explicitly: the Gradle daemon is long-lived and may not carry an
+    // env var exported after it started, which would silently read as "no signal".
+    environment(
+        "OVERLAY_PUBLISHABLE_JSON",
+        providers.environmentVariable("OVERLAY_PUBLISHABLE_JSON").getOrElse(""),
+    )
+    environment(
+        "OVERLAY_REDUNDANT_JSON",
+        providers.environmentVariable("OVERLAY_REDUNDANT_JSON").getOrElse(""),
+    )
 
     // Always reaches over the network for an authoritative upstream diff;
     // intentional opt-out from up-to-date caching.

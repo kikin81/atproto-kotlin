@@ -26,7 +26,7 @@ import kotlin.system.exitProcess
  * An overlay is a lexicon we ship from `generator/overlay-lexicons/` because
  * the real record isn't yet resolvable on-network via `npx lex install`
  * (so it can't go in `generator/lexicons.json`). Each overlay carries a
- * manifest entry in `generator/overlay-lexicons.json`. This tool flags two
+ * manifest entry in `generator/overlay-lexicons.json`. This tool flags three
  * conditions per overlay:
  *
  *   - **publishable** — the on-network record now exists (the workflow probed
@@ -38,6 +38,18 @@ import kotlin.system.exitProcess
  *     `bluesky-social/atproto@main` copy (or upstream removed the path). The
  *     overlay should be RE-VENDORED: re-copy the upstream JSON + bump the
  *     manifest commit.
+ *   - **redundant** — the vendored JSON is byte-identical (after
+ *     canonicalization) to the document `npx lex install` actually fetches
+ *     from the network (passed in via `OVERLAY_REDUNDANT_JSON`). The overlay
+ *     contributes nothing and should be RETIRED, regardless of
+ *     `removeWhenPublished` — this is the only signal that catches a pinned
+ *     shadow whose local additions upstream has since absorbed.
+ *
+ * An overlay's manifest entry may also set `expectDrift: true` for a
+ * deliberate, permanent superset of upstream (see `chat.bsky.group.defs`).
+ * That flag suppresses the ordinary DRIFTED nag for exactly as long as the
+ * overlay is actually drifted — see `isStale` below for how it stays honest
+ * once the situation changes.
  *
  * Runnable locally (prints a markdown report to stdout) and from
  * `.github/workflows/overlay-staleness.yaml` (writes `has_stale`,
@@ -63,6 +75,11 @@ internal data class OverlayEntry(
     val vendoredAt: String = "",
     val reason: String = "",
     val removeWhenPublished: Boolean = false,
+    // The vendored copy is INTENTIONALLY not byte-equal to upstream@main (e.g. it
+    // re-adds a def upstream deleted that is still published on-network). Suppresses
+    // the RE-VENDOR nag; see the isStale inversion below for how it stays honest.
+    val expectDrift: Boolean = false,
+    val driftReason: String = "",
 )
 
 @Serializable
@@ -85,8 +102,8 @@ internal sealed interface DriftStatus {
 
 internal fun parseOverlayManifest(manifestJson: String): OverlayManifest = overlayJson.decodeFromString<OverlayManifest>(manifestJson)
 
-/** Parses the workflow-supplied `{nsid: bool}` publishable map. Empty/blank -> empty. */
-internal fun parsePublishableMap(raw: String?): Map<String, Boolean> {
+/** Parses a workflow-supplied `{nsid: bool}` map. Empty/blank/non-object -> empty. */
+internal fun parseNsidBoolMap(raw: String?): Map<String, Boolean> {
     if (raw.isNullOrBlank()) return emptyMap()
     val element = overlayJson.parseToJsonElement(raw)
     if (element !is JsonObject) return emptyMap()
@@ -151,13 +168,35 @@ internal data class OverlayStatus(
     // is intentionally kept even after upstream publishes, so it must NOT be flagged
     // for retirement. Defaults true (the common case).
     val removeWhenPublished: Boolean = true,
+    // The vendored copy is byte-identical to the document `lex install` fetches, so
+    // the overlay contributes nothing and is safe to delete. Deliberately IGNORES
+    // removeWhenPublished: a pinned shadow whose local additions upstream has since
+    // absorbed is exactly the case the drift-only comparison could never see.
+    val redundant: Boolean = false,
+    // Drift against upstream@main is EXPECTED for this overlay, so it must not nag.
+    val expectDrift: Boolean = false,
+    val driftReason: String = "",
 ) {
     /**
-     * Stale = actionable: retire (publishable AND opted in to removal) or re-vendor
-     * (drifted/removed). A pinned overlay (removeWhenPublished=false) still surfaces
-     * drift — we just never tell the maintainer to retire it.
+     * Stale = actionable: redundant (delete it), retire (publishable AND opted in to
+     * removal), or re-vendor (drifted/removed). A pinned overlay
+     * (removeWhenPublished=false) still surfaces drift — we just never tell the
+     * maintainer to retire it.
+     *
+     * An `expectDrift` overlay inverts this: it is quiet ONLY while it is actually
+     * drifted (that is the point of the flag). It becomes stale again if it reads
+     * in-sync (upstream absorbed the local addition) or upstream-removed — both mean
+     * the drift the flag was suppressing is no longer the current situation.
      */
-    val isStale: Boolean get() = (publishable && removeWhenPublished) || drift != DriftStatus.InSync
+    val isStale: Boolean get() = when {
+        redundant -> true
+        publishable && removeWhenPublished -> true
+        // An expected-drift superset is quiet ONLY while it is actually drifted.
+        // If it reads in-sync, upstream absorbed the local addition and the flag
+        // itself is now the stale thing — so this inverts rather than mutes.
+        expectDrift -> drift != DriftStatus.Drifted
+        else -> drift != DriftStatus.InSync
+    }
 }
 
 internal fun renderReport(
@@ -183,7 +222,10 @@ internal fun renderReport(
     appendLine("## Overlays needing attention (${stale.size})")
     appendLine()
     if (stale.isEmpty()) {
-        appendLine("_(none — every overlay is still required and in sync with upstream.)_")
+        appendLine(
+            "_(none — see \"All overlays\" below; an expected-drift superset can " +
+                "make this list empty even while drifted by design.)_",
+        )
         appendLine()
     } else {
         for (status in stale.sortedBy { it.nsid }) {
@@ -204,12 +246,15 @@ internal fun renderReport(
                 status.publishable -> "publishable"
                 else -> "not-yet-publishable"
             }
-            val drift = when (status.drift) {
-                DriftStatus.InSync -> "in-sync"
-                DriftStatus.Drifted -> "DRIFTED"
-                DriftStatus.UpstreamRemoved -> "UPSTREAM-REMOVED"
+            val drift = when {
+                status.expectDrift && status.drift == DriftStatus.Drifted ->
+                    "SUPERSET (expected drift): ${status.driftReason}"
+                status.drift == DriftStatus.InSync -> "in-sync"
+                status.drift == DriftStatus.Drifted -> "DRIFTED"
+                else -> "UPSTREAM-REMOVED"
             }
-            appendLine("- `${status.nsid}` — $pub, $drift")
+            val redundant = if (status.redundant) ", REDUNDANT" else ""
+            appendLine("- `${status.nsid}` — $pub, $drift$redundant")
         }
         appendLine()
     }
@@ -221,7 +266,13 @@ internal fun renderReport(
             "resolver against a throwaway manifest; success means the " +
             "on-network record now exists. Drift compares the vendored file " +
             "to upstream `main` with a key-sorted, whitespace-insensitive " +
-            "JSON canonicalization.",
+            "JSON canonicalization." +
+            " A REDUNDANT verdict means the vendored file and the document " +
+            "`lex install` fetches are identical after canonicalization, so " +
+            "deleting the overlay is a no-op. The probe resolves the LATEST " +
+            "on-network document while the build installs the CID pinned in " +
+            "`generator/lexicons.json`, so redundancy can lead the pins — the " +
+            "`models.api` diff is what authorizes an actual retirement.",
     )
 }
 
@@ -229,6 +280,20 @@ private fun renderStaleLine(status: OverlayStatus): String {
     val nsid = status.nsid
     val path = nsidToPath(nsid)
     return when {
+        status.redundant -> {
+            "♻️ `$nsid` — vendored copy is byte-identical to the on-network " +
+                "document; the overlay contributes nothing. **RETIRE:** add to " +
+                "`generator/lexicons.json` + `npx lex install`, " +
+                "`rm generator/overlay-lexicons/$path.json` + its manifest entry, " +
+                "`./gradlew :generator:generateModels apiDump`, then confirm " +
+                "`git diff --exit-code models/api/models.api` is empty."
+        }
+        status.expectDrift && status.drift == DriftStatus.InSync -> {
+            "🔄 `$nsid` — upstream `main` now matches the vendored superset, so " +
+                "the local addition is no longer needed. **ACTION:** drop " +
+                "`expectDrift` from its `generator/overlay-lexicons.json` entry " +
+                "and re-evaluate the overlay for retirement."
+        }
         status.publishable && status.removeWhenPublished -> {
             "✅ `$nsid` — now resolvable on-network. **RETIRE:** add to " +
                 "`generator/lexicons.json` + `npx lex install`, " +
@@ -302,6 +367,11 @@ private fun emitActionsOutputs(
  * `./gradlew :generator:detectStaleOverlays` from the repo root). Vendored
  * files are read from `generator/overlay-lexicons/<nsid-as-path>.json`
  * alongside the manifest.
+ *
+ * Publishability comes from `OVERLAY_PUBLISHABLE_JSON` and redundancy comes
+ * from `OVERLAY_REDUNDANT_JSON`, both `{nsid: bool}` maps supplied by the
+ * workflow's probe step. Either reads as "not publishable" / "not redundant"
+ * for an NSID it omits (including when the env var itself is absent).
  */
 public fun main(args: Array<String>) {
     val manifestPath =
@@ -317,7 +387,8 @@ public fun main(args: Array<String>) {
     val overlayDir = manifestPath.resolveSibling("overlay-lexicons")
 
     val manifest = parseOverlayManifest(Files.readString(manifestPath))
-    val publishable = parsePublishableMap(System.getenv("OVERLAY_PUBLISHABLE_JSON"))
+    val publishable = parseNsidBoolMap(System.getenv("OVERLAY_PUBLISHABLE_JSON"))
+    val redundantMap = parseNsidBoolMap(System.getenv("OVERLAY_REDUNDANT_JSON"))
     val token = System.getenv("GITHUB_TOKEN")
 
     val statuses = manifest.overlays.map { overlay ->
@@ -337,8 +408,11 @@ public fun main(args: Array<String>) {
         OverlayStatus(
             nsid = overlay.nsid,
             publishable = publishable[overlay.nsid] == true,
+            redundant = redundantMap[overlay.nsid] == true,
             drift = drift,
             removeWhenPublished = overlay.removeWhenPublished,
+            expectDrift = overlay.expectDrift,
+            driftReason = overlay.driftReason,
         )
     }
 
