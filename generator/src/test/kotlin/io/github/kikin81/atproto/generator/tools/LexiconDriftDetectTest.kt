@@ -11,6 +11,37 @@ class LexiconDriftDetectTest {
 
     private val fixedNow: OffsetDateTime = OffsetDateTime.parse("2026-05-14T12:00:00Z")
 
+    private companion object {
+        /** Two opted-in NSIDs; resolutions additionally pins two transitive ones. */
+        const val MANIFEST_WITH_TRANSITIVE = """
+            {
+              "version": 1,
+              "lexicons": [
+                "app.bsky.feed.getTimeline",
+                "com.atproto.repo.createRecord"
+              ],
+              "resolutions": {
+                "app.bsky.feed.getTimeline": {
+                  "uri": "at://did:plc:xxx/com.atproto.lexicon.schema/app.bsky.feed.getTimeline",
+                  "cid": "bafy1"
+                },
+                "com.atproto.repo.createRecord": {
+                  "uri": "at://did:plc:xxx/com.atproto.lexicon.schema/com.atproto.repo.createRecord",
+                  "cid": "bafy2"
+                },
+                "app.bsky.embed.images": {
+                  "uri": "at://did:plc:xxx/com.atproto.lexicon.schema/app.bsky.embed.images",
+                  "cid": "bafy3"
+                },
+                "app.bsky.feed.defs": {
+                  "uri": "at://did:plc:xxx/com.atproto.lexicon.schema/app.bsky.feed.defs",
+                  "cid": "bafy4"
+                }
+              }
+            }
+        """
+    }
+
     @Test
     fun `isSubscription matches the upstream subscribe prefix on leaves`() {
         assertTrue(isSubscription("com.atproto.sync.subscribeRepos"))
@@ -104,7 +135,9 @@ class LexiconDriftDetectTest {
     }
 
     @Test
-    fun `parseUpstreamNsids skips defs files and non-lexicon paths`() {
+    fun `parseUpstreamNsids skips non-lexicon paths but keeps defs documents`() {
+        // defs are kept here so the removed-side diff can match a manifest that
+        // names one directly; the new-side strips them via optInCandidates.
         val payload = """
             {
               "tree": [
@@ -117,31 +150,113 @@ class LexiconDriftDetectTest {
             }
         """.trimIndent()
 
-        assertEquals(setOf("app.bsky.feed.getTimeline"), parseUpstreamNsids(payload))
+        assertEquals(
+            setOf("app.bsky.feed.getTimeline", "app.bsky.feed.defs"),
+            parseUpstreamNsids(payload),
+        )
     }
 
     @Test
-    fun `parseManifestNsids reads the lexicons array and ignores resolutions`() {
-        val payload = """
-            {
-              "version": 1,
-              "lexicons": [
-                "app.bsky.feed.getTimeline",
-                "com.atproto.repo.createRecord"
-              ],
-              "resolutions": {
-                "app.bsky.feed.getTimeline": {
-                  "uri": "at://did:plc:xxx/com.atproto.lexicon.schema/app.bsky.feed.getTimeline",
-                  "cid": "bafy..."
-                }
-              }
-            }
-        """.trimIndent()
-
-        assertEquals(
-            setOf("app.bsky.feed.getTimeline", "com.atproto.repo.createRecord"),
-            parseManifestNsids(payload),
+    fun `optInCandidates drops defs documents`() {
+        val upstream = setOf(
+            "app.bsky.feed.getTimeline",
+            "app.bsky.feed.defs",
+            "app.bsky.embed.defs",
         )
+
+        assertEquals(setOf("app.bsky.feed.getTimeline"), optInCandidates(upstream))
+    }
+
+    @Test
+    fun `parseManifest reads the opt-in lexicons array`() {
+        assertEquals(
+            listOf("app.bsky.feed.getTimeline", "com.atproto.repo.createRecord"),
+            parseManifest(MANIFEST_WITH_TRANSITIVE).lexicons,
+        )
+    }
+
+    @Test
+    fun `parseManifest reads every pinned NSID including transitive ones`() {
+        assertEquals(
+            setOf(
+                "app.bsky.feed.getTimeline",
+                "com.atproto.repo.createRecord",
+                "app.bsky.embed.images",
+                "app.bsky.feed.defs",
+            ),
+            parseManifest(MANIFEST_WITH_TRANSITIVE).resolutions.keys,
+        )
+    }
+
+    @Test
+    fun `parseManifest tolerates a manifest with no resolutions`() {
+        val payload = """{"version": 1, "lexicons": ["app.bsky.feed.post"]}"""
+
+        val manifest = parseManifest(payload)
+
+        assertEquals(listOf("app.bsky.feed.post"), manifest.lexicons)
+        assertEquals(emptySet(), manifest.resolutions.keys)
+    }
+
+    @Test
+    fun `transitively resolved NSIDs are not reported as a coverage gap`() {
+        // app.bsky.embed.images is pinned in resolutions via app.bsky.feed.post
+        // without being opted into — it is installed and generated, not a gap.
+        val upstream = setOf(
+            "app.bsky.feed.getTimeline",
+            "com.atproto.repo.createRecord",
+            "app.bsky.embed.images",
+            "app.bsky.graph.follow",
+        )
+        val manifest = parseManifest(MANIFEST_WITH_TRANSITIVE)
+        val declared = manifest.lexicons.toSet()
+        val resolved = manifest.resolutions.keys
+
+        val newNsids = optInCandidates(upstream) - declared - resolved
+
+        assertEquals(setOf("app.bsky.graph.follow"), newNsids)
+    }
+
+    @Test
+    fun `a manifest defs entry that exists upstream is not reported as removed`() {
+        // The manifest may name a defs document directly. Diffing against the
+        // unfiltered upstream set keeps it from reading missing forever.
+        val upstream = setOf("app.bsky.feed.post", "app.bsky.video.defs")
+        val declared = setOf("app.bsky.feed.post", "app.bsky.video.defs")
+
+        assertEquals(emptySet(), declared - upstream)
+    }
+
+    @Test
+    fun `a manifest NSID genuinely absent upstream is still reported as removed`() {
+        val upstream = setOf("app.bsky.feed.post", "app.bsky.video.defs")
+        val declared = setOf(
+            "app.bsky.feed.post",
+            "app.bsky.video.defs",
+            "chat.bsky.group.getGroupPublicInfo",
+        )
+
+        assertEquals(setOf("chat.bsky.group.getGroupPublicInfo"), declared - upstream)
+    }
+
+    @Test
+    fun `renderReport notes the transitive exclusion count`() {
+        val body = renderReport(
+            emptySet(),
+            emptySet(),
+            fixedNow,
+            overlayCount = 0,
+            transitiveCount = 21,
+        )
+
+        assertContains(body, "_(21 NSID(s) covered transitively via `resolutions`")
+    }
+
+    @Test
+    fun `renderReport omits the transitive note when nothing is excluded`() {
+        val body = renderReport(emptySet(), emptySet(), fixedNow)
+
+        assertFalse(body.contains("covered transitively"))
     }
 
     @Test
