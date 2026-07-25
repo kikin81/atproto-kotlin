@@ -427,7 +427,7 @@ In the "All overlays" loop, replace the `drift` assignment so an expected supers
 ```kotlin
             val drift = when {
                 status.expectDrift && status.drift == DriftStatus.Drifted ->
-                    "SUPERSET (expected drift: ${status.driftReason})"
+                    "SUPERSET (expected drift): ${status.driftReason}"
                 status.drift == DriftStatus.InSync -> "in-sync"
                 status.drift == DriftStatus.Drifted -> "DRIFTED"
                 else -> "UPSTREAM-REMOVED"
@@ -765,7 +765,7 @@ A non-empty diff means an overlay was load-bearing after all. Identify which NSI
 ./gradlew :generator:test :models:jvmTest :runtime:jvmTest
 ```
 
-Expected: PASS. `EmbedGalleryUnionTest` in particular is the direct evidence that the gallery union types survived their overlay's retirement.
+Expected: PASS. `EmbedGalleryUnionTest` in particular is the direct evidence that the gallery union types survived their overlay's retirement, and `FullCorpusSmokeTest` (repaired in Task 7) is direct evidence that the post-retirement corpus plus the surviving overlay still resolves every ref.
 
 - [ ] **Step 11: Review the lexicons.json diff before committing**
 
@@ -835,7 +835,7 @@ Reuse the exported env vars from Task 4 if the shell is still live; otherwise re
 ./gradlew :generator:detectStaleOverlays --quiet --no-configuration-cache
 ```
 
-Expected: `## Overlays needing attention (0)`, and `chat.bsky.group.defs` listed under "All overlays" as `SUPERSET (expected drift: ...)`. This is the report that would have produced issue #165 — it is now empty.
+Expected: `## Overlays needing attention (0)`, and `chat.bsky.group.defs` listed under "All overlays" as `SUPERSET (expected drift): ...`. This is the report that would have produced issue #165 — it is now empty.
 
 - [ ] **Step 5: Commit**
 
@@ -857,6 +857,112 @@ Expected: rebase clean, tests PASS, and the `models.api` diff against `origin/ma
 If the rebase pulled in a `lexicon-bump`, re-run `cd generator && npx lex install --ci && cd -` and `./gradlew :generator:generateModels apiDump` before opening the PR. Any `models.api` change that appears at this point belongs to the bump; evaluate it there, and say so explicitly in the PR body rather than folding it into this change.
 
 Then open the PR with a body covering: the ten retirements and why each is a no-op (byte-identity, verified twice — by hand and by the new detector), the five `lexicons[]` additions split into "required" and "tripwire", why `chat.bsky.group.defs` survives, and the empty `models.api` diff as the no-breaking-change evidence. Include `Closes #165`.
+
+---
+
+### Task 7: Make the corpus smoke test merge overlays
+
+**Added mid-execution, and executed between Task 3 and Task 4** (kept at number 7 so
+earlier task numbering and its generated briefs stay stable).
+
+`FullCorpusSmokeTest` parses `generator/lexicons/` alone and generates from it, while
+the real generator merges `generator/overlay-lexicons/` over the corpus with
+overlay-wins semantics (`Main.kt:52-64`). The test therefore does not test what the
+build produces, and it currently fails on `main` with
+`UnresolvedRefException: chat.bsky.group.defs#groupPublicView` — the exact dangling
+ref the `group.defs` overlay exists to fix. This is an independent, third confirmation
+that the overlay is load-bearing, and it must be green before Task 5 can use
+`:generator:test` as a gate.
+
+**Files:**
+- Modify: `generator/src/test/kotlin/io/github/kikin81/atproto/generator/smoke/FullCorpusSmokeTest.kt`
+
+**Interfaces:**
+- Consumes: `LexiconParser.parseDirectory(Path)`, `CodeGenerator.generate(List<LexiconDocument>)`, `io.github.kikin81.atproto.generator.ir.LexiconDocument`.
+- Produces: nothing other tasks depend on.
+
+- [ ] **Step 1: Confirm the failure and its cause**
+
+```bash
+./gradlew :generator:test --tests '*FullCorpusSmokeTest*'
+grep -oE "[a-z]+\.[a-z.]+#[a-zA-Z]+" \
+  generator/build/test-results/test/TEST-io.github.kikin81.atproto.generator.smoke.FullCorpusSmokeTest.xml \
+  | sort -u
+```
+
+Expected: the test FAILS with `UnresolvedRefException`, and the grep prints exactly
+`chat.bsky.group.defs#groupPublicView`. This is the RED state — it is a pre-existing
+failure, not one you introduced, and it is the behavior this task fixes.
+
+- [ ] **Step 2: Add the overlay merge**
+
+Add the import `io.github.kikin81.atproto.generator.ir.LexiconDocument` (keep imports
+alphabetically ordered — ktlint enforces it, and no wildcards).
+
+Replace the body between `val docs = parser.parseDirectory(root)` and
+`val files = gen.generate(docs)` so the test merges exactly the way `Main.kt` does:
+
+```kotlin
+        val parser = LexiconParser()
+        val installed = parser.parseDirectory(root)
+        println("[smoke] parsed ${installed.size} lexicon documents from $root")
+        assertTrue(installed.isNotEmpty(), "lexicons/ exists but contains no *.json files")
+
+        // Mirror Main.kt's overlay-wins merge: the shipped build generates from the
+        // corpus WITH overlays applied, so generating from the bare corpus would test
+        // a document set that is never emitted — and would fail on refs that only an
+        // overlay satisfies (e.g. chat.bsky.group.defs#groupPublicView).
+        val overlay = locateOverlayRoot()?.let(parser::parseDirectory) ?: emptyList()
+        val byId = LinkedHashMap<String, LexiconDocument>()
+        installed.forEach { byId[it.id] = it }
+        overlay.forEach { byId[it.id] = it }
+        val docs = byId.values.toList()
+        println("[smoke] merged ${overlay.size} overlay documents -> ${docs.size} total")
+```
+
+and add a locator beside `locateLexiconRoot`, mirroring its candidate style:
+
+```kotlin
+    private fun locateOverlayRoot(): Path? {
+        val candidates = listOf(
+            Path.of("overlay-lexicons"),
+            Path.of("generator/overlay-lexicons"),
+            Path.of("../generator/overlay-lexicons"),
+        )
+        return candidates.firstOrNull { it.exists() }?.toAbsolutePath()
+    }
+```
+
+Update the class KDoc to say the pipeline runs over the corpus with overlays merged.
+
+- [ ] **Step 3: Run the test to verify it passes**
+
+```bash
+./gradlew :generator:test --tests '*FullCorpusSmokeTest*'
+```
+
+Expected: PASS, with the `[smoke] merged N overlay documents` line showing a non-zero
+overlay count.
+
+- [ ] **Step 4: Run the whole generator suite**
+
+```bash
+./gradlew :generator:test
+```
+
+Expected: PASS — this is the first point on the branch where the full `:generator`
+suite is green, and Task 5 depends on it being so.
+
+- [ ] **Step 5: Format and commit**
+
+```bash
+./gradlew spotlessApply
+git add generator/src/test/kotlin/io/github/kikin81/atproto/generator/smoke/FullCorpusSmokeTest.kt
+git commit -m "fix(generator): merge overlays in the full-corpus smoke test"
+```
+
+`fix` rather than `chore` here: this repairs a genuinely broken test. `:generator` is
+unpublished, so it still produces no release.
 
 ---
 
