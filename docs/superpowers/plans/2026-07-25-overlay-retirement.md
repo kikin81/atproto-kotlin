@@ -620,7 +620,16 @@ git commit -m "chore(ci): compare probed on-network lexicons against vendored ov
 
 - [ ] **Step 1: Run the probe loop locally**
 
-This is the workflow's probe logic, run from `generator/`. It makes one network resolution per overlay (11 total) and takes a couple of minutes:
+This is the workflow's probe logic, run from `generator/`. It makes one network resolution per overlay (11 total) and takes a couple of minutes.
+
+**Run it under `bash`, not `zsh`.** Two zsh incompatibilities produce silent
+false `redundant=false` results rather than errors: `path` is a special
+parameter tied to `$PATH` (assigning to it breaks `jq`/`mktemp` for every later
+iteration), and `${nsid//./\/}` leaves literal backslashes instead of
+substituting. The snippet below avoids both — it names the variable `nsid_path`
+and uses `tr` for the substitution, so it behaves identically in bash and zsh.
+The committed workflow is unaffected either way: GitHub Actions `run:` steps
+execute under bash.
 
 ```bash
 cd generator
@@ -630,7 +639,8 @@ for nsid in $(jq -r '.overlays[].nsid' overlay-lexicons.json); do
   printf '%s' '{"version":1,"lexicons":[],"resolutions":{}}' > "$tmp_manifest"
   if npx lex install "$nsid" --manifest "$tmp_manifest" --lexicons "$tmp_dir" >/dev/null 2>&1; then
     publishable=true; else publishable=false; fi
-  path="${nsid//./\/}"; fetched="$tmp_dir/$path.json"; vendored="overlay-lexicons/$path.json"
+  nsid_path="$(printf '%s' "$nsid" | tr '.' '/')"
+  fetched="$tmp_dir/$nsid_path.json"; vendored="overlay-lexicons/$nsid_path.json"
   redundant=false
   if [ "$publishable" = true ] && [ -f "$fetched" ] && [ -f "$vendored" ] &&
      diff -q <(jq -S 'del(.["$type"])' "$fetched") <(jq -S . "$vendored") >/dev/null 2>&1; then
