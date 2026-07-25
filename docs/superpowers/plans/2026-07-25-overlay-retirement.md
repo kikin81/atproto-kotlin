@@ -707,10 +707,12 @@ Two are required (nothing refs `getEmbedExternalView` or `getConvoMembers`, so u
 - [ ] **Step 3: Install the corpus**
 
 ```bash
-cd generator && npx lex install --ci && cd -
+cd generator && npx lex install && npx lex install --ci && cd -
 ```
 
-Expected: exit 0. If it fails with a CID mismatch on an NSID you did not touch, **stop** — that is a pending `lexicon-bump`, and the remedy is to wait for its PR to land and rebase, never to hand-edit `resolutions`. See Global Constraints.
+Two invocations, because they do different jobs: `--ci` is **verify-only** — it errors when the installed lexicons don't match the manifest's pinned CIDs, and it cannot mint the two new pins this step needs. Running it alone fails with `Lexicons manifest is out of date`. The plain install resolves and writes the new pins; the `--ci` pass then proves the result is self-consistent, which is what CI will check.
+
+Expected: both exit 0. If the `--ci` pass fails, or the plain install moves a CID for an NSID you did not touch, **stop** — that is a pending `lexicon-bump`, and the remedy is to wait for its PR to land and rebase, never to hand-edit `resolutions`. See Global Constraints.
 
 - [ ] **Step 4: Verify the two install-time NSIDs match their vendored copies**
 
@@ -864,7 +866,7 @@ git diff --exit-code origin/main -- models/api/models.api
 
 Expected: rebase clean, tests PASS, and the `models.api` diff against `origin/main` is empty — the headline claim of the whole change, verified against the merge target rather than a local baseline.
 
-If the rebase pulled in a `lexicon-bump`, re-run `cd generator && npx lex install --ci && cd -` and `./gradlew :generator:generateModels apiDump` before opening the PR. Any `models.api` change that appears at this point belongs to the bump; evaluate it there, and say so explicitly in the PR body rather than folding it into this change.
+If the rebase pulled in a `lexicon-bump`, re-run `cd generator && npx lex install && npx lex install --ci && cd -` and `./gradlew :generator:generateModels apiDump` before opening the PR. Any `models.api` change that appears at this point belongs to the bump; evaluate it there, and say so explicitly in the PR body rather than folding it into this change.
 
 Then open the PR with a body covering: the ten retirements and why each is a no-op (byte-identity, verified twice — by hand and by the new detector), the five `lexicons[]` additions split into "required" and "tripwire", why `chat.bsky.group.defs` survives, and the empty `models.api` diff as the no-breaking-change evidence. Include `Closes #165`.
 

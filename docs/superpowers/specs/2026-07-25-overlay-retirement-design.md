@@ -127,7 +127,10 @@ it has no direct `"ref"` anywhere in the corpus — it appears only inside embed
 unions, exactly like `gallery` and `joinLink`. Leaving it out would have made
 the rule look arbitrary and left a real gap.
 
-`npx lex install --ci` then repins `resolutions`.
+`npx lex install` then repins `resolutions`, and a following `npx lex install --ci`
+proves the result self-consistent. Both are needed: `--ci` is verify-only and
+cannot mint the new pins, so running it alone fails with `Lexicons manifest is
+out of date`.
 
 **Order of operations for the two install-time NSIDs:** add to `lexicons.json`,
 run `lex install`, diff the fetched copy against the still-present vendored copy,
@@ -218,7 +221,7 @@ kotlinx binary-compatibility-validator, so the proof is mechanical rather than
 argued:
 
 ```bash
-cd generator && npx lex install --ci && cd -
+cd generator && npx lex install && npx lex install --ci && cd -
 ./gradlew :generator:generateModels apiDump
 git diff --exit-code models/api/models.api   # must be empty
 ```
