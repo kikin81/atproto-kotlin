@@ -347,6 +347,11 @@ private fun emitActionsOutputs(
  * `./gradlew :generator:detectStaleOverlays` from the repo root). Vendored
  * files are read from `generator/overlay-lexicons/<nsid-as-path>.json`
  * alongside the manifest.
+ *
+ * Publishability comes from `OVERLAY_PUBLISHABLE_JSON` and redundancy comes
+ * from `OVERLAY_REDUNDANT_JSON`, both `{nsid: bool}` maps supplied by the
+ * workflow's probe step. Either reads as "not publishable" / "not redundant"
+ * for an NSID it omits (including when the env var itself is absent).
  */
 public fun main(args: Array<String>) {
     val manifestPath =
@@ -363,6 +368,7 @@ public fun main(args: Array<String>) {
 
     val manifest = parseOverlayManifest(Files.readString(manifestPath))
     val publishable = parseNsidBoolMap(System.getenv("OVERLAY_PUBLISHABLE_JSON"))
+    val redundantMap = parseNsidBoolMap(System.getenv("OVERLAY_REDUNDANT_JSON"))
     val token = System.getenv("GITHUB_TOKEN")
 
     val statuses = manifest.overlays.map { overlay ->
@@ -382,6 +388,7 @@ public fun main(args: Array<String>) {
         OverlayStatus(
             nsid = overlay.nsid,
             publishable = publishable[overlay.nsid] == true,
+            redundant = redundantMap[overlay.nsid] == true,
             drift = drift,
             removeWhenPublished = overlay.removeWhenPublished,
             expectDrift = overlay.expectDrift,
