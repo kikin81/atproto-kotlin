@@ -34,18 +34,10 @@ class DetectStaleOverlaysTest {
     }
 
     @Test
-    fun `parsePublishableMap parses a nsid-to-bool map`() {
-        val map = parsePublishableMap("""{"a.b.c": true, "d.e.f": false}""")
-
-        assertEquals(true, map["a.b.c"])
-        assertEquals(false, map["d.e.f"])
-    }
-
-    @Test
-    fun `parsePublishableMap returns empty for null or blank`() {
-        assertTrue(parsePublishableMap(null).isEmpty())
-        assertTrue(parsePublishableMap("").isEmpty())
-        assertTrue(parsePublishableMap("   ").isEmpty())
+    fun `parseNsidBoolMap returns empty for null or blank`() {
+        assertTrue(parseNsidBoolMap(null).isEmpty())
+        assertTrue(parseNsidBoolMap("").isEmpty())
+        assertTrue(parseNsidBoolMap("   ").isEmpty())
     }
 
     @Test
@@ -196,5 +188,61 @@ class DetectStaleOverlaysTest {
 
         assertContains(body, "⚠️ `app.bsky.feed.gone` — upstream removed")
         assertContains(body, "**TRIAGE:**")
+    }
+
+    @Test
+    fun `redundant overlay is stale even when pinned`() {
+        val status = OverlayStatus(
+            nsid = "app.bsky.feed.post",
+            publishable = true,
+            drift = DriftStatus.InSync,
+            removeWhenPublished = false,
+            redundant = true,
+        )
+
+        assertTrue(status.isStale)
+    }
+
+    @Test
+    fun `renderReport emits a REDUNDANT line for a pinned redundant overlay`() {
+        val body = renderReport(
+            listOf(
+                OverlayStatus(
+                    nsid = "app.bsky.feed.post",
+                    publishable = true,
+                    drift = DriftStatus.InSync,
+                    removeWhenPublished = false,
+                    redundant = true,
+                ),
+            ),
+            fixedNow,
+        )
+
+        assertContains(body, "## Overlays needing attention (1)")
+        assertContains(body, "♻️ `app.bsky.feed.post`")
+        assertContains(body, "byte-identical to the on-network document")
+        assertContains(body, "rm generator/overlay-lexicons/app/bsky/feed/post.json")
+        assertContains(body, "- `app.bsky.feed.post` — publishable (pinned: removeWhenPublished=false), in-sync, REDUNDANT")
+    }
+
+    @Test
+    fun `non-redundant pinned in-sync overlay stays quiet`() {
+        val status = OverlayStatus(
+            nsid = "chat.bsky.group.defs",
+            publishable = true,
+            drift = DriftStatus.InSync,
+            removeWhenPublished = false,
+            redundant = false,
+        )
+
+        assertFalse(status.isStale)
+    }
+
+    @Test
+    fun `parseNsidBoolMap parses a nsid-to-bool map`() {
+        val map = parseNsidBoolMap("""{"a.b.c": true, "d.e.f": false}""")
+
+        assertEquals(true, map["a.b.c"])
+        assertEquals(false, map["d.e.f"])
     }
 }

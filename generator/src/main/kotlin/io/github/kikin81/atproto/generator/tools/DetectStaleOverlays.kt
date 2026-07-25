@@ -85,8 +85,8 @@ internal sealed interface DriftStatus {
 
 internal fun parseOverlayManifest(manifestJson: String): OverlayManifest = overlayJson.decodeFromString<OverlayManifest>(manifestJson)
 
-/** Parses the workflow-supplied `{nsid: bool}` publishable map. Empty/blank -> empty. */
-internal fun parsePublishableMap(raw: String?): Map<String, Boolean> {
+/** Parses a workflow-supplied `{nsid: bool}` map. Empty/blank/non-object -> empty. */
+internal fun parseNsidBoolMap(raw: String?): Map<String, Boolean> {
     if (raw.isNullOrBlank()) return emptyMap()
     val element = overlayJson.parseToJsonElement(raw)
     if (element !is JsonObject) return emptyMap()
@@ -151,13 +151,20 @@ internal data class OverlayStatus(
     // is intentionally kept even after upstream publishes, so it must NOT be flagged
     // for retirement. Defaults true (the common case).
     val removeWhenPublished: Boolean = true,
+    // The vendored copy is byte-identical to the document `lex install` fetches, so
+    // the overlay contributes nothing and is safe to delete. Deliberately IGNORES
+    // removeWhenPublished: a pinned shadow whose local additions upstream has since
+    // absorbed is exactly the case the drift-only comparison could never see.
+    val redundant: Boolean = false,
 ) {
     /**
-     * Stale = actionable: retire (publishable AND opted in to removal) or re-vendor
-     * (drifted/removed). A pinned overlay (removeWhenPublished=false) still surfaces
-     * drift — we just never tell the maintainer to retire it.
+     * Stale = actionable: redundant (delete it), retire (publishable AND opted in to
+     * removal), or re-vendor (drifted/removed). A pinned overlay
+     * (removeWhenPublished=false) still surfaces drift — we just never tell the
+     * maintainer to retire it.
      */
-    val isStale: Boolean get() = (publishable && removeWhenPublished) || drift != DriftStatus.InSync
+    val isStale: Boolean get() =
+        redundant || (publishable && removeWhenPublished) || drift != DriftStatus.InSync
 }
 
 internal fun renderReport(
@@ -209,7 +216,8 @@ internal fun renderReport(
                 DriftStatus.Drifted -> "DRIFTED"
                 DriftStatus.UpstreamRemoved -> "UPSTREAM-REMOVED"
             }
-            appendLine("- `${status.nsid}` — $pub, $drift")
+            val redundant = if (status.redundant) ", REDUNDANT" else ""
+            appendLine("- `${status.nsid}` — $pub, $drift$redundant")
         }
         appendLine()
     }
@@ -221,7 +229,13 @@ internal fun renderReport(
             "resolver against a throwaway manifest; success means the " +
             "on-network record now exists. Drift compares the vendored file " +
             "to upstream `main` with a key-sorted, whitespace-insensitive " +
-            "JSON canonicalization.",
+            "JSON canonicalization." +
+            " A REDUNDANT verdict means the vendored file and the document " +
+            "`lex install` fetches are identical after canonicalization, so " +
+            "deleting the overlay is a no-op. The probe resolves the LATEST " +
+            "on-network document while the build installs the CID pinned in " +
+            "`generator/lexicons.json`, so redundancy can lead the pins — the " +
+            "`models.api` diff is what authorizes an actual retirement.",
     )
 }
 
@@ -229,6 +243,14 @@ private fun renderStaleLine(status: OverlayStatus): String {
     val nsid = status.nsid
     val path = nsidToPath(nsid)
     return when {
+        status.redundant -> {
+            "♻️ `$nsid` — vendored copy is byte-identical to the on-network " +
+                "document; the overlay contributes nothing. **RETIRE:** add to " +
+                "`generator/lexicons.json` + `npx lex install`, " +
+                "`rm generator/overlay-lexicons/$path.json` + its manifest entry, " +
+                "`./gradlew :generator:generateModels apiDump`, then confirm " +
+                "`git diff --exit-code models/api/models.api` is empty."
+        }
         status.publishable && status.removeWhenPublished -> {
             "✅ `$nsid` — now resolvable on-network. **RETIRE:** add to " +
                 "`generator/lexicons.json` + `npx lex install`, " +
@@ -317,7 +339,7 @@ public fun main(args: Array<String>) {
     val overlayDir = manifestPath.resolveSibling("overlay-lexicons")
 
     val manifest = parseOverlayManifest(Files.readString(manifestPath))
-    val publishable = parsePublishableMap(System.getenv("OVERLAY_PUBLISHABLE_JSON"))
+    val publishable = parseNsidBoolMap(System.getenv("OVERLAY_PUBLISHABLE_JSON"))
     val token = System.getenv("GITHUB_TOKEN")
 
     val statuses = manifest.overlays.map { overlay ->
