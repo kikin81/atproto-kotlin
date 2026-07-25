@@ -51,7 +51,7 @@ jobs:
           java-version-file: .java-version
 
       - name: Set up Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
@@ -100,7 +100,7 @@ jobs:
           java-version-file: .java-version
 
       - name: Set up Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
