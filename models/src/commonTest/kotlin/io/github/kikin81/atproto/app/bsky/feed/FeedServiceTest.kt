@@ -3,6 +3,7 @@ package io.github.kikin81.atproto.app.bsky.feed
 import io.github.kikin81.atproto.runtime.AtField
 import io.github.kikin81.atproto.runtime.AtIdentifier
 import io.github.kikin81.atproto.runtime.AtUri
+import io.github.kikin81.atproto.runtime.Language
 import io.github.kikin81.atproto.test.MockXrpcFixture
 import io.ktor.http.HttpMethod
 import kotlinx.coroutines.test.runTest
@@ -51,6 +52,50 @@ class FeedServiceTest {
         assertNotNull(url)
         assertContains(url, "/xrpc/app.bsky.feed.describeFeedGenerator")
         assertEquals("did:web:feed.test", response.did.raw)
+    }
+
+    @Test
+    fun searchPostsV2SerializesRepeatedFilterParamsAndDecodesQueryLanguages() = runTest {
+        fixture.respondWith(
+            """
+            {
+              "posts": [],
+              "cursor": "next",
+              "hitsTotal": 42,
+              "detectedQueryLanguages": ["ja", "ko"]
+            }
+            """.trimIndent(),
+        )
+
+        val response = FeedService(fixture.client).searchPostsV2(
+            SearchPostsV2Request(
+                query = "kotlin",
+                sort = "top",
+                limit = 25,
+                authors = listOf(AtIdentifier("alice.test"), AtIdentifier("bob.test")),
+                hashtags = listOf("kmp"),
+                languages = listOf(Language("ja")),
+                hasVideo = true,
+            ),
+        )
+
+        assertEquals(HttpMethod.Get, fixture.capturedMethod)
+        val url = fixture.capturedUrl
+        assertNotNull(url)
+        assertContains(url, "/xrpc/app.bsky.feed.searchPostsV2")
+        assertContains(url, "query=kotlin")
+        assertContains(url, "sort=top")
+        assertContains(url, "limit=25")
+        // Array params repeat the key rather than joining — both authors survive.
+        assertContains(url, "authors=alice.test")
+        assertContains(url, "authors=bob.test")
+        assertContains(url, "hashtags=kmp")
+        assertContains(url, "languages=ja")
+        assertContains(url, "hasVideo=true")
+        assertEquals("next", response.cursor)
+        assertEquals(42L, response.hitsTotal)
+        assertEquals(listOf("ja", "ko"), response.detectedQueryLanguages)
+        assertEquals(emptyList(), response.posts)
     }
 
     @Test

@@ -9,6 +9,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 
 class GroupServiceTest {
@@ -266,6 +267,105 @@ class GroupServiceTest {
         assertChatProxyApplied()
         assertEquals(5L, response.group.memberCount)
         assertEquals("My Group", response.group.name)
+    }
+
+    // ---- join-link previews / mutual groups ------------------------------
+
+    @Test
+    fun getJoinLinkPreviewsDecodesEachUnionMemberAndFallsBackOnUnknown() = runTest {
+        // One of each known member, plus a $type the SDK has never seen — the
+        // open union must degrade to Unknown rather than failing the response.
+        fixture.respondWith(
+            """{"joinLinkPreviews":[""" +
+                """{"${'$'}type":"chat.bsky.group.defs#joinLinkPreviewView",""" +
+                """"code":"abc123","convoId":"3kconvo","joinRule":"open",""" +
+                """"memberCount":5,"memberLimit":100,"name":"My Group",""" +
+                """"owner":{"did":"did:plc:alice"},"requireApproval":false},""" +
+                """{"${'$'}type":"chat.bsky.group.defs#disabledJoinLinkPreviewView","code":"dead01"},""" +
+                """{"${'$'}type":"chat.bsky.group.defs#invalidJoinLinkPreviewView","code":"bogus1"},""" +
+                """{"${'$'}type":"chat.bsky.group.defs#futureJoinLinkPreviewView","code":"new001"}]}""",
+        )
+
+        val response = service().getJoinLinkPreviews(
+            GetJoinLinkPreviewsRequest(codes = listOf("abc123", "dead01", "bogus1", "new001")),
+        )
+
+        assertEquals(HttpMethod.Get, fixture.capturedMethod)
+        val url = fixture.capturedUrl
+        assertNotNull(url)
+        assertContains(url, "/xrpc/chat.bsky.group.getJoinLinkPreviews")
+        // Array param repeats the key — all four codes survive the round trip.
+        assertContains(url, "codes=abc123")
+        assertContains(url, "codes=new001")
+        assertChatProxyApplied()
+
+        val previews = response.joinLinkPreviews
+        assertEquals(4, previews.size)
+        val known = previews[0]
+        assertIs<JoinLinkPreviewView>(known)
+        assertEquals("My Group", known.name)
+        assertEquals(5L, known.memberCount)
+        assertEquals(Did("did:plc:alice"), known.owner.did)
+        assertIs<DisabledJoinLinkPreviewView>(previews[1])
+        assertIs<InvalidJoinLinkPreviewView>(previews[2])
+        val unknown = previews[3]
+        assertIs<GetJoinLinkPreviewsResponseJoinLinkPreviewsUnion.Unknown>(unknown)
+        assertEquals("chat.bsky.group.defs#futureJoinLinkPreviewView", unknown.type)
+    }
+
+    @Test
+    fun listMutualGroupsIsGetWithSubjectAndPaginationParams() = runTest {
+        fixture.respondWith("""{"cursor":"next","convos":[$convoJson]}""")
+
+        val response = service().listMutualGroups(
+            ListMutualGroupsRequest(subject = Did("did:plc:bob"), limit = 10, cursor = "abc"),
+        )
+
+        assertEquals(HttpMethod.Get, fixture.capturedMethod)
+        val url = fixture.capturedUrl
+        assertNotNull(url)
+        assertContains(url, "/xrpc/chat.bsky.group.listMutualGroups")
+        assertContains(url, "subject=did%3Aplc%3Abob")
+        assertContains(url, "limit=10")
+        assertContains(url, "cursor=abc")
+        assertChatProxyApplied()
+        assertEquals("next", response.cursor)
+        assertEquals(1, response.convos.size)
+        assertEquals("3kconvo", response.convos[0].id)
+    }
+
+    // ---- join-request procedures -----------------------------------------
+
+    @Test
+    fun updateJoinRequestsReadPostsConvoId() = runTest {
+        fixture.respondWith("{}")
+
+        service().updateJoinRequestsRead(UpdateJoinRequestsReadRequest(convoId = "3kconvo"))
+
+        assertEquals(HttpMethod.Post, fixture.capturedMethod)
+        val url = fixture.capturedUrl
+        assertNotNull(url)
+        assertContains(url, "/xrpc/chat.bsky.group.updateJoinRequestsRead")
+        assertChatProxyApplied()
+        val body = fixture.capturedBody
+        assertNotNull(body)
+        assertContains(body, "3kconvo")
+    }
+
+    @Test
+    fun withdrawJoinRequestPostsConvoId() = runTest {
+        fixture.respondWith("{}")
+
+        service().withdrawJoinRequest(WithdrawJoinRequestRequest(convoId = "3kconvo"))
+
+        assertEquals(HttpMethod.Post, fixture.capturedMethod)
+        val url = fixture.capturedUrl
+        assertNotNull(url)
+        assertContains(url, "/xrpc/chat.bsky.group.withdrawJoinRequest")
+        assertChatProxyApplied()
+        val body = fixture.capturedBody
+        assertNotNull(body)
+        assertContains(body, "3kconvo")
     }
 
     @Test
