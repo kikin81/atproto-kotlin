@@ -7,6 +7,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 
 class ConvoServiceTest {
@@ -26,6 +27,36 @@ class ConvoServiceTest {
             "did:web:api.bsky.chat#bsky_chat",
             fixture.capturedHeaders["atproto-proxy"],
         )
+    }
+
+    @Test
+    fun getUnreadCountsIsGetWithOptionalGroupFlagAndSplitCounts() = runTest {
+        fixture.respondWith("""{"unreadAcceptedConvos":7,"unreadRequestConvos":2}""")
+
+        val response = service().getUnreadCounts(
+            GetUnreadCountsRequest(includeGroupChats = true),
+        )
+
+        assertEquals(HttpMethod.Get, fixture.capturedMethod)
+        val url = fixture.capturedUrl
+        assertNotNull(url)
+        assertContains(url, "/xrpc/chat.bsky.convo.getUnreadCounts")
+        assertContains(url, "includeGroupChats=true")
+        assertChatProxyApplied()
+        assertEquals(7L, response.unreadAcceptedConvos)
+        assertEquals(2L, response.unreadRequestConvos)
+    }
+
+    @Test
+    fun getUnreadCountsOmitsTheGroupFlagWhenUnset() = runTest {
+        fixture.respondWith("""{"unreadAcceptedConvos":0,"unreadRequestConvos":0}""")
+
+        service().getUnreadCounts()
+
+        val url = fixture.capturedUrl
+        assertNotNull(url)
+        assertContains(url, "/xrpc/chat.bsky.convo.getUnreadCounts")
+        assertFalse(url.contains("includeGroupChats"))
     }
 
     @Test
