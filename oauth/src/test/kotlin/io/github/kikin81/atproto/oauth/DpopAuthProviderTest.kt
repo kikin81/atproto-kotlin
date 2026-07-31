@@ -25,13 +25,21 @@ class DpopAuthProviderTest {
 
     private val jsonHeaders = headersOf(HttpHeaders.ContentType, "application/json")
 
+    // A fresh channel per response: ByteReadChannel is consumed on read, so a
+    // shared instance would surface as an empty body on the second call.
+    private fun invalidGrantBody() = ByteReadChannel("""{"error":"invalid_grant","error_description":"token has been revoked"}""")
+
     private class InMemorySessionStore : OAuthSessionStore {
         var session: OAuthSession? = null
+        var clearCalls = 0
+        var saveCalls = 0
         override suspend fun load(): OAuthSession? = session
         override suspend fun save(session: OAuthSession) {
+            saveCalls++
             this.session = session
         }
         override suspend fun clear() {
+            clearCalls++
             session = null
         }
     }
@@ -619,6 +627,115 @@ class DpopAuthProviderTest {
             "pre-send failures must state the refresh token was not consumed, got: ${failure.message}",
         )
         assertNotNull(store.session, "a pre-send failure must not clear the session")
+    }
+
+    @Test
+    fun coalescedWaitersDoNotReplayADeadTokenAfterTerminalInvalidGrant() = runTest {
+        // Regression for #164 §1. failRefresh clears the store but deliberately
+        // leaves the in-memory session intact, so neither dedup check can see
+        // that a prior waiter already failed terminally: `rotatedWhileWaiting`
+        // reads unchanged tokens and adoptStoredSessionIfRotated reads an empty
+        // store and reports "no rotation". The waiter then re-POSTs the dead
+        // refresh token — a replay, which is exactly what AT Proto reuse
+        // detection revokes on — and duplicate-clears.
+        var tokenCalls = 0
+        val refreshClient = HttpClient(
+            MockEngine { _ ->
+                tokenCalls++
+                respond(invalidGrantBody(), HttpStatusCode.BadRequest, jsonHeaders)
+            },
+        )
+        val (provider, store) = fixtureWithExpiredToken(refreshClient)
+
+        listOf(
+            async { runCatching { provider.onUnauthorized(emptyMap()) } },
+            async { runCatching { provider.onUnauthorized(emptyMap()) } },
+        ).awaitAll()
+
+        assertEquals(1, tokenCalls, "the dead refresh token must be POSTed once for the whole coalesced set")
+        assertEquals(1, store.clearCalls, "the session must be cleared exactly once")
+    }
+
+    @Test
+    fun aNonceRotationAfterTerminalClearDoesNotResurrectTheClearedSession() = runTest {
+        // Regression for #164 §4. persistNonces() saved unconditionally, so the
+        // first 401 carrying a rotated DPoP-Nonce after a terminal clear wrote
+        // the dead session back to the store. Once the token is dead EVERY
+        // request 401s and the PDS rotates nonces routinely, so this fired on
+        // the very next request — re-arming the logout loop.
+        val refreshClient = HttpClient(
+            MockEngine { _ -> respond(invalidGrantBody(), HttpStatusCode.BadRequest, jsonHeaders) },
+        )
+        // The access token here is OPAQUE, not an expired JWT, on purpose: it
+        // makes isAccessTokenExpired() return false so the second
+        // onUnauthorized returns right after persistNonces() instead of running
+        // another refresh. With an expired JWT that follow-up refresh clears the
+        // store a second time and masks the resurrect — the assertion would then
+        // pass against unfixed code and prove nothing.
+        val (provider, store) = fixtureWithOpaqueToken(refreshClient)
+
+        assertFailsWith<OAuthSessionExpiredException> { provider.onUnauthorized(emptyMap()) }
+        assertNull(store.session, "precondition: the terminal invalid_grant must have cleared the store")
+        val savesBefore = store.saveCalls
+
+        provider.onUnauthorized(mapOf("DPoP-Nonce" to "rotated-nonce"))
+
+        assertEquals(savesBefore, store.saveCalls, "a cleared session must never be re-saved")
+        assertNull(store.session, "a cleared session must stay cleared — never re-save a dead refresh token")
+    }
+
+    /**
+     * Companion to [fixtureWithExpiredToken] whose access token is opaque, so
+     * `isAccessTokenExpired()` cannot fire and `onUnauthorized` exercises only
+     * the nonce branches plus the explicit fall-through refresh.
+     */
+    private fun fixtureWithOpaqueToken(refreshClient: HttpClient): Pair<DpopAuthProvider, InMemorySessionStore> {
+        val signer = DpopSigner.generate()
+        val exported = signer.exportKeyPair()
+        val store = InMemorySessionStore()
+        val session = OAuthSession(
+            accessToken = "opaque-not-a-jwt",
+            refreshToken = "rt_dead",
+            did = "did:plc:x",
+            handle = "x.test",
+            pdsUrl = "https://pds.test",
+            tokenEndpoint = "https://auth.test/token",
+            clientId = "https://app.test/meta.json",
+            dpopPrivateKey = exported.privateKeyEncoded,
+            dpopPublicKey = exported.publicKeyEncoded,
+            pdsNonce = "old-nonce",
+        )
+        store.session = session
+        return DpopAuthProvider(session, signer, store, refreshClient) to store
+    }
+
+    @Test
+    fun invalidGrantCarryingANonceHeaderIsTerminalRatherThanRetried() = runTest {
+        // Regression for #164 §5. The nonce-retry gate keyed only on
+        // (401|400) + a DPoP-Nonce header, never on the body, so a rejection
+        // that also rotated a nonce was misread as `use_dpop_nonce` and the
+        // just-rejected refresh token was replayed. Production stacks show the
+        // clear arriving via refreshTokensWithNonce, i.e. through this branch.
+        var tokenCalls = 0
+        val refreshClient = HttpClient(
+            MockEngine { _ ->
+                tokenCalls++
+                respond(
+                    invalidGrantBody(),
+                    HttpStatusCode.BadRequest,
+                    headersOf(
+                        HttpHeaders.ContentType to listOf("application/json"),
+                        "DPoP-Nonce" to listOf("rotated-nonce-$tokenCalls"),
+                    ),
+                )
+            },
+        )
+        val (provider, store) = fixtureWithExpiredToken(refreshClient)
+
+        assertFailsWith<OAuthSessionExpiredException> { provider.onUnauthorized(emptyMap()) }
+
+        assertEquals(1, tokenCalls, "an explicit invalid_grant is terminal even when a nonce was also rotated")
+        assertEquals(1, store.clearCalls, "the session must be cleared exactly once")
     }
 
     /**

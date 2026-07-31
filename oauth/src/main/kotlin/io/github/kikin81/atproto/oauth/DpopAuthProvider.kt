@@ -67,6 +67,20 @@ class DpopAuthProvider(
 
     private val refreshMutex = Mutex()
 
+    /**
+     * Latches once a refresh is terminally rejected (`invalid_grant`) and the
+     * session is cleared. Written and read under [refreshMutex].
+     *
+     * The in-memory [session] is deliberately NOT mutated on failure, so
+     * neither dedup check in [refreshTokensSingleFlight] can tell a terminal
+     * failure apart from "nothing has happened yet": `rotatedWhileWaiting`
+     * sees unchanged tokens, and [adoptStoredSessionIfRotated] sees an empty
+     * store and reports "no rotation". Without this latch every coalesced
+     * waiter re-POSTs the dead refresh token and duplicate-clears, and any
+     * later nonce rotation re-saves the dead session over the cleared store.
+     */
+    private var sessionTerminallyExpired = false
+
     @Volatile
     private var pdsNonce: String? = session.pdsNonce
 
@@ -148,6 +162,12 @@ class DpopAuthProvider(
         observedRefreshToken: String,
     ): Boolean {
         refreshMutex.withLock {
+            // A prior waiter already proved this refresh token dead. Replaying
+            // it would re-trip reuse detection and duplicate the clear; the
+            // terminal outcome is shared across the coalesced set, exactly as
+            // a successful rotation is.
+            if (sessionTerminallyExpired) throw OAuthSessionExpiredException(TERMINAL_MESSAGE)
+
             val rotatedWhileWaiting =
                 session.accessToken != observedAccessToken ||
                     session.refreshToken != observedRefreshToken
@@ -214,24 +234,53 @@ class DpopAuthProvider(
 
     private suspend fun refreshTokens(): Boolean {
         val response = postRefreshForm(failureContext = "")
+        if (response.status == HttpStatusCode.OK) return applyRefreshResponse(response)
+
+        // Classify before deciding to retry: an HTTP body can only be consumed
+        // once, and both the nonce-retry decision and the terminal split need
+        // the `error` field.
+        val error = parseErrorField(response)
 
         // A rotated DPoP-Nonce on a 401/400 is a recoverable use_dpop_nonce
         // signal — retry once with the new nonce (not a token rejection).
+        //
+        // An explicit `invalid_grant` is terminal even when the server ALSO
+        // rotated a nonce: retrying would re-POST the refresh token the server
+        // just rejected, and replaying a single-use refresh token is precisely
+        // what trips AT Proto reuse detection. Classify first, retry second.
         val nonceHeader = response.headers["DPoP-Nonce"]
         val isNonceRetryStatus =
             response.status == HttpStatusCode.Unauthorized ||
                 response.status == HttpStatusCode.BadRequest
-        val canRetryWithNonce = isNonceRetryStatus && nonceHeader != null
+        val canRetryWithNonce = error != INVALID_GRANT && isNonceRetryStatus && nonceHeader != null
         if (canRetryWithNonce) {
             signer.calibrateClockFromHeader(response.headers["Date"]?.toString())
             authServerNonce = nonceHeader
             return refreshTokensWithNonce()
         }
 
-        return applyRefreshResponse(response)
+        failRefresh(response.status, error)
     }
 
-    private suspend fun refreshTokensWithNonce(): Boolean = applyRefreshResponse(postRefreshForm(failureContext = " (nonce retry)"))
+    private suspend fun refreshTokensWithNonce(): Boolean {
+        val response = postRefreshForm(failureContext = " (nonce retry)")
+        if (response.status == HttpStatusCode.OK) return applyRefreshResponse(response)
+        failRefresh(response.status, parseErrorField(response))
+    }
+
+    /**
+     * Reads the response body and extracts the OAuth `error` field (RFC 6749
+     * §5.2). Returns `null` for an unparseable body (proxy/captive-portal HTML),
+     * which the caller must treat as transient rather than as a rejection.
+     */
+    private suspend fun parseErrorField(response: HttpResponse): String? {
+        // bodyAsText() is a suspend call — must not sit inside runCatching,
+        // which would swallow CancellationException. Only the parse is guarded.
+        val body = response.bodyAsText()
+        return runCatching {
+            json.parseToJsonElement(body).jsonObject["error"]?.jsonPrimitive?.content
+        }.getOrNull()
+    }
 
     private suspend fun postRefreshForm(failureContext: String): HttpResponse {
         val proof = signer.sign(
@@ -269,9 +318,8 @@ class DpopAuthProvider(
         e is UnresolvedAddressException ||
         e is ConnectTimeoutException
 
+    /** Callers guarantee [response] is HTTP 200; non-OK goes to [failRefresh]. */
     private suspend fun applyRefreshResponse(response: HttpResponse): Boolean {
-        if (response.status != HttpStatusCode.OK) failRefresh(response)
-
         val tokenResponse = json.decodeFromString(TokenResponse.serializer(), response.bodyAsText())
         session = session.copy(
             accessToken = tokenResponse.access_token,
@@ -322,19 +370,16 @@ class DpopAuthProvider(
      * request with real connectivity can refresh cleanly. This is what keeps a
      * flaky connection from silently signing the user out.
      */
-    private suspend fun failRefresh(response: HttpResponse): Nothing {
-        // Read the body first (a suspend call — must not be inside runCatching, which
-        // would swallow CancellationException); only the pure JSON parse is guarded.
-        val body = response.bodyAsText()
-        val error = runCatching {
-            json.parseToJsonElement(body).jsonObject["error"]?.jsonPrimitive?.content
-        }.getOrNull()
-        if (error == "invalid_grant") {
+    private suspend fun failRefresh(status: HttpStatusCode, error: String?): Nothing {
+        if (error == INVALID_GRANT) {
+            // Latch BEFORE clearing so any waiter that acquires the mutex next
+            // short-circuits instead of replaying this now-dead token.
+            sessionTerminallyExpired = true
             sessionStore.clear()
-            throw OAuthSessionExpiredException("Refresh token revoked (invalid_grant, HTTP ${response.status})")
+            throw OAuthSessionExpiredException("Refresh token revoked (invalid_grant, HTTP $status)")
         }
         throw OAuthRefreshFailedException(
-            "Refresh failed (HTTP ${response.status}${error?.let { ", error=$it" } ?: ""})",
+            "Refresh failed (HTTP $status${error?.let { ", error=$it" } ?: ""})",
         )
     }
 
@@ -349,12 +394,26 @@ class DpopAuthProvider(
      */
     private suspend fun persistNonces() {
         refreshMutex.withLock {
+            // Once the session is terminally expired the store has been cleared
+            // and this instance's in-memory copy holds a dead refresh token.
+            // Saving it would resurrect the cleared session — and because every
+            // request 401s with a rotated nonce after a logout, that happens on
+            // the very next request, re-arming the reuse-detection loop.
+            if (sessionTerminallyExpired) return
             adoptStoredSessionIfRotated()
             session = session.copy(authServerNonce = authServerNonce, pdsNonce = pdsNonce)
             sessionStore.save(session)
         }
     }
 }
+
+// File-level rather than a `private companion object`: a `const val` in a
+// companion still compiles to a PUBLIC static field on the enclosing class, so
+// the companion form leaked both constants into the published ABI and failed
+// binary-compatibility-validator. Top-level private consts land on the file
+// class as private statics instead.
+private const val INVALID_GRANT = "invalid_grant"
+private const val TERMINAL_MESSAGE = "Refresh token revoked (invalid_grant) — terminal for this session"
 
 @Serializable
 internal data class TokenResponse(
