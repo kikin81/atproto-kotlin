@@ -405,12 +405,15 @@ class DpopAuthProvider(
             sessionStore.save(session)
         }
     }
-
-    private companion object {
-        const val INVALID_GRANT = "invalid_grant"
-        const val TERMINAL_MESSAGE = "Refresh token revoked (invalid_grant) — terminal for this session"
-    }
 }
+
+// File-level rather than a `private companion object`: a `const val` in a
+// companion still compiles to a PUBLIC static field on the enclosing class, so
+// the companion form leaked both constants into the published ABI and failed
+// binary-compatibility-validator. Top-level private consts land on the file
+// class as private statics instead.
+private const val INVALID_GRANT = "invalid_grant"
+private const val TERMINAL_MESSAGE = "Refresh token revoked (invalid_grant) — terminal for this session"
 
 @Serializable
 internal data class TokenResponse(
