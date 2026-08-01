@@ -272,9 +272,21 @@ class DiscoveryChain(
     }
 
     /**
-     * Extracts the PDS URL from the DID document's service array.
+     * Resolves a DID to the URL of the PDS hosting it, by fetching the DID
+     * document and reading its `#atproto_pds` service entry.
+     *
+     * Public because callers routinely have a DID already — `searchActorsTypeahead`
+     * and `getProfile` both return one — and want only this one hop. [resolve]
+     * would work but runs the whole chain (handle → DID → PDS → auth server →
+     * metadata), which is four extra round trips for an answer this method gets
+     * in one, and is far too heavy to run per row of a list.
+     *
+     * Handles `did:plc` (via `plc.directory`) and `did:web` (via the host's
+     * `/.well-known/did.json`). Throws [OAuthDiscoveryException] for an
+     * unsupported DID method, an unreachable or malformed document, or a
+     * document with no PDS service entry.
      */
-    internal suspend fun resolvePds(did: String): String {
+    suspend fun resolvePds(did: String): String {
         val doc = resolveDid(did)
         val pdsService = doc.service?.firstOrNull { it.id == "#atproto_pds" }
             ?: throw OAuthDiscoveryException("DID document for '$did' has no #atproto_pds service")

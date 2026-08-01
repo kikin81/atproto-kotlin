@@ -350,4 +350,81 @@ class DiscoveryChainTest {
         assertEquals("flaky.test", hydrated.handle)
         assertEquals(null, hydrated.pdsUrl)
     }
+
+    // --- resolvePds, now part of the public surface ---
+
+    @Test
+    fun resolvePdsReadsTheAtprotoPdsServiceFromAPlcDocument() = runTest {
+        var requestedUrl: String? = null
+        val client = HttpClient(
+            MockEngine { request ->
+                requestedUrl = request.url.toString()
+                respond(
+                    ByteReadChannel(
+                        """{"id":"did:plc:abc","service":[{"id":"#atproto_pds","type":"AtprotoPersonalDataServer","serviceEndpoint":"https://shiitake.us-east.host.bsky.network"}]}""",
+                    ),
+                    HttpStatusCode.OK,
+                    jsonHeaders,
+                )
+            },
+        )
+
+        val pds = DiscoveryChain(client).resolvePds("did:plc:abc")
+
+        assertEquals("https://shiitake.us-east.host.bsky.network", pds)
+        // One hop only. The point of exposing this over resolve() is that a caller
+        // holding a DID pays a single request instead of the full four-step chain.
+        assertEquals("https://plc.directory/did:plc:abc", requestedUrl)
+    }
+
+    @Test
+    fun resolvePdsUsesTheHostsWellKnownDocumentForDidWeb() = runTest {
+        var requestedUrl: String? = null
+        val client = HttpClient(
+            MockEngine { request ->
+                requestedUrl = request.url.toString()
+                respond(
+                    ByteReadChannel(
+                        """{"id":"did:web:pds.example.com","service":[{"id":"#atproto_pds","type":"AtprotoPersonalDataServer","serviceEndpoint":"https://pds.example.com"}]}""",
+                    ),
+                    HttpStatusCode.OK,
+                    jsonHeaders,
+                )
+            },
+        )
+
+        val pds = DiscoveryChain(client).resolvePds("did:web:pds.example.com")
+
+        assertEquals("https://pds.example.com", pds)
+        assertEquals("https://pds.example.com/.well-known/did.json", requestedUrl)
+    }
+
+    @Test
+    fun resolvePdsFailsWhenTheDocumentDeclaresNoPdsService() = runTest {
+        val client = HttpClient(
+            MockEngine {
+                respond(
+                    // A syntactically valid DID document whose services do not
+                    // include #atproto_pds — callers must get a clear failure
+                    // rather than a silently wrong endpoint.
+                    ByteReadChannel("""{"id":"did:plc:abc","service":[{"id":"#other","type":"Other","serviceEndpoint":"https://nope.example"}]}"""),
+                    HttpStatusCode.OK,
+                    jsonHeaders,
+                )
+            },
+        )
+
+        assertFailsWith<OAuthDiscoveryException> {
+            DiscoveryChain(client).resolvePds("did:plc:abc")
+        }
+    }
+
+    @Test
+    fun resolvePdsRejectsAnUnsupportedDidMethod() = runTest {
+        val client = HttpClient(MockEngine { respond(ByteReadChannel(""), HttpStatusCode.OK) })
+
+        assertFailsWith<OAuthDiscoveryException> {
+            DiscoveryChain(client).resolvePds("did:example:abc")
+        }
+    }
 }
