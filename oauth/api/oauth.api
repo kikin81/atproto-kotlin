@@ -42,6 +42,7 @@ public final class io/github/kikin81/atproto/oauth/DiscoveryChain {
 	public synthetic fun <init> (Lio/ktor/client/HttpClient;Lkotlinx/serialization/json/Json;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun resolve (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun resolveKnownAuthServer (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun resolvePds (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class io/github/kikin81/atproto/oauth/DpopAuthProvider : io/github/kikin81/atproto/runtime/AuthProvider {
