@@ -38,7 +38,7 @@
             </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
         </button>
         <div class="navigation-controls--break ui-kit_mobile-only"></div>
-        <div class="library-version" id="library-version">9.9.2
+        <div class="library-version" id="library-version">9.10.0
         </div>
         <div class="navigation-controls">
         <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
@@ -145,6 +145,21 @@
               <div>
                 <div class="title">
                   <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":oauth/main"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="resolve-known-auth-server.html"><span class="token function">resolveKnownAuthServer</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">authServerUrl<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-auth-server-metadata/index.html">AuthServerMetadata</a></div><div class="brief "><p class="paragraph">Short-circuits the discovery chain for flows where the auth server is already known (e.g. signup, where the user has no handle/DID yet). Fetches only the auth-server metadata; <a href="../-auth-server-metadata/did.html">AuthServerMetadata.did</a>, <a href="../-auth-server-metadata/handle.html">AuthServerMetadata.handle</a>, and <a href="../-auth-server-metadata/pds-url.html">AuthServerMetadata.pdsUrl</a> are left null — populate them post-token-exchange via <a href="../../../oauth/io.github.kikin81.atproto.oauth/-discovery-chain/hydrate-identity-from-did.html">hydrateIdentityFromDid</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1589077569%2FFunctions%2F650462341" anchor-label="resolvePds" id="1589077569%2FFunctions%2F650462341" data-filterable-set=":oauth/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":oauth/main" data-filterable-set=":oauth/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="resolve-pds.html"><span>resolve</span><wbr><span><span>Pds</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1589077569%2FFunctions%2F650462341"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":oauth/main"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="resolve-pds.html"><span class="token function">resolvePds</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">did<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div><div class="brief "><p class="paragraph">Resolves a DID to the URL of the PDS hosting it, by fetching the DID document and reading its <code class="lang-kotlin">#atproto_pds</code> service entry.</p></div></div></div>
                 </div>
               </div>
             </div>
