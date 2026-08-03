@@ -8,8 +8,10 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Parameters
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
@@ -51,6 +53,20 @@ class DpopAuthProvider(
     @Volatile private var session: OAuthSession,
     private val signer: DpopSigner,
     private val sessionStore: OAuthSessionStore,
+    /**
+     * Client used for token-endpoint POSTs.
+     *
+     * Should be bounded by a request timeout — Ktor's `HttpTimeout` plugin, or
+     * timeouts configured on the engine. This library installs neither and
+     * cannot enforce it, so it is the caller's responsibility.
+     *
+     * It matters more here than for an ordinary request: the refresh runs under
+     * `NonCancellable`, because once the token endpoint has been POSTed the
+     * refresh token is consumed server-side and abandoning the call would
+     * strand the rotation. That removes cancellation as an escape hatch, so a
+     * timeout is what bounds a hung socket. An unbounded client will hold the
+     * calling coroutine until the socket resolves on its own.
+     */
     private val refreshClient: HttpClient,
     private val json: Json = Json { ignoreUnknownKeys = true },
     /**
@@ -178,7 +194,21 @@ class DpopAuthProvider(
                 return true
             }
 
-            return refreshTokens()
+            // NonCancellable from here down, and NOT a line earlier. Everything
+            // above is either a cheap local check or a wait on the mutex, where
+            // a cancelled caller has caused no server-side effect and should be
+            // free to give up. Once the token endpoint is POSTed the refresh
+            // token is CONSUMED and a new one issued, so abandoning the call
+            // does not undo anything — it only loses the replacement, leaving
+            // the store holding a token the server will reject as reuse
+            // (RFC 9700) on the next attempt. In the field the canceller was a
+            // WorkManager CoroutineWorker being stopped mid-poll, and the user
+            // was silently signed out minutes later.
+            //
+            // Bounded by the refresh client's request timeout, not by
+            // withTimeout: a timeout wrapper here would reintroduce the very
+            // cancellation this exists to prevent. See [refreshClient].
+            return withContext(NonCancellable) { refreshTokens() }
         }
     }
 
