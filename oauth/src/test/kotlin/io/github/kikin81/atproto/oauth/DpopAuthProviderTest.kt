@@ -10,6 +10,7 @@ import io.ktor.utils.io.ByteReadChannel
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.io.encoding.Base64
@@ -781,5 +782,81 @@ class DpopAuthProviderTest {
         val header = Base64.UrlSafe.encode("""{"alg":"ES256","typ":"at+jwt"}""".toByteArray()).trimEnd('=')
         val payload = Base64.UrlSafe.encode("""{"exp":$exp}""".toByteArray()).trimEnd('=')
         return "$header.$payload.fakesignature"
+    }
+
+    @Test
+    fun rotatedTokenSurvivesCallerCancellationDuringPersist() = runTest {
+        // Regression for the nubecita spurious-logout chain.
+        //
+        // The refresh runs inside whatever coroutine needed a token — in the
+        // field that was a WorkManager CoroutineWorker polling chat.bsky.convo
+        // .getLog, which WorkManager cancels on Doze / constraint loss / the
+        // execution limit. If the caller is cancelled AFTER the server has
+        // consumed and rotated the refresh token but BEFORE the rotation is
+        // persisted, the stored token is the CONSUMED one. The next refresh
+        // replays it, the authorization server treats a replayed refresh token
+        // as reuse (RFC 9700), and the user is silently signed out.
+        //
+        // Once the request is in flight the rotation MUST be durable, because
+        // the server-side effect has already happened and cannot be undone.
+        val persistReached = CompletableDeferred<Unit>()
+        val releasePersist = CompletableDeferred<Unit>()
+        val refreshClient = HttpClient(
+            MockEngine { _ ->
+                respond(
+                    ByteReadChannel(
+                        """{"access_token":"at_rotated","refresh_token":"rt_rotated","token_type":"DPoP"}""",
+                    ),
+                    HttpStatusCode.OK,
+                    jsonHeaders,
+                )
+            },
+        )
+
+        val signer = DpopSigner.generate()
+        val exported = signer.exportKeyPair()
+        val store = object : OAuthSessionStore {
+            var session: OAuthSession? = null
+            override suspend fun load(): OAuthSession? = session
+            override suspend fun save(session: OAuthSession) {
+                // Stand in for the real store's encrypt + DataStore write: a
+                // suspending gap the caller's cancellation can land inside.
+                persistReached.complete(Unit)
+                releasePersist.await()
+                this.session = session
+            }
+            override suspend fun clear() {
+                session = null
+            }
+        }
+        val session = OAuthSession(
+            accessToken = makeJwtWithExp((System.currentTimeMillis() / 1000) - 3600),
+            refreshToken = "rt_consumed",
+            did = "did:plc:testuser",
+            handle = "alice.test",
+            pdsUrl = "https://pds.test",
+            tokenEndpoint = "https://auth.test/token",
+            clientId = "https://app.test/meta.json",
+            dpopPrivateKey = exported.privateKeyEncoded,
+            dpopPublicKey = exported.publicKeyEncoded,
+        )
+        store.session = session
+        val provider = DpopAuthProvider(session, signer, store, refreshClient)
+
+        // The worker that needed the token, and the cancellation that killed it.
+        val caller = launch { provider.onUnauthorized(emptyMap()) }
+        persistReached.await()
+        caller.cancel()
+        releasePersist.complete(Unit)
+        caller.join()
+
+        val persisted = store.session
+        assertNotNull(persisted)
+        assertEquals(
+            "rt_rotated",
+            persisted.refreshToken,
+            "the server already consumed rt_consumed, so abandoning the rotation " +
+                "leaves a token that will be rejected as reuse on the next refresh",
+        )
     }
 }
