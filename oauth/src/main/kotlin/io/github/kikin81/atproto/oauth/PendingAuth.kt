@@ -51,17 +51,56 @@ data class PendingAuth(
     val promptValuesSupported: List<String> = emptyList(),
     val createdAtEpochMillis: Long = 0,
 ) {
-    // ByteArray fields make the generated equals/hashCode reference-based,
-    // which silently breaks value comparison in consumer tests. `state` is a
-    // 32-byte CSPRNG value generated per flow, so it alone identifies the
-    // record. Same reasoning as OAuthSession's override.
+    // Full structural equality, with contentEquals for the ByteArray fields
+    // (the generated equals would compare those by reference).
+    //
+    // Deliberately NOT the narrow identity comparison OAuthSession uses. The
+    // entire purpose of this type is to survive a round-trip through disk, so
+    // a round-trip test asserting equality has to actually compare what came
+    // back — under state-only equality it would pass with every other field
+    // mangled, which is the one bug this class exists to not have.
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is PendingAuth) return false
-        return state == other.state
+        return state == other.state &&
+            codeVerifier == other.codeVerifier &&
+            redirectUri == other.redirectUri &&
+            flowOrigin == other.flowOrigin &&
+            authServerNonce == other.authServerNonce &&
+            dpopPrivateKey.contentEquals(other.dpopPrivateKey) &&
+            dpopPublicKey.contentEquals(other.dpopPublicKey) &&
+            issuer == other.issuer &&
+            authorizationEndpoint == other.authorizationEndpoint &&
+            tokenEndpoint == other.tokenEndpoint &&
+            parEndpoint == other.parEndpoint &&
+            revocationEndpoint == other.revocationEndpoint &&
+            pdsUrl == other.pdsUrl &&
+            did == other.did &&
+            handle == other.handle &&
+            promptValuesSupported == other.promptValuesSupported &&
+            createdAtEpochMillis == other.createdAtEpochMillis
     }
 
-    override fun hashCode(): Int = state.hashCode()
+    override fun hashCode(): Int {
+        var result = state.hashCode()
+        result = 31 * result + codeVerifier.hashCode()
+        result = 31 * result + redirectUri.hashCode()
+        result = 31 * result + flowOrigin.hashCode()
+        result = 31 * result + (authServerNonce?.hashCode() ?: 0)
+        result = 31 * result + dpopPrivateKey.contentHashCode()
+        result = 31 * result + dpopPublicKey.contentHashCode()
+        result = 31 * result + issuer.hashCode()
+        result = 31 * result + authorizationEndpoint.hashCode()
+        result = 31 * result + tokenEndpoint.hashCode()
+        result = 31 * result + parEndpoint.hashCode()
+        result = 31 * result + (revocationEndpoint?.hashCode() ?: 0)
+        result = 31 * result + (pdsUrl?.hashCode() ?: 0)
+        result = 31 * result + (did?.hashCode() ?: 0)
+        result = 31 * result + (handle?.hashCode() ?: 0)
+        result = 31 * result + promptValuesSupported.hashCode()
+        result = 31 * result + createdAtEpochMillis.hashCode()
+        return result
+    }
 }
 
 /**
@@ -96,6 +135,11 @@ interface PendingAuthStore {
  * completed. See [PendingAuthStore].
  */
 class InMemoryPendingAuthStore : PendingAuthStore {
+    // @Volatile because the write (beginLogin) and the read (completeLogin)
+    // are separated by a browser roundtrip and routinely land on different
+    // dispatcher threads, with no lock or other happens-before edge between
+    // them to publish the value.
+    @Volatile
     private var pending: PendingAuth? = null
 
     override suspend fun load(): PendingAuth? = pending

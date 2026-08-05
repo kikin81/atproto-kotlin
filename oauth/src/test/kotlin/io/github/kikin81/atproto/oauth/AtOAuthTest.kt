@@ -10,7 +10,6 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
 import io.ktor.http.parseQueryString
 import io.ktor.utils.io.ByteReadChannel
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
@@ -389,6 +388,35 @@ class AtOAuthTest {
             "app.example:/oauth-redirect?code=auth_code_123&state=$state&iss=https://auth.test",
         )
         assertNotNull(sessionStore.session)
+    }
+
+    @Test
+    fun completeLoginRejectsUnrecognizedFlowOrigin() = runTest {
+        // Reachable precisely because the record now survives on disk: the app
+        // can be updated mid-roundtrip, so a value written by a different
+        // library version can come back. It must surface as this SDK's
+        // OAuthException, not a raw IllegalArgumentException that slips past
+        // callers' error handling.
+        val sessionStore = InMemorySessionStore()
+        val pendingStore = InMemoryPendingAuthStore()
+        val oauth = AtOAuth(
+            clientMetadataUrl = "https://app.test/oauth/client-metadata.json",
+            redirectUri = "app.example:/oauth-redirect",
+            sessionStore = sessionStore,
+            httpClient = fullFlowMockClient(),
+            pendingStore = pendingStore,
+        )
+        oauth.beginLogin("alice.test")
+        val stored = pendingStore.load()
+        assertNotNull(stored)
+        pendingStore.save(stored.copy(flowOrigin = "SomeFutureFlow"))
+
+        val failure = assertFailsWith<OAuthException> {
+            oauth.completeLogin(
+                "app.example:/oauth-redirect?code=auth_code_123&state=${stored.state}&iss=https://auth.test",
+            )
+        }
+        assertContains(failure.message ?: "", "SomeFutureFlow")
     }
 
     @Test
@@ -1238,11 +1266,11 @@ class AtOAuthTest {
      * works for tests that supply their own store and for the majority that
      * rely on the default [InMemoryPendingAuthStore].
      */
-    private fun extractState(oauth: AtOAuth): String = runBlocking {
+    private suspend fun extractState(oauth: AtOAuth): String {
         val field = AtOAuth::class.java.getDeclaredField("pendingStore")
         field.isAccessible = true
         val store = field.get(oauth) as PendingAuthStore
-        store.load()?.state ?: throw IllegalStateException("No pending state")
+        return store.load()?.state ?: throw IllegalStateException("No pending state")
     }
 
     /**

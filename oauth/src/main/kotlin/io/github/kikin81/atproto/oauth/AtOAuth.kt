@@ -599,7 +599,13 @@ class AtOAuth(
         codeVerifier = codeVerifier,
         state = state,
         redirectUri = redirectUri,
-        flowOrigin = FlowOrigin.valueOf(flowOrigin),
+        // Not valueOf directly: this record round-trips through disk and can
+        // outlive an app update mid-roundtrip, so a value written by a
+        // different library version is reachable. Surface that as the SDK's
+        // own error type rather than letting a raw IllegalArgumentException
+        // escape past callers' OAuthException handling.
+        flowOrigin = FlowOrigin.entries.firstOrNull { it.name == flowOrigin }
+            ?: throw OAuthException("Unrecognized pending-login flow origin '$flowOrigin' — start the login again"),
         authServerNonce = authServerNonce,
     )
 
