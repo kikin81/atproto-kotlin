@@ -7182,17 +7182,19 @@ public final class io/github/kikin81/atproto/app/bsky/graph/GetBlocksResponse$Co
 
 public final class io/github/kikin81/atproto/app/bsky/graph/GetFollowersRequest {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/graph/GetFollowersRequest$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-mlEIfv0 ()Ljava/lang/String;
 	public final fun component2 ()Ljava/lang/String;
 	public final fun component3 ()Ljava/lang/Long;
-	public final fun copy-zhZdu3M (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;)Lio/github/kikin81/atproto/app/bsky/graph/GetFollowersRequest;
-	public static synthetic fun copy-zhZdu3M$default (Lio/github/kikin81/atproto/app/bsky/graph/GetFollowersRequest;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/graph/GetFollowersRequest;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun copy-icULqAM (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/graph/GetFollowersRequest;
+	public static synthetic fun copy-icULqAM$default (Lio/github/kikin81/atproto/app/bsky/graph/GetFollowersRequest;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/graph/GetFollowersRequest;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getActor-mlEIfv0 ()Ljava/lang/String;
 	public final fun getCursor ()Ljava/lang/String;
 	public final fun getLimit ()Ljava/lang/Long;
+	public final fun getSort ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -7246,17 +7248,19 @@ public final class io/github/kikin81/atproto/app/bsky/graph/GetFollowersResponse
 
 public final class io/github/kikin81/atproto/app/bsky/graph/GetFollowsRequest {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/graph/GetFollowsRequest$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-mlEIfv0 ()Ljava/lang/String;
 	public final fun component2 ()Ljava/lang/String;
 	public final fun component3 ()Ljava/lang/Long;
-	public final fun copy-zhZdu3M (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;)Lio/github/kikin81/atproto/app/bsky/graph/GetFollowsRequest;
-	public static synthetic fun copy-zhZdu3M$default (Lio/github/kikin81/atproto/app/bsky/graph/GetFollowsRequest;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/graph/GetFollowsRequest;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun copy-icULqAM (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/graph/GetFollowsRequest;
+	public static synthetic fun copy-icULqAM$default (Lio/github/kikin81/atproto/app/bsky/graph/GetFollowsRequest;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/graph/GetFollowsRequest;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getActor-mlEIfv0 ()Ljava/lang/String;
 	public final fun getCursor ()Ljava/lang/String;
 	public final fun getLimit ()Ljava/lang/Long;
+	public final fun getSort ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -9641,9 +9645,10 @@ public final class io/github/kikin81/atproto/app/bsky/notification/ListActivityS
 
 public final class io/github/kikin81/atproto/app/bsky/notification/ListNotificationsNotification {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/ListNotificationsNotification$Companion;
-	public synthetic fun <init> (Lio/github/kikin81/atproto/app/bsky/actor/ProfileView;Ljava/lang/String;Ljava/lang/String;ZLjava/util/List;Ljava/lang/String;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (Lio/github/kikin81/atproto/app/bsky/actor/ProfileView;Ljava/lang/String;Ljava/lang/String;ZLjava/util/List;Ljava/lang/String;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Lio/github/kikin81/atproto/app/bsky/actor/ProfileView;Ljava/lang/String;Ljava/lang/String;ZLjava/util/List;Ljava/lang/String;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;Lio/github/kikin81/atproto/app/bsky/graph/StarterPackViewBasic;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Lio/github/kikin81/atproto/app/bsky/actor/ProfileView;Ljava/lang/String;Ljava/lang/String;ZLjava/util/List;Ljava/lang/String;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;Lio/github/kikin81/atproto/app/bsky/graph/StarterPackViewBasic;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Lio/github/kikin81/atproto/app/bsky/actor/ProfileView;
+	public final fun component10-GUXd3rc ()Ljava/lang/String;
 	public final fun component2-LVDfoeI ()Ljava/lang/String;
 	public final fun component3-DnBUIck ()Ljava/lang/String;
 	public final fun component4 ()Z
@@ -9651,9 +9656,9 @@ public final class io/github/kikin81/atproto/app/bsky/notification/ListNotificat
 	public final fun component6 ()Ljava/lang/String;
 	public final fun component7-XX8z880 ()Ljava/lang/String;
 	public final fun component8 ()Lkotlinx/serialization/json/JsonObject;
-	public final fun component9-GUXd3rc ()Ljava/lang/String;
-	public final fun copy-fuaNEfE (Lio/github/kikin81/atproto/app/bsky/actor/ProfileView;Ljava/lang/String;Ljava/lang/String;ZLjava/util/List;Ljava/lang/String;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/notification/ListNotificationsNotification;
-	public static synthetic fun copy-fuaNEfE$default (Lio/github/kikin81/atproto/app/bsky/notification/ListNotificationsNotification;Lio/github/kikin81/atproto/app/bsky/actor/ProfileView;Ljava/lang/String;Ljava/lang/String;ZLjava/util/List;Ljava/lang/String;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/notification/ListNotificationsNotification;
+	public final fun component9 ()Lio/github/kikin81/atproto/app/bsky/graph/StarterPackViewBasic;
+	public final fun copy-IpaLm9A (Lio/github/kikin81/atproto/app/bsky/actor/ProfileView;Ljava/lang/String;Ljava/lang/String;ZLjava/util/List;Ljava/lang/String;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;Lio/github/kikin81/atproto/app/bsky/graph/StarterPackViewBasic;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/notification/ListNotificationsNotification;
+	public static synthetic fun copy-IpaLm9A$default (Lio/github/kikin81/atproto/app/bsky/notification/ListNotificationsNotification;Lio/github/kikin81/atproto/app/bsky/actor/ProfileView;Ljava/lang/String;Ljava/lang/String;ZLjava/util/List;Ljava/lang/String;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;Lio/github/kikin81/atproto/app/bsky/graph/StarterPackViewBasic;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/notification/ListNotificationsNotification;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAuthor ()Lio/github/kikin81/atproto/app/bsky/actor/ProfileView;
 	public final fun getCid-LVDfoeI ()Ljava/lang/String;
@@ -9662,6 +9667,7 @@ public final class io/github/kikin81/atproto/app/bsky/notification/ListNotificat
 	public final fun getReason ()Ljava/lang/String;
 	public final fun getReasonSubject-XX8z880 ()Ljava/lang/String;
 	public final fun getRecord ()Lkotlinx/serialization/json/JsonObject;
+	public final fun getStarterPack ()Lio/github/kikin81/atproto/app/bsky/graph/StarterPackViewBasic;
 	public final fun getUri-GUXd3rc ()Ljava/lang/String;
 	public fun hashCode ()I
 	public final fun isRead ()Z
