@@ -10,6 +10,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
 import io.ktor.http.parseQueryString
 import io.ktor.utils.io.ByteReadChannel
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
@@ -23,6 +24,7 @@ import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class AtOAuthTest {
@@ -289,6 +291,104 @@ class AtOAuthTest {
         assertTrue(session.did == "did:plc:testuser")
         assertTrue(session.handle == "alice.test")
         assertTrue(session.dpopPrivateKey.isNotEmpty())
+    }
+
+    @Test
+    fun loginSurvivesProcessDeathWhenPendingStateIsPersisted() = runTest {
+        // Pin the whole point of PendingAuthStore: the authorization step
+        // happens in a browser, and on Android the OS can kill the app while
+        // the user is on the auth page. A second AtOAuth instance sharing the
+        // store stands in for the process that comes back from that kill —
+        // it never called beginLogin, yet it must complete the callback.
+        val sessionStore = InMemorySessionStore()
+        val pendingStore = InMemoryPendingAuthStore()
+        val client = fullFlowMockClient()
+
+        val beforeDeath = AtOAuth(
+            clientMetadataUrl = "https://app.test/oauth/client-metadata.json",
+            redirectUri = "app.example:/oauth-redirect",
+            sessionStore = sessionStore,
+            httpClient = client,
+            pendingStore = pendingStore,
+        )
+        beforeDeath.beginLogin("alice.test")
+        val state = pendingStore.load()?.state
+        assertNotNull(state, "beginLogin must persist the pending login")
+
+        val afterDeath = AtOAuth(
+            clientMetadataUrl = "https://app.test/oauth/client-metadata.json",
+            redirectUri = "app.example:/oauth-redirect",
+            sessionStore = sessionStore,
+            httpClient = client,
+            pendingStore = pendingStore,
+        )
+        afterDeath.completeLogin(
+            "app.example:/oauth-redirect?code=auth_code_123&state=$state&iss=https://auth.test",
+        )
+
+        val session = sessionStore.session
+        assertNotNull(session, "the reborn process must complete the login")
+        assertEquals("did:plc:testuser", session.did)
+        assertNull(pendingStore.load(), "a consumed pending login must not linger on disk")
+    }
+
+    @Test
+    fun completeLoginRejectsPendingStateOlderThanTtl() = runTest {
+        // A persisted pending login outlives the process, so it also outlives
+        // the authorization code's server-side lifetime. Past the TTL it can
+        // never complete, and leaving a PKCE verifier + DPoP private key on
+        // disk past its usefulness is needless exposure — discard it.
+        val sessionStore = InMemorySessionStore()
+        val pendingStore = InMemoryPendingAuthStore()
+        var now = 1_000_000L
+        val oauth = AtOAuth(
+            clientMetadataUrl = "https://app.test/oauth/client-metadata.json",
+            redirectUri = "app.example:/oauth-redirect",
+            sessionStore = sessionStore,
+            httpClient = fullFlowMockClient(),
+            pendingStore = pendingStore,
+            nowMillis = { now },
+        )
+        oauth.beginLogin("alice.test")
+        val state = pendingStore.load()?.state
+        assertNotNull(state)
+
+        now += AtOAuth.PENDING_AUTH_TTL_MILLIS + 1
+
+        val failure = assertFailsWith<OAuthException> {
+            oauth.completeLogin(
+                "app.example:/oauth-redirect?code=auth_code_123&state=$state&iss=https://auth.test",
+            )
+        }
+        assertContains(failure.message ?: "", "expired")
+        assertNull(pendingStore.load(), "an expired pending login must be discarded, not left on disk")
+    }
+
+    @Test
+    fun pendingStateWithinTtlStillCompletes() = runTest {
+        // Guards the TTL check against being too aggressive: a normal browser
+        // roundtrip takes seconds-to-minutes and must not be rejected. Without
+        // this, the expiry test above would pass just as well with a TTL of 0.
+        val sessionStore = InMemorySessionStore()
+        val pendingStore = InMemoryPendingAuthStore()
+        var now = 1_000_000L
+        val oauth = AtOAuth(
+            clientMetadataUrl = "https://app.test/oauth/client-metadata.json",
+            redirectUri = "app.example:/oauth-redirect",
+            sessionStore = sessionStore,
+            httpClient = fullFlowMockClient(),
+            pendingStore = pendingStore,
+            nowMillis = { now },
+        )
+        oauth.beginLogin("alice.test")
+        val state = pendingStore.load()?.state
+
+        now += AtOAuth.PENDING_AUTH_TTL_MILLIS - 1
+
+        oauth.completeLogin(
+            "app.example:/oauth-redirect?code=auth_code_123&state=$state&iss=https://auth.test",
+        )
+        assertNotNull(sessionStore.session)
     }
 
     @Test
@@ -1133,14 +1233,16 @@ class AtOAuthTest {
     /**
      * Extracts the state from a pending AtOAuth instance via reflection.
      * Only for testing — production consumers don't access internal state.
+     *
+     * Reads through whichever [PendingAuthStore] the instance holds, so it
+     * works for tests that supply their own store and for the majority that
+     * rely on the default [InMemoryPendingAuthStore].
      */
-    private fun extractState(oauth: AtOAuth): String {
-        val field = AtOAuth::class.java.getDeclaredField("pendingState")
+    private fun extractState(oauth: AtOAuth): String = runBlocking {
+        val field = AtOAuth::class.java.getDeclaredField("pendingStore")
         field.isAccessible = true
-        val pending = field.get(oauth) ?: throw IllegalStateException("No pending state")
-        val stateField = pending::class.java.getDeclaredField("state")
-        stateField.isAccessible = true
-        return stateField.get(pending) as String
+        val store = field.get(oauth) as PendingAuthStore
+        store.load()?.state ?: throw IllegalStateException("No pending state")
     }
 
     /**

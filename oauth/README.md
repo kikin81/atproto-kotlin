@@ -144,6 +144,51 @@ interface OAuthSessionStore {
 On Android, use `EncryptedSharedPreferences` to protect the DPoP keypair and
 tokens at rest. See the sample app for a complete implementation.
 
+## Pending-login persistence (Android: required)
+
+The authorization step happens in a **different process** — a browser or Custom
+Tab. Android is free to kill your app while the user is on the authorization
+page, and on memory-constrained devices it routinely does.
+
+`AtOAuth` keeps the in-flight PKCE verifier and CSRF `state` in a
+`PendingAuthStore`. The default is **in-memory**, which cannot survive that
+kill: the callback returns to a fresh process, `completeLogin` throws
+`No pending login — call beginLogin or beginSignup first`, and the user is stuck
+behind an error that retrying cannot clear.
+
+Supply a durable, encrypted store on Android:
+
+```kotlin
+interface PendingAuthStore {
+    suspend fun load(): PendingAuth?
+    suspend fun save(pending: PendingAuth)
+    suspend fun clear()
+}
+
+AtOAuth(
+    clientMetadataUrl = "...",
+    redirectUri = "...",
+    sessionStore = sessionStore,
+    httpClient = httpClient,
+    pendingStore = MyEncryptedPendingAuthStore(), // <- do this on Android
+)
+```
+
+`PendingAuth` briefly holds a PKCE verifier and a DPoP private key, so encrypt it
+at rest exactly as you do the session — reuse the same backing store under a
+separate key. Records older than `AtOAuth.PENDING_AUTH_TTL_MILLIS` (15 minutes)
+are discarded on read, since the authorization code has expired server-side long
+before that.
+
+To verify your implementation, kill the process mid-flow and confirm the callback
+still completes:
+
+```bash
+# with the Custom Tab in the foreground
+adb shell am kill your.package.name
+# then let the redirect come back
+```
+
 ## Security considerations
 
 - **DPoP (RFC 9449)**: Every request carries a proof-of-possession JWT signed

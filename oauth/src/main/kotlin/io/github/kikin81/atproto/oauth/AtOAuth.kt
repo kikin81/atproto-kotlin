@@ -80,9 +80,20 @@ class AtOAuth(
      * [DpopAuthProvider]'s `onPersistFailure` for the durability implications.
      */
     private val onSessionPersistFailure: (Throwable) -> Unit = {},
+    /**
+     * Where the in-flight login lives between `beginLogin` / `beginSignup` and
+     * [completeLogin].
+     *
+     * Defaults to memory, preserving this module's historical behaviour.
+     * **Android consumers should supply a durable, encrypted store**: the
+     * authorization step runs in a browser, and an OS kill during it otherwise
+     * strands the login permanently — the callback returns to a process that
+     * has no record of it. See [PendingAuthStore].
+     */
+    private val pendingStore: PendingAuthStore = InMemoryPendingAuthStore(),
+    /** Injection seam for [PENDING_AUTH_TTL_MILLIS] expiry; overridden in tests. */
+    private val nowMillis: () -> Long = { System.currentTimeMillis() },
 ) {
-    // Transient state during the login/signup flow (between beginX and completeLogin)
-    private var pendingState: PendingAuthState? = null
 
     /**
      * Starts the OAuth login flow.
@@ -171,14 +182,30 @@ class AtOAuth(
             prompt = prompt,
         )
 
-        pendingState = PendingAuthState(
-            metadata = metadata,
-            signer = signer,
-            codeVerifier = codeVerifier,
-            state = state,
-            redirectUri = redirectUri,
-            flowOrigin = flowOrigin,
-            authServerNonce = parResult.dpopNonce,
+        // Persisted BEFORE the caller gets the URL to open: once the browser is
+        // foregrounded this process may be killed at any moment, and anything
+        // written after that point is a race we would lose.
+        val exported = signer.exportKeyPair()
+        pendingStore.save(
+            PendingAuth(
+                state = state,
+                codeVerifier = codeVerifier,
+                redirectUri = redirectUri,
+                flowOrigin = flowOrigin.name,
+                authServerNonce = parResult.dpopNonce,
+                dpopPrivateKey = exported.privateKeyEncoded,
+                dpopPublicKey = exported.publicKeyEncoded,
+                issuer = metadata.issuer,
+                authorizationEndpoint = metadata.authorizationEndpoint,
+                tokenEndpoint = metadata.tokenEndpoint,
+                parEndpoint = metadata.parEndpoint,
+                revocationEndpoint = metadata.revocationEndpoint,
+                pdsUrl = metadata.pdsUrl,
+                did = metadata.did,
+                handle = metadata.handle,
+                promptValuesSupported = metadata.promptValuesSupported,
+                createdAtEpochMillis = nowMillis(),
+            ),
         )
 
         return "${metadata.authorizationEndpoint}?client_id=$clientMetadataUrl&request_uri=${parResult.requestUri}"
@@ -200,8 +227,25 @@ class AtOAuth(
      *   (e.g. `myapp://oauth/callback?code=...&state=...&iss=...`).
      */
     suspend fun completeLogin(redirectUri: String) {
-        val pending = pendingState ?: throw OAuthException("No pending login — call beginLogin or beginSignup first")
-        pendingState = null
+        val stored = pendingStore.load()
+            ?: throw OAuthException("No pending login — call beginLogin or beginSignup first")
+        // Consume before validating: the record is single-use, and clearing it
+        // up front means a malformed or replayed callback cannot be retried
+        // against the same PKCE verifier. Matches the pre-persistence behaviour.
+        pendingStore.clear()
+
+        // A persisted record outlives the process, so it can also outlive the
+        // authorization code's server-side lifetime. Past the TTL there is
+        // nothing to complete — fail with a distinguishable message rather than
+        // letting the token endpoint reject it as an opaque invalid_grant.
+        val age = nowMillis() - stored.createdAtEpochMillis
+        if (age > PENDING_AUTH_TTL_MILLIS) {
+            throw OAuthException(
+                "Pending login expired after ${age}ms (limit ${PENDING_AUTH_TTL_MILLIS}ms) — start the login again",
+            )
+        }
+
+        val pending = stored.toPendingAuthState()
 
         val params = parseRedirectParams(redirectUri)
         val code = params["code"] ?: throw OAuthException("Missing 'code' in redirect URI")
@@ -527,6 +571,48 @@ class AtOAuth(
                     param.substring(0, eq) to java.net.URLDecoder.decode(param.substring(eq + 1), "UTF-8")
                 }
             }
+    }
+
+    /**
+     * Rehydrate the in-memory working shape from its persisted form. The DPoP
+     * keypair round-trips through PKCS8/X509 encoding, the same path
+     * [OAuthSession] uses.
+     */
+    private fun PendingAuth.toPendingAuthState(): PendingAuthState = PendingAuthState(
+        metadata = AuthServerMetadata(
+            issuer = issuer,
+            authorizationEndpoint = authorizationEndpoint,
+            tokenEndpoint = tokenEndpoint,
+            parEndpoint = parEndpoint,
+            revocationEndpoint = revocationEndpoint,
+            pdsUrl = pdsUrl,
+            did = did,
+            handle = handle,
+            promptValuesSupported = promptValuesSupported,
+        ),
+        signer = DpopSigner.fromExported(
+            DpopSigner.ExportedKeyPair(
+                privateKeyEncoded = dpopPrivateKey,
+                publicKeyEncoded = dpopPublicKey,
+            ),
+        ),
+        codeVerifier = codeVerifier,
+        state = state,
+        redirectUri = redirectUri,
+        flowOrigin = FlowOrigin.valueOf(flowOrigin),
+        authServerNonce = authServerNonce,
+    )
+
+    companion object {
+        /**
+         * How long a persisted pending login stays completable.
+         *
+         * Bounded by the authorization code's own server-side lifetime (minutes
+         * in practice), with generous headroom for a slow password entry on a
+         * third-party PDS. Past this, the record is dead weight and its PKCE
+         * verifier + DPoP private key are needless exposure at rest.
+         */
+        const val PENDING_AUTH_TTL_MILLIS: Long = 15 * 60 * 1000L
     }
 
     internal enum class FlowOrigin { Login, Signup }
