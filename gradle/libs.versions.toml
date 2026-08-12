@@ -23,7 +23,7 @@ androidx-hilt-navigation-compose = "1.4.0"
 androidx-lifecycle = "2.11.0"
 androidx-navigation-compose = "2.9.8"
 androidx-security-crypto = "1.1.0"
-compose-bom = "2026.06.01"
+compose-bom = "2026.08.00"
 coil = "2.7.0"
 
 [libraries]
