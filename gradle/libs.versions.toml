@@ -14,7 +14,7 @@ binary-compatibility-validator = "0.18.1"
 
 # Android sample
 agp = "9.3.1"
-ksp = "2.3.10"
+ksp = "2.3.11"
 hilt = "2.60.1"
 androidx-activity-compose = "1.13.0"
 androidx-browser = "1.10.0"
