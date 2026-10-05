@@ -10,6 +10,16 @@
       "removeWhenPublished": false,
       "expectDrift": true,
       "driftReason": "Re-adds groupPublicView, which upstream main deleted but which is still published on-network and reffed by chat.bsky.group.getGroupPublicInfo."
+    },
+    {
+      "nsid": "chat.bsky.group.getGroupPublicInfo",
+      "source": "https://github.com/kikin81/atproto-kotlin",
+      "commit": "20af19159a7d68adba4f4d126cba8b61828b1d44",
+      "vendoredAt": "2026-10-22",
+      "reason": "Preserved after upstream deletion both on GitHub and from on-network PLC DID repo. Retiring it would remove getGroupPublicInfo and break binary/source compatibility.",
+      "removeWhenPublished": false,
+      "expectDrift": true,
+      "driftReason": "Upstream removed getGroupPublicInfo in favor of getJoinLinkPreviews; vendored to retain API backwards compatibility."
     }
   ]
 }

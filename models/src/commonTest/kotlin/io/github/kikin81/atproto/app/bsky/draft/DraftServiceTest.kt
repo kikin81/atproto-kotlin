@@ -1,5 +1,6 @@
 package io.github.kikin81.atproto.app.bsky.draft
 
+import io.github.kikin81.atproto.runtime.Tid
 import io.github.kikin81.atproto.test.MockXrpcFixture
 import io.ktor.http.HttpMethod
 import kotlinx.coroutines.test.runTest
@@ -44,6 +45,6 @@ class DraftServiceTest {
         assertContains(body, "\"draft\"")
         assertContains(body, "hello from a draft")
 
-        assertEquals("draft-123", response.id)
+        assertEquals(Tid("draft-123"), response.id)
     }
 }

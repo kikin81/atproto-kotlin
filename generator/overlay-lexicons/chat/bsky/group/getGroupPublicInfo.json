@@ -1,0 +1,36 @@
+{
+  "lexicon": 1,
+  "id": "chat.bsky.group.getGroupPublicInfo",
+  "defs": {
+    "main": {
+      "type": "query",
+      "description": "Get public info about a group by invite code. Preserved as overlay after upstream deletion to maintain backward compatibility.",
+      "parameters": {
+        "type": "params",
+        "required": [
+          "code"
+        ],
+        "properties": {
+          "code": {
+            "type": "string"
+          }
+        }
+      },
+      "output": {
+        "encoding": "application/json",
+        "schema": {
+          "type": "object",
+          "required": [
+            "group"
+          ],
+          "properties": {
+            "group": {
+              "type": "ref",
+              "ref": "chat.bsky.group.defs#groupPublicView"
+            }
+          }
+        }
+      }
+    }
+  }
+}
