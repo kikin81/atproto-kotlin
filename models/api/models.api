@@ -722,6 +722,7 @@ public final class io/github/kikin81/atproto/app/bsky/actor/Nux$Companion {
 
 public final class io/github/kikin81/atproto/app/bsky/actor/PersonalDetailsPref : io/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponsePreferencesUnion, io/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequestPreferencesUnion {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/actor/PersonalDetailsPref$Companion;
+	public fun <init> ()V
 	public synthetic fun <init> (Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-G5DCnlA ()Ljava/lang/String;
@@ -1858,6 +1859,7 @@ public final class io/github/kikin81/atproto/app/bsky/actor/VerificationView$Com
 
 public final class io/github/kikin81/atproto/app/bsky/actor/ViewerState {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/actor/ViewerState$Companion;
+	public fun <init> ()V
 	public synthetic fun <init> (Lio/github/kikin81/atproto/app/bsky/notification/ActivitySubscription;Ljava/lang/Boolean;Ljava/lang/String;Lio/github/kikin81/atproto/app/bsky/graph/ListViewBasic;Ljava/lang/String;Ljava/lang/String;Lio/github/kikin81/atproto/app/bsky/actor/KnownFollowers;Ljava/lang/Boolean;Lio/github/kikin81/atproto/app/bsky/graph/ListViewBasic;Ljava/lang/Boolean;Ljava/lang/Boolean;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (Lio/github/kikin81/atproto/app/bsky/notification/ActivitySubscription;Ljava/lang/Boolean;Ljava/lang/String;Lio/github/kikin81/atproto/app/bsky/graph/ListViewBasic;Ljava/lang/String;Ljava/lang/String;Lio/github/kikin81/atproto/app/bsky/actor/KnownFollowers;Ljava/lang/Boolean;Lio/github/kikin81/atproto/app/bsky/graph/ListViewBasic;Ljava/lang/Boolean;Ljava/lang/Boolean;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Lio/github/kikin81/atproto/app/bsky/notification/ActivitySubscription;
@@ -2292,6 +2294,7 @@ public final class io/github/kikin81/atproto/app/bsky/ageassurance/State$Compani
 
 public final class io/github/kikin81/atproto/app/bsky/ageassurance/StateMetadata {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/ageassurance/StateMetadata$Companion;
+	public fun <init> ()V
 	public synthetic fun <init> (Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-G5DCnlA ()Ljava/lang/String;
@@ -5353,6 +5356,7 @@ public final class io/github/kikin81/atproto/app/bsky/feed/GeneratorView$Compani
 
 public final class io/github/kikin81/atproto/app/bsky/feed/GeneratorViewerState {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/feed/GeneratorViewerState$Companion;
+	public fun <init> ()V
 	public synthetic fun <init> (Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-XX8z880 ()Ljava/lang/String;
@@ -7204,6 +7208,7 @@ public final class io/github/kikin81/atproto/app/bsky/feed/SearchPostsResponse$C
 
 public final class io/github/kikin81/atproto/app/bsky/feed/SearchPostsV2Request {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/feed/SearchPostsV2Request$Companion;
+	public fun <init> ()V
 	public synthetic fun <init> (Ljava/lang/Boolean;Ljava/util/List;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/lang/Boolean;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/List;Ljava/util/List;Ljava/lang/Long;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (Ljava/lang/Boolean;Ljava/util/List;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/lang/Boolean;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/List;Ljava/util/List;Ljava/lang/Long;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/Boolean;
@@ -7491,6 +7496,7 @@ public final class io/github/kikin81/atproto/app/bsky/feed/SkeletonReasonRepost$
 
 public final class io/github/kikin81/atproto/app/bsky/feed/ThreadContext {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/feed/ThreadContext$Companion;
+	public fun <init> ()V
 	public synthetic fun <init> (Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-XX8z880 ()Ljava/lang/String;
@@ -7794,6 +7800,7 @@ public final class io/github/kikin81/atproto/app/bsky/feed/ThreadgateMentionRule
 
 public final class io/github/kikin81/atproto/app/bsky/feed/ThreadgateView {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/feed/ThreadgateView$Companion;
+	public fun <init> ()V
 	public synthetic fun <init> (Ljava/lang/String;Ljava/util/List;Lkotlinx/serialization/json/JsonObject;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (Ljava/lang/String;Ljava/util/List;Lkotlinx/serialization/json/JsonObject;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-eL7R55w ()Ljava/lang/String;
@@ -7828,6 +7835,7 @@ public final class io/github/kikin81/atproto/app/bsky/feed/ThreadgateView$Compan
 
 public final class io/github/kikin81/atproto/app/bsky/feed/ViewerState {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/feed/ViewerState$Companion;
+	public fun <init> ()V
 	public synthetic fun <init> (Ljava/lang/Boolean;Ljava/lang/Boolean;Lio/github/kikin81/atproto/app/bsky/feed/KnownLikers;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/Boolean;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (Ljava/lang/Boolean;Ljava/lang/Boolean;Lio/github/kikin81/atproto/app/bsky/feed/KnownLikers;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/Boolean;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/Boolean;
@@ -9309,6 +9317,7 @@ public final class io/github/kikin81/atproto/app/bsky/graph/ListViewBasic$Compan
 
 public final class io/github/kikin81/atproto/app/bsky/graph/ListViewerState {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/graph/ListViewerState$Companion;
+	public fun <init> ()V
 	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-XX8z880 ()Ljava/lang/String;
@@ -10140,6 +10149,7 @@ public final class io/github/kikin81/atproto/app/bsky/labeler/LabelerViewDetaile
 
 public final class io/github/kikin81/atproto/app/bsky/labeler/LabelerViewerState {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/labeler/LabelerViewerState$Companion;
+	public fun <init> ()V
 	public synthetic fun <init> (Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-XX8z880 ()Ljava/lang/String;
@@ -10409,6 +10419,7 @@ public final class io/github/kikin81/atproto/app/bsky/notification/GetPreference
 
 public final class io/github/kikin81/atproto/app/bsky/notification/GetUnreadCountRequest {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetUnreadCountRequest$Companion;
+	public fun <init> ()V
 	public synthetic fun <init> (Ljava/lang/Boolean;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (Ljava/lang/Boolean;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/Boolean;
@@ -10573,6 +10584,7 @@ public final class io/github/kikin81/atproto/app/bsky/notification/ListNotificat
 
 public final class io/github/kikin81/atproto/app/bsky/notification/ListNotificationsRequest {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/ListNotificationsRequest$Companion;
+	public fun <init> ()V
 	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Boolean;Ljava/util/List;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Boolean;Ljava/util/List;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
@@ -16268,6 +16280,7 @@ public final class io/github/kikin81/atproto/chat/bsky/group/JoinLinkView$Compan
 
 public final class io/github/kikin81/atproto/chat/bsky/group/JoinLinkViewerState {
 	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/group/JoinLinkViewerState$Companion;
+	public fun <init> ()V
 	public synthetic fun <init> (Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-G5DCnlA ()Ljava/lang/String;
@@ -18525,6 +18538,7 @@ public final class io/github/kikin81/atproto/com/atproto/server/DescribeServerCo
 
 public final class io/github/kikin81/atproto/com/atproto/server/DescribeServerLinks {
 	public static final field Companion Lio/github/kikin81/atproto/com/atproto/server/DescribeServerLinks$Companion;
+	public fun <init> ()V
 	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-Eo6btPk ()Ljava/lang/String;
@@ -19029,6 +19043,7 @@ public final class io/github/kikin81/atproto/tools/ozone/moderation/AccountStats
 
 public final class io/github/kikin81/atproto/tools/ozone/moderation/AccountStrike {
 	public static final field Companion Lio/github/kikin81/atproto/tools/ozone/moderation/AccountStrike$Companion;
+	public fun <init> ()V
 	public synthetic fun <init> (Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/Long;
@@ -19794,6 +19809,7 @@ public final class io/github/kikin81/atproto/tools/ozone/moderation/ModEventTag$
 
 public final class io/github/kikin81/atproto/tools/ozone/moderation/ModEventTakedown : io/github/kikin81/atproto/tools/ozone/moderation/ModEventViewDetailEventUnion, io/github/kikin81/atproto/tools/ozone/moderation/ModEventViewEventUnion {
 	public static final field Companion Lio/github/kikin81/atproto/tools/ozone/moderation/ModEventTakedown$Companion;
+	public fun <init> ()V
 	public synthetic fun <init> (Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/Long;Ljava/util/List;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/String;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/Long;Ljava/util/List;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/String;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/Boolean;
@@ -20644,6 +20660,7 @@ public final class io/github/kikin81/atproto/tools/ozone/moderation/RevokeAccoun
 
 public final class io/github/kikin81/atproto/tools/ozone/moderation/ScheduleTakedownEvent : io/github/kikin81/atproto/tools/ozone/moderation/ModEventViewDetailEventUnion, io/github/kikin81/atproto/tools/ozone/moderation/ModEventViewEventUnion {
 	public static final field Companion Lio/github/kikin81/atproto/tools/ozone/moderation/ScheduleTakedownEvent$Companion;
+	public fun <init> ()V
 	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
@@ -21037,6 +21054,7 @@ public final class io/github/kikin81/atproto/tools/ozone/queue/AssignmentView$Co
 
 public final class io/github/kikin81/atproto/tools/ozone/queue/QueueStats {
 	public static final field Companion Lio/github/kikin81/atproto/tools/ozone/queue/QueueStats$Companion;
+	public fun <init> ()V
 	public synthetic fun <init> (Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/Long;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/Long;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/Long;
@@ -21336,6 +21354,7 @@ public final class io/github/kikin81/atproto/tools/ozone/report/HistoricalStats$
 
 public final class io/github/kikin81/atproto/tools/ozone/report/LiveStats {
 	public static final field Companion Lio/github/kikin81/atproto/tools/ozone/report/LiveStats$Companion;
+	public fun <init> ()V
 	public synthetic fun <init> (Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/Long;
