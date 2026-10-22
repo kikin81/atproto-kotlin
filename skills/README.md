@@ -9,29 +9,29 @@ Each skill is a self-contained `SKILL.md` with YAML frontmatter that
 agents pattern-match against the current task. Fetch only the skill
 that matches what you're doing — skills are designed to stand alone.
 
-**Documented library version:** `5.0.0`
+**Documented library version:** `9.11.0`
 
 ## Skills
 
 | Skill | Use when |
 |---|---|
-| [`atproto-setup`](./atproto-setup/SKILL.md) | Wiring Gradle dependencies, picking a Ktor engine, understanding the three published artifacts. Run first. |
-| [`atproto-oauth`](./atproto-oauth/SKILL.md) | Integrating OAuth 2.0 login for Bluesky into an Android app: client metadata, intent filter, session store, `AtOAuth` flow. |
+| [`atproto-setup`](./atproto-setup/SKILL.md) | Wiring Gradle dependencies, picking a Ktor engine, understanding the published artifacts (`runtime`, `models`, `oauth`, `compose`, `compose-material3`). Run first. |
+| [`atproto-oauth`](./atproto-oauth/SKILL.md) | Integrating OAuth 2.0 login for Bluesky into an Android app (e.g. Nubecita): client metadata, intent filter, session store, `AtOAuth` flow. |
 | [`atproto-read`](./atproto-read/SKILL.md) | Calling XRPC queries via `*Service` classes, paginating with `*PageFlow()`, dispatching over open unions (embeds, reasons, quoted records). |
 | [`atproto-write-records`](./atproto-write-records/SKILL.md) | Creating or deleting posts, likes, reposts, follows, blocks via `RepoService.createRecord` / `deleteRecord` + `encodeRecord()`. |
 | [`atproto-types-reference`](./atproto-types-reference/SKILL.md) | Cross-cutting rules: `AtField<T>` three-state semantics, runtime value classes (`Did`, `Handle`, `AtUri`, …), pitfalls that span skills. Keep loaded alongside task-specific skills. |
 
-## Installation: paste into your consumer repo's `CLAUDE.md`
+## Installation: paste into your consumer repo's `AGENTS.md` / `CLAUDE.md`
 
-Copy this block into the `CLAUDE.md` of the downstream app that
-consumes the library. Claude agents working in that repo will fetch
+Copy this block into the `AGENTS.md` or `CLAUDE.md` of the downstream app (e.g. Nubecita) that
+consumes the library. AI agents working in that repo will fetch
 only the skill that matches the current task instead of reading the
 whole library.
 
 ```markdown
 ## atproto-kotlin
 
-This app consumes `io.github.kikin81.atproto:{runtime,models,oauth}:5.0.0`.
+This app consumes `io.github.kikin81.atproto:{runtime,models,oauth,compose,compose-material3}:9.11.0`.
 
 Before implementing any ATProto feature, fetch the relevant skill from
 the library repository. Do not load all of them — pick the one matching
@@ -52,7 +52,7 @@ those only when the SKILL.md explicitly links to them.
 
 Each `SKILL.md`'s frontmatter contains a `metadata.library-version`
 field pinned to the version the snippets were validated against
-(currently `5.0.0`). If a consumer is on a newer library version, the
+(currently `9.11.0`). If a consumer is on a newer library version, the
 skills may need updating — open an issue at
 https://github.com/kikin81/atproto-kotlin/issues.
 

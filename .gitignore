@@ -21,3 +21,7 @@ generator/lexicons/
 .dolt/
 *.db
 .beads-credential-key
+
+# Beads / Dolt files (added by bd init)
+.beads/proxieddb/
+*.gate.lock*
