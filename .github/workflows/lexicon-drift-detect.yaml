@@ -1,7 +1,8 @@
 name: Lexicon drift detection
 
-# Surfaces upstream NSIDs that exist in bluesky-social/atproto's lexicon
-# corpus but are not yet in our generator/lexicons.json manifest, plus
+# Surfaces upstream NSIDs that exist in the canonical lexicon repos
+# (bluesky-social/atproto for com.atproto/tools.ozone, bluesky-social/bsky for
+# app.bsky/chat.bsky/network.bsky; see UpstreamSources.kt) but are not yet in our generator/lexicons.json manifest, plus
 # manifest NSIDs no longer present upstream (deprecations or renames).
 #
 # Complements .github/workflows/lexicon-bump.yaml. That workflow refreshes
@@ -60,7 +61,7 @@ jobs:
       - name: Run drift detection
         id: detect
         # GITHUB_TOKEN intentionally NOT exposed here. The detector makes
-        # one HTTPS request per run against a public bluesky-social/atproto
+        # one HTTPS request per run against a public bluesky-social repo
         # endpoint; unauthenticated GitHub API allows 60/hr per runner IP,
         # which is comfortably above our weekly cadence. Keeping the token
         # scoped to the gh-issue-management steps below means the JVM

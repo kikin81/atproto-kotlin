@@ -21,7 +21,9 @@ import kotlin.system.exitProcess
  * Detects upstream lexicon drift against `generator/lexicons.json`.
  *
  * Compares NSIDs covered by this repo's manifest against the
- * `bluesky-social/atproto` upstream lexicon corpus at main, and reports:
+ * upstream lexicon corpora at main (every repo in [UPSTREAM_REPOS]:
+ * `bluesky-social/atproto` for `com.atproto`/`tools.ozone`, `bluesky-social/bsky`
+ * for `app.bsky`/`chat.bsky`/`network.bsky`), and reports:
  *   - new upstream NSIDs we don't cover at all (coverage gap)
  *   - manifest NSIDs no longer present upstream (deprecations / renames)
  *
@@ -37,9 +39,6 @@ import kotlin.system.exitProcess
  * Honors `GITHUB_TOKEN` — auth bumps the GitHub API rate limit from 60
  * to 5000 req/hr. Unauthenticated also works (one call per run).
  */
-
-private const val UPSTREAM_TREE_URL =
-    "https://api.github.com/repos/bluesky-social/atproto/git/trees/main?recursive=1"
 
 private val json = Json { ignoreUnknownKeys = true }
 
@@ -155,6 +154,7 @@ internal fun renderReport(
     now: OffsetDateTime,
     overlayCount: Int = 0,
     transitiveCount: Int = 0,
+    repos: List<UpstreamRepo> = UPSTREAM_REPOS,
 ): String = buildString {
     appendLine(
         "_Generated ${timestampFormatter.format(now)} by " +
@@ -163,8 +163,8 @@ internal fun renderReport(
     appendLine()
     appendLine(
         "Compares `generator/lexicons.json` against " +
-            "[`bluesky-social/atproto@main`]" +
-            "(https://github.com/bluesky-social/atproto/tree/main/lexicons).",
+            repos.joinToString(" and ") { "[`${it.label}`](${it.browseUrl})" } +
+            " (canonical lexicon sources, split by namespace).",
     )
     appendLine()
     if (overlayCount > 0) {
@@ -217,7 +217,8 @@ internal fun renderReport(
     appendLine("## Manifest NSIDs missing from upstream (${removedNsids.size})")
     appendLine()
     appendLine(
-        "NSIDs we list that no longer exist in `bluesky-social/atproto`. " +
+        "NSIDs we list that no longer exist in " +
+            repos.joinToString(" or ") { "`${it.slug}`" } + ". " +
             "Possible deprecation, rename, or non-Bluesky publisher. " +
             "Needs human triage before removal from the manifest.",
     )
@@ -237,15 +238,15 @@ internal fun renderReport(
             "Namespaces typically intentionally out of scope: `tools.ozone.*` " +
             "(moderation tooling), `com.atproto.admin.*` (PDS-operator surface), " +
             "`com.atproto.temp.*` (deprecated/internal), `app.bsky.unspecced.*` " +
-            "(experimental, churns). When you decide to opt into a new " +
+            "(experimental, churns), `network.bsky.jetstream.*` (relay infra). When you decide to opt into a new " +
             "namespace, append the NSIDs to `generator/lexicons.json` and run " +
             "the regen flow.",
     )
 }
 
-private fun fetchUpstreamTree(token: String?): String {
+private fun fetchUpstreamTree(repo: UpstreamRepo, token: String?): String {
     val builder = HttpRequest.newBuilder()
-        .uri(URI.create(UPSTREAM_TREE_URL))
+        .uri(URI.create(repo.treeUrl))
         .timeout(Duration.ofSeconds(30))
         .header("Accept", "application/vnd.github+json")
         .header("User-Agent", "kikinlex-lexicon-drift-detect")
@@ -256,7 +257,7 @@ private fun fetchUpstreamTree(token: String?): String {
         .build()
     val response = client.send(builder.build(), HttpResponse.BodyHandlers.ofString())
     check(response.statusCode() == 200) {
-        "GitHub API returned ${response.statusCode()}: ${response.body().take(200)}"
+        "GitHub API returned ${response.statusCode()} for ${repo.label}: ${response.body().take(200)}"
     }
     return response.body()
 }
@@ -310,7 +311,12 @@ public fun main(args: Array<String>) {
         emptySet()
     }
 
-    val upstream = parseUpstreamNsids(fetchUpstreamTree(System.getenv("GITHUB_TOKEN")))
+    // Union across every canonical repo. A failed fetch aborts the run: a
+    // partial union would report that repo's whole namespace as removed.
+    val token = System.getenv("GITHUB_TOKEN")
+    val upstream = UPSTREAM_REPOS.flatMapTo(mutableSetOf()) { repo ->
+        parseUpstreamNsids(fetchUpstreamTree(repo, token))
+    }
     val manifest = parseManifest(Files.readString(manifestPath))
     val declared = manifest.lexicons.toSet()
     // `resolutions` pins everything lex install walked to, so it already

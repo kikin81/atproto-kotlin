@@ -4,7 +4,7 @@ name: Overlay staleness
 # should be RETIRED or RE-VENDORED:
 #   - retire: the record is now resolvable on-network (npx lex install
 #     succeeds), so the NSID belongs in generator/lexicons.json
-#   - re-vendor: the vendored JSON drifted from bluesky-social/atproto@main
+#   - re-vendor: the vendored JSON drifted from upstream main (atproto or bsky repo)
 #
 # Complements .github/workflows/lexicon-drift-detect.yaml. That workflow flags
 # brand-new upstream NSIDs missing from our manifest (and now excludes overlay

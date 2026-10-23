@@ -4,7 +4,7 @@ This repository contains **atproto-kotlin**, a code-generated Kotlin Multiplatfo
 
 > **Nubecita Support & Lexicon Schema Currency**
 > This library directly powers the Android Bluesky client **Nubecita**.
-> A primary objective of this repository is keeping the Lexicon schema up to date with the latest upstream changes in `@atproto/lex` and `bluesky-social/atproto` so that Nubecita maintains 1:1 functional parity with the official Bluesky client app.
+> A primary objective of this repository is keeping the Lexicon schema up to date with the latest upstream changes in `@atproto/lex`, `bluesky-social/atproto` (`com.atproto`, `tools.ozone`) and `bluesky-social/bsky` (`app.bsky`, `chat.bsky`, `network.bsky`; moved out of `atproto` on 2026-10-15) so that Nubecita maintains 1:1 functional parity with the official Bluesky client app.
 
 - **Repo:** https://github.com/kikin81/atproto-kotlin
 - **Maven Central:** `io.github.kikin81.atproto:{runtime,models,oauth,compose,compose-material3}`
@@ -84,7 +84,7 @@ To maintain parity for **Nubecita** with the official Bluesky client:
    ```bash
    ./gradlew :generator:generateModels --no-configuration-cache
    ```
-5. **Detect uncovered NSIDs / drift:**
+5. **Detect uncovered NSIDs / drift** (reads both upstream repos; sources are declared in `generator/.../tools/UpstreamSources.kt`):
    ```bash
    ./gradlew :generator:detectLexiconDrift
    ```
