@@ -57,6 +57,24 @@ public class ExampleService(
   )
 
   /**
+   * Upload a chunk, optionally resuming at an offset.
+   */
+  public suspend fun uploadChunk(
+    request: UploadChunkRequest = UploadChunkRequest(),
+    input: ByteArray,
+    inputContentType: ContentType = ContentType.Application.OctetStream,
+    proxy: String? = null,
+  ): UploadChunkResponse = client.procedure(
+      nsid = "example.uploadChunk",
+      params = request,
+      paramsSerializer = UploadChunkRequest.serializer(),
+      input = input,
+      inputContentType = inputContentType,
+      responseSerializer = UploadChunkResponse.serializer(),
+      proxy = proxy,
+  )
+
+  /**
    * Upload one part of a multipart upload.
    */
   public suspend fun uploadPart(

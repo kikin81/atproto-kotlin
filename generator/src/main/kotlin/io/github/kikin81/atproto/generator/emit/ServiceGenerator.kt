@@ -316,7 +316,13 @@ public class ServiceGenerator(
                 } else {
                     null
                 }
-                if (paramsCn != null) fn.addParameter(ParameterSpec.builder("request", paramsCn).build())
+                if (paramsCn != null) {
+                    val param = ParameterSpec.builder("request", paramsCn)
+                    if (def.parameters != null && paramsHasNoRequiredArgs(def.parameters)) {
+                        param.defaultValue("%T()", paramsCn)
+                    }
+                    fn.addParameter(param.build())
+                }
                 fn.addParameter(ParameterSpec.builder("input", BYTE_ARRAY).build())
                 val contentTypeParam = ParameterSpec.builder("inputContentType", KTOR_CONTENT_TYPE)
                 shape.defaultContentType?.let {

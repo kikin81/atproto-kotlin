@@ -1,6 +1,8 @@
 package io.github.kikin81.atproto.app.bsky.actor
 
 import io.github.kikin81.atproto.runtime.AtField
+import io.github.kikin81.atproto.runtime.Datetime
+import io.github.kikin81.atproto.runtime.Uri
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlin.test.Test
@@ -57,8 +59,8 @@ class ProfileLinkTest {
     @Test
     fun link_omitsMissingOptionalFieldsOnEncode() {
         val link = Link(
-            createdAt = json.decodeFromString("\"2026-10-22T12:00:00.000Z\""),
-            url = json.decodeFromString("\"https://example.com\""),
+            createdAt = Datetime("2026-10-22T12:00:00.000Z"),
+            url = Uri("https://example.com"),
         )
         val encoded = json.parseToJsonElement(json.encodeToString(link)).jsonObject
 
