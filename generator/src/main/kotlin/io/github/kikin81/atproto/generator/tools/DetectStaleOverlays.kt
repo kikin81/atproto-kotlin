@@ -35,7 +35,7 @@ import kotlin.system.exitProcess
  *     into `generator/lexicons.json`, `npx lex install`, delete the vendored
  *     file + manifest entry, regen.
  *   - **drifted** — the vendored JSON no longer matches the upstream
- *     `bluesky-social/atproto@main` copy (or upstream removed the path). The
+ *     upstream copy at main (`bluesky-social/atproto` or `bluesky-social/bsky`, whichever owns the namespace; or upstream removed the path). The
  *     overlay should be RE-VENDORED: re-copy the upstream JSON + bump the
  *     manifest commit.
  *   - **redundant** — the vendored JSON is byte-identical (after
@@ -58,9 +58,6 @@ import kotlin.system.exitProcess
  * Honors `GITHUB_TOKEN` for the raw.githubusercontent.com fetches (auth bumps
  * the rate limit). Unauthenticated also works.
  */
-
-private const val UPSTREAM_RAW_BASE =
-    "https://raw.githubusercontent.com/bluesky-social/atproto/main/lexicons"
 
 private val overlayJson = Json {
     ignoreUnknownKeys = true
@@ -212,9 +209,8 @@ internal fun renderReport(
         "Tracks vendored lexicon overlays in `generator/overlay-lexicons.json`. " +
             "An overlay should be **retired** once its record is resolvable " +
             "on-network (so it belongs in `generator/lexicons.json`), or " +
-            "**re-vendored** when its source JSON drifts from " +
-            "[`bluesky-social/atproto@main`]" +
-            "(https://github.com/bluesky-social/atproto/tree/main/lexicons).",
+            "**re-vendored** when its source JSON drifts from upstream main " +
+            UPSTREAM_REPOS.joinToString(" / ") { "[`${it.label}`](${it.browseUrl})" } + ".",
     )
     appendLine()
 
@@ -302,20 +298,26 @@ private fun renderStaleLine(status: OverlayStatus): String {
         }
         status.drift == DriftStatus.UpstreamRemoved -> {
             "⚠️ `$nsid` — upstream removed `lexicons/$path.json` from " +
-                "bluesky-social/atproto@main. **TRIAGE:** confirm rename/deprecation; " +
+                "upstream main (${UPSTREAM_REPOS.joinToString(" / ") { it.label }}). **TRIAGE:** confirm rename/deprecation; " +
                 "if gone for good, retire the overlay or pin to a tagged commit."
         }
         else -> {
-            "⚠️ `$nsid` — overlay drifted from bluesky-social/atproto@main. " +
+            "⚠️ `$nsid` — overlay drifted from upstream main. " +
                 "**RE-VENDOR:** re-copy the upstream JSON into " +
                 "`generator/overlay-lexicons/$path.json` + bump the manifest `commit`."
         }
     }
 }
 
-/** GET a raw upstream lexicon. Returns null on 404, throws on other non-200. */
-private fun fetchUpstreamLexicon(nsid: String, token: String?): String? {
-    val url = "$UPSTREAM_RAW_BASE/${nsidToPath(nsid)}.json"
+/**
+ * GET a raw upstream lexicon, trying the NSID's canonical repo first and then
+ * the others ([reposFor]). Returns null only if every repo 404s.
+ */
+private fun fetchUpstreamLexicon(nsid: String, token: String?): String? = reposFor(nsid).firstNotNullOfOrNull { fetchRaw(it, nsid, token) }
+
+/** GET one repo's copy. Returns null on 404, throws on other non-200. */
+private fun fetchRaw(repo: UpstreamRepo, nsid: String, token: String?): String? {
+    val url = "${repo.rawBase}/${nsidToPath(nsid)}.json"
     val builder = HttpRequest.newBuilder()
         .uri(URI.create(url))
         .timeout(Duration.ofSeconds(30))
