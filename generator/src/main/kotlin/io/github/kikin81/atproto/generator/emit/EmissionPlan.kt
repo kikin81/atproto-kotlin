@@ -36,13 +36,10 @@ import io.github.kikin81.atproto.generator.verify.FqName
  *   `input.encoding` is not `application/json` — emit a raw-bytes signature
  *   that delegates to the [io.github.kikin81.atproto.runtime.XrpcClient]
  *   `ByteArray` overload. Used by `com.atproto.repo.uploadBlob` (`&#42;/&#42;`).
- * - [UnsupportedRawBytesWithParams]: a raw-bytes input combined with
- *   `def.parameters` is unsupported — no current lexicon needs both, and the
- *   API surface for "bytes plus URL params" deserves a real use case to design
- *   against. Halts codegen with a [io.github.kikin81.atproto.generator.verify.VerificationFailure]
- *   so a future contributor adding the first such lexicon gets a clear error
- *   pointing at the right place to extend, rather than a silently param-dropping
- *   generated method.
+ *   When the lexicon also declares `def.parameters` (e.g.
+ *   `app.bsky.video.uploadPart`: bytes body plus `jobId`/`partNumber` in the
+ *   URL), [RawBytes.hasParams] is set and the service method additionally
+ *   takes the generated `request` params class.
  */
 public sealed interface ProcedureInputShape {
     public data object Json : ProcedureInputShape
@@ -51,10 +48,7 @@ public sealed interface ProcedureInputShape {
     public data class RawBytes(
         public val encoding: String,
         public val defaultContentType: KtorContentTypeRef?,
-    ) : ProcedureInputShape
-    public data class UnsupportedRawBytesWithParams(
-        public val encoding: String,
-        public val lexiconId: String,
+        public val hasParams: Boolean = false,
     ) : ProcedureInputShape
 }
 
@@ -112,9 +106,8 @@ public class EmissionPlan(
          * Classifies a [ProcedureDef]'s body shape per the rules documented on
          * [ProcedureInputShape]. The only branch that consults
          * `input.encoding` is [ProcedureInputShape.RawBytes]; all other shapes
-         * are unaffected by encoding. [lexiconId] is embedded in the
-         * [ProcedureInputShape.UnsupportedRawBytesWithParams] variant so call
-         * sites can produce a clear error message naming the offending lexicon.
+         * are unaffected by encoding. [lexiconId] is the id of the lexicon being
+         * classified, kept for call-site diagnostics.
          */
         public fun classifyProcedureInput(def: ProcedureDef, lexiconId: String): ProcedureInputShape {
             val input = def.input
@@ -122,13 +115,10 @@ public class EmissionPlan(
                 input == null -> if (def.parameters != null) ProcedureInputShape.ParamsOnly else ProcedureInputShape.None
                 input.schema != null -> ProcedureInputShape.Json
                 input.encoding == "application/json" -> ProcedureInputShape.Json
-                def.parameters != null -> ProcedureInputShape.UnsupportedRawBytesWithParams(
-                    encoding = input.encoding,
-                    lexiconId = lexiconId,
-                )
                 else -> ProcedureInputShape.RawBytes(
                     encoding = input.encoding,
                     defaultContentType = defaultContentTypeFor(input.encoding),
+                    hasParams = def.parameters != null,
                 )
             }
         }

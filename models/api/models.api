@@ -1244,7 +1244,7 @@ public final class io/github/kikin81/atproto/app/bsky/actor/ProfileView$Companio
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class io/github/kikin81/atproto/app/bsky/actor/ProfileViewBasic {
+public final class io/github/kikin81/atproto/app/bsky/actor/ProfileViewBasic : io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsResponseRelatedViewsUnion {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/actor/ProfileViewBasic$Companion;
 	public synthetic fun <init> (Lio/github/kikin81/atproto/app/bsky/actor/ProfileAssociated;Ljava/lang/String;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Lio/github/kikin81/atproto/app/bsky/actor/StatusView;Lio/github/kikin81/atproto/app/bsky/actor/VerificationState;Lio/github/kikin81/atproto/app/bsky/actor/ViewerState;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (Lio/github/kikin81/atproto/app/bsky/actor/ProfileAssociated;Ljava/lang/String;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Lio/github/kikin81/atproto/app/bsky/actor/StatusView;Lio/github/kikin81/atproto/app/bsky/actor/VerificationState;Lio/github/kikin81/atproto/app/bsky/actor/ViewerState;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -1982,6 +1982,50 @@ public final class io/github/kikin81/atproto/app/bsky/actor/ViewerState$Companio
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class io/github/kikin81/atproto/app/bsky/ageassurance/AgeassuranceService {
+	public fun <init> (Lio/github/kikin81/atproto/runtime/XrpcClient;)V
+	public final fun begin (Lio/github/kikin81/atproto/app/bsky/ageassurance/BeginRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun begin$default (Lio/github/kikin81/atproto/app/bsky/ageassurance/AgeassuranceService;Lio/github/kikin81/atproto/app/bsky/ageassurance/BeginRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getConfig (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getConfig$default (Lio/github/kikin81/atproto/app/bsky/ageassurance/AgeassuranceService;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getState (Lio/github/kikin81/atproto/app/bsky/ageassurance/GetStateRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getState$default (Lio/github/kikin81/atproto/app/bsky/ageassurance/AgeassuranceService;Lio/github/kikin81/atproto/app/bsky/ageassurance/GetStateRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/ageassurance/BeginRequest {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/ageassurance/BeginRequest$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/kikin81/atproto/runtime/AtField;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/kikin81/atproto/runtime/AtField;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Lio/github/kikin81/atproto/runtime/AtField;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/kikin81/atproto/runtime/AtField;)Lio/github/kikin81/atproto/app/bsky/ageassurance/BeginRequest;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/ageassurance/BeginRequest;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/kikin81/atproto/runtime/AtField;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/ageassurance/BeginRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCountryCode ()Ljava/lang/String;
+	public final fun getEmail ()Ljava/lang/String;
+	public final fun getLanguage ()Ljava/lang/String;
+	public final fun getRegionCode ()Lio/github/kikin81/atproto/runtime/AtField;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/ageassurance/BeginRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/ageassurance/BeginRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/ageassurance/BeginRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/ageassurance/BeginRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/ageassurance/BeginRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class io/github/kikin81/atproto/app/bsky/ageassurance/Config {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/ageassurance/Config$Companion;
 	public fun <init> (Ljava/util/List;)V
@@ -2336,6 +2380,65 @@ public final class io/github/kikin81/atproto/app/bsky/ageassurance/Event$Compani
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class io/github/kikin81/atproto/app/bsky/ageassurance/GetStateRequest {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/ageassurance/GetStateRequest$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/ageassurance/GetStateRequest;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/ageassurance/GetStateRequest;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/ageassurance/GetStateRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCountryCode ()Ljava/lang/String;
+	public final fun getRegionCode ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/ageassurance/GetStateRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/ageassurance/GetStateRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/ageassurance/GetStateRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/ageassurance/GetStateRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/ageassurance/GetStateRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/ageassurance/GetStateResponse {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/ageassurance/GetStateResponse$Companion;
+	public fun <init> (Lio/github/kikin81/atproto/app/bsky/ageassurance/StateMetadata;Lio/github/kikin81/atproto/app/bsky/ageassurance/State;)V
+	public final fun component1 ()Lio/github/kikin81/atproto/app/bsky/ageassurance/StateMetadata;
+	public final fun component2 ()Lio/github/kikin81/atproto/app/bsky/ageassurance/State;
+	public final fun copy (Lio/github/kikin81/atproto/app/bsky/ageassurance/StateMetadata;Lio/github/kikin81/atproto/app/bsky/ageassurance/State;)Lio/github/kikin81/atproto/app/bsky/ageassurance/GetStateResponse;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/ageassurance/GetStateResponse;Lio/github/kikin81/atproto/app/bsky/ageassurance/StateMetadata;Lio/github/kikin81/atproto/app/bsky/ageassurance/State;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/ageassurance/GetStateResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getMetadata ()Lio/github/kikin81/atproto/app/bsky/ageassurance/StateMetadata;
+	public final fun getState ()Lio/github/kikin81/atproto/app/bsky/ageassurance/State;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/ageassurance/GetStateResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/ageassurance/GetStateResponse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/ageassurance/GetStateResponse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/ageassurance/GetStateResponse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/ageassurance/GetStateResponse$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class io/github/kikin81/atproto/app/bsky/ageassurance/State {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/ageassurance/State$Companion;
 	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -2627,6 +2730,525 @@ public final synthetic class io/github/kikin81/atproto/app/bsky/bookmark/GetBook
 }
 
 public final class io/github/kikin81/atproto/app/bsky/bookmark/GetBookmarksResponse$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/ContactService {
+	public fun <init> (Lio/github/kikin81/atproto/runtime/XrpcClient;)V
+	public final fun dismissMatch (Lio/github/kikin81/atproto/app/bsky/contact/DismissMatchRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun dismissMatch$default (Lio/github/kikin81/atproto/app/bsky/contact/ContactService;Lio/github/kikin81/atproto/app/bsky/contact/DismissMatchRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getMatches (Lio/github/kikin81/atproto/app/bsky/contact/GetMatchesRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getMatches$default (Lio/github/kikin81/atproto/app/bsky/contact/ContactService;Lio/github/kikin81/atproto/app/bsky/contact/GetMatchesRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getSyncStatus (Lio/github/kikin81/atproto/app/bsky/contact/GetSyncStatusRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getSyncStatus$default (Lio/github/kikin81/atproto/app/bsky/contact/ContactService;Lio/github/kikin81/atproto/app/bsky/contact/GetSyncStatusRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun importContacts (Lio/github/kikin81/atproto/app/bsky/contact/ImportContactsRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun importContacts$default (Lio/github/kikin81/atproto/app/bsky/contact/ContactService;Lio/github/kikin81/atproto/app/bsky/contact/ImportContactsRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun removeData (Lio/github/kikin81/atproto/app/bsky/contact/RemoveDataRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun removeData$default (Lio/github/kikin81/atproto/app/bsky/contact/ContactService;Lio/github/kikin81/atproto/app/bsky/contact/RemoveDataRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun sendNotification (Lio/github/kikin81/atproto/app/bsky/contact/SendNotificationRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun sendNotification$default (Lio/github/kikin81/atproto/app/bsky/contact/ContactService;Lio/github/kikin81/atproto/app/bsky/contact/SendNotificationRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun startPhoneVerification (Lio/github/kikin81/atproto/app/bsky/contact/StartPhoneVerificationRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun startPhoneVerification$default (Lio/github/kikin81/atproto/app/bsky/contact/ContactService;Lio/github/kikin81/atproto/app/bsky/contact/StartPhoneVerificationRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun verifyPhone (Lio/github/kikin81/atproto/app/bsky/contact/VerifyPhoneRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun verifyPhone$default (Lio/github/kikin81/atproto/app/bsky/contact/ContactService;Lio/github/kikin81/atproto/app/bsky/contact/VerifyPhoneRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/ContactServiceKt {
+	public static final fun matchesFlow (Lio/github/kikin81/atproto/app/bsky/contact/ContactService;Lio/github/kikin81/atproto/app/bsky/contact/GetMatchesRequest;)Lkotlinx/coroutines/flow/Flow;
+	public static synthetic fun matchesFlow$default (Lio/github/kikin81/atproto/app/bsky/contact/ContactService;Lio/github/kikin81/atproto/app/bsky/contact/GetMatchesRequest;ILjava/lang/Object;)Lkotlinx/coroutines/flow/Flow;
+	public static final fun matchesPageFlow (Lio/github/kikin81/atproto/app/bsky/contact/ContactService;Lio/github/kikin81/atproto/app/bsky/contact/GetMatchesRequest;)Lkotlinx/coroutines/flow/Flow;
+	public static synthetic fun matchesPageFlow$default (Lio/github/kikin81/atproto/app/bsky/contact/ContactService;Lio/github/kikin81/atproto/app/bsky/contact/GetMatchesRequest;ILjava/lang/Object;)Lkotlinx/coroutines/flow/Flow;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/DismissMatchRequest {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/contact/DismissMatchRequest$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-UyB9Nic ()Ljava/lang/String;
+	public final fun copy-OoJ1cAE (Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/contact/DismissMatchRequest;
+	public static synthetic fun copy-OoJ1cAE$default (Lio/github/kikin81/atproto/app/bsky/contact/DismissMatchRequest;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/contact/DismissMatchRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getSubject-UyB9Nic ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/contact/DismissMatchRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/contact/DismissMatchRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/contact/DismissMatchRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/contact/DismissMatchRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/DismissMatchRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/DismissMatchResponse {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/contact/DismissMatchResponse$Companion;
+	public fun <init> ()V
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/contact/DismissMatchResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/contact/DismissMatchResponse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/contact/DismissMatchResponse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/contact/DismissMatchResponse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/DismissMatchResponse$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/GetMatchesRequest {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/contact/GetMatchesRequest$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Ljava/lang/Long;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Long;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/Long;
+	public final fun copy (Ljava/lang/String;Ljava/lang/Long;)Lio/github/kikin81/atproto/app/bsky/contact/GetMatchesRequest;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/contact/GetMatchesRequest;Ljava/lang/String;Ljava/lang/Long;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/contact/GetMatchesRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCursor ()Ljava/lang/String;
+	public final fun getLimit ()Ljava/lang/Long;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/contact/GetMatchesRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/contact/GetMatchesRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/contact/GetMatchesRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/contact/GetMatchesRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/GetMatchesRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/GetMatchesResponse {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/contact/GetMatchesResponse$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/util/List;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/util/List;
+	public final fun copy (Ljava/lang/String;Ljava/util/List;)Lio/github/kikin81/atproto/app/bsky/contact/GetMatchesResponse;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/contact/GetMatchesResponse;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/contact/GetMatchesResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCursor ()Ljava/lang/String;
+	public final fun getMatches ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/contact/GetMatchesResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/contact/GetMatchesResponse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/contact/GetMatchesResponse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/contact/GetMatchesResponse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/GetMatchesResponse$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/GetSyncStatusRequest {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/contact/GetSyncStatusRequest$Companion;
+	public fun <init> ()V
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/contact/GetSyncStatusRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/contact/GetSyncStatusRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/contact/GetSyncStatusRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/contact/GetSyncStatusRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/GetSyncStatusRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/GetSyncStatusResponse {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/contact/GetSyncStatusResponse$Companion;
+	public fun <init> ()V
+	public fun <init> (Lio/github/kikin81/atproto/app/bsky/contact/SyncStatus;)V
+	public synthetic fun <init> (Lio/github/kikin81/atproto/app/bsky/contact/SyncStatus;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lio/github/kikin81/atproto/app/bsky/contact/SyncStatus;
+	public final fun copy (Lio/github/kikin81/atproto/app/bsky/contact/SyncStatus;)Lio/github/kikin81/atproto/app/bsky/contact/GetSyncStatusResponse;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/contact/GetSyncStatusResponse;Lio/github/kikin81/atproto/app/bsky/contact/SyncStatus;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/contact/GetSyncStatusResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getSyncStatus ()Lio/github/kikin81/atproto/app/bsky/contact/SyncStatus;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/contact/GetSyncStatusResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/contact/GetSyncStatusResponse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/contact/GetSyncStatusResponse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/contact/GetSyncStatusResponse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/GetSyncStatusResponse$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/ImportContactsRequest {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/contact/ImportContactsRequest$Companion;
+	public fun <init> (Ljava/util/List;Ljava/lang/String;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Ljava/util/List;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/contact/ImportContactsRequest;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/contact/ImportContactsRequest;Ljava/util/List;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/contact/ImportContactsRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getContacts ()Ljava/util/List;
+	public final fun getToken ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/contact/ImportContactsRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/contact/ImportContactsRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/contact/ImportContactsRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/contact/ImportContactsRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/ImportContactsRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/ImportContactsResponse {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/contact/ImportContactsResponse$Companion;
+	public fun <init> (Ljava/util/List;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun copy (Ljava/util/List;)Lio/github/kikin81/atproto/app/bsky/contact/ImportContactsResponse;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/contact/ImportContactsResponse;Ljava/util/List;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/contact/ImportContactsResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getMatchesAndContactIndexes ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/contact/ImportContactsResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/contact/ImportContactsResponse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/contact/ImportContactsResponse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/contact/ImportContactsResponse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/ImportContactsResponse$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/MatchAndContactIndex {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/contact/MatchAndContactIndex$Companion;
+	public fun <init> (JLio/github/kikin81/atproto/app/bsky/actor/ProfileView;)V
+	public final fun component1 ()J
+	public final fun component2 ()Lio/github/kikin81/atproto/app/bsky/actor/ProfileView;
+	public final fun copy (JLio/github/kikin81/atproto/app/bsky/actor/ProfileView;)Lio/github/kikin81/atproto/app/bsky/contact/MatchAndContactIndex;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/contact/MatchAndContactIndex;JLio/github/kikin81/atproto/app/bsky/actor/ProfileView;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/contact/MatchAndContactIndex;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getContactIndex ()J
+	public final fun getMatch ()Lio/github/kikin81/atproto/app/bsky/actor/ProfileView;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/contact/MatchAndContactIndex$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/contact/MatchAndContactIndex$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/contact/MatchAndContactIndex;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/contact/MatchAndContactIndex;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/MatchAndContactIndex$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/Notification {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/contact/Notification$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-UyB9Nic ()Ljava/lang/String;
+	public final fun component2-UyB9Nic ()Ljava/lang/String;
+	public final fun copy-GrP4AtY (Ljava/lang/String;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/contact/Notification;
+	public static synthetic fun copy-GrP4AtY$default (Lio/github/kikin81/atproto/app/bsky/contact/Notification;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/contact/Notification;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getFrom-UyB9Nic ()Ljava/lang/String;
+	public final fun getTo-UyB9Nic ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/contact/Notification$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/contact/Notification$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/contact/Notification;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/contact/Notification;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/Notification$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/RemoveDataRequest {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/contact/RemoveDataRequest$Companion;
+	public fun <init> ()V
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/contact/RemoveDataRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/contact/RemoveDataRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/contact/RemoveDataRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/contact/RemoveDataRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/RemoveDataRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/RemoveDataResponse {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/contact/RemoveDataResponse$Companion;
+	public fun <init> ()V
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/contact/RemoveDataResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/contact/RemoveDataResponse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/contact/RemoveDataResponse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/contact/RemoveDataResponse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/RemoveDataResponse$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/SendNotificationRequest {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/contact/SendNotificationRequest$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-UyB9Nic ()Ljava/lang/String;
+	public final fun component2-UyB9Nic ()Ljava/lang/String;
+	public final fun copy-GrP4AtY (Ljava/lang/String;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/contact/SendNotificationRequest;
+	public static synthetic fun copy-GrP4AtY$default (Lio/github/kikin81/atproto/app/bsky/contact/SendNotificationRequest;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/contact/SendNotificationRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getFrom-UyB9Nic ()Ljava/lang/String;
+	public final fun getTo-UyB9Nic ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/contact/SendNotificationRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/contact/SendNotificationRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/contact/SendNotificationRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/contact/SendNotificationRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/SendNotificationRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/SendNotificationResponse {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/contact/SendNotificationResponse$Companion;
+	public fun <init> ()V
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/contact/SendNotificationResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/contact/SendNotificationResponse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/contact/SendNotificationResponse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/contact/SendNotificationResponse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/SendNotificationResponse$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/StartPhoneVerificationRequest {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/contact/StartPhoneVerificationRequest$Companion;
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/contact/StartPhoneVerificationRequest;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/contact/StartPhoneVerificationRequest;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/contact/StartPhoneVerificationRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getPhone ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/contact/StartPhoneVerificationRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/contact/StartPhoneVerificationRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/contact/StartPhoneVerificationRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/contact/StartPhoneVerificationRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/StartPhoneVerificationRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/StartPhoneVerificationResponse {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/contact/StartPhoneVerificationResponse$Companion;
+	public fun <init> ()V
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/contact/StartPhoneVerificationResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/contact/StartPhoneVerificationResponse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/contact/StartPhoneVerificationResponse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/contact/StartPhoneVerificationResponse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/StartPhoneVerificationResponse$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/SyncStatus {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/contact/SyncStatus$Companion;
+	public synthetic fun <init> (JLjava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()J
+	public final fun component2-DnBUIck ()Ljava/lang/String;
+	public final fun copy-La2l2MI (JLjava/lang/String;)Lio/github/kikin81/atproto/app/bsky/contact/SyncStatus;
+	public static synthetic fun copy-La2l2MI$default (Lio/github/kikin81/atproto/app/bsky/contact/SyncStatus;JLjava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/contact/SyncStatus;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getMatchesCount ()J
+	public final fun getSyncedAt-DnBUIck ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/contact/SyncStatus$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/contact/SyncStatus$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/contact/SyncStatus;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/contact/SyncStatus;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/SyncStatus$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/VerifyPhoneRequest {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/contact/VerifyPhoneRequest$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/contact/VerifyPhoneRequest;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/contact/VerifyPhoneRequest;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/contact/VerifyPhoneRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCode ()Ljava/lang/String;
+	public final fun getPhone ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/contact/VerifyPhoneRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/contact/VerifyPhoneRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/contact/VerifyPhoneRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/contact/VerifyPhoneRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/VerifyPhoneRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/VerifyPhoneResponse {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/contact/VerifyPhoneResponse$Companion;
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/contact/VerifyPhoneResponse;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/contact/VerifyPhoneResponse;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/contact/VerifyPhoneResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getToken ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/contact/VerifyPhoneResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/contact/VerifyPhoneResponse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/contact/VerifyPhoneResponse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/contact/VerifyPhoneResponse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/contact/VerifyPhoneResponse$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
@@ -5018,7 +5640,7 @@ public final class io/github/kikin81/atproto/app/bsky/feed/BlockedAuthor$Compani
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class io/github/kikin81/atproto/app/bsky/feed/BlockedPost : io/github/kikin81/atproto/app/bsky/bookmark/BookmarkViewItemUnion, io/github/kikin81/atproto/app/bsky/feed/GetPostThreadResponseThreadUnion, io/github/kikin81/atproto/app/bsky/feed/ReplyRefParentUnion, io/github/kikin81/atproto/app/bsky/feed/ReplyRefRootUnion, io/github/kikin81/atproto/app/bsky/feed/ThreadViewPostParentUnion, io/github/kikin81/atproto/app/bsky/feed/ThreadViewPostRepliesUnion {
+public final class io/github/kikin81/atproto/app/bsky/feed/BlockedPost : io/github/kikin81/atproto/app/bsky/bookmark/BookmarkViewItemUnion, io/github/kikin81/atproto/app/bsky/feed/GetPostThreadResponseThreadUnion, io/github/kikin81/atproto/app/bsky/feed/ReplyRefParentUnion, io/github/kikin81/atproto/app/bsky/feed/ReplyRefRootUnion, io/github/kikin81/atproto/app/bsky/feed/ThreadViewPostParentUnion, io/github/kikin81/atproto/app/bsky/feed/ThreadViewPostRepliesUnion, io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsResponseRelatedViewsUnion {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/feed/BlockedPost$Companion;
 	public synthetic fun <init> (Lio/github/kikin81/atproto/app/bsky/feed/BlockedAuthor;ZLjava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Lio/github/kikin81/atproto/app/bsky/feed/BlockedAuthor;
@@ -5376,7 +5998,7 @@ public final class io/github/kikin81/atproto/app/bsky/feed/GeneratorLabelsUnionU
 	public synthetic fun construct (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)Lio/github/kikin81/atproto/runtime/UnknownOpenUnionMember;
 }
 
-public final class io/github/kikin81/atproto/app/bsky/feed/GeneratorView : io/github/kikin81/atproto/app/bsky/embed/RecordViewRecordUnion {
+public final class io/github/kikin81/atproto/app/bsky/feed/GeneratorView : io/github/kikin81/atproto/app/bsky/embed/RecordViewRecordUnion, io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsResponseRelatedViewsUnion {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/feed/GeneratorView$Companion;
 	public synthetic fun <init> (Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/kikin81/atproto/app/bsky/actor/ProfileView;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/Long;Ljava/lang/String;Lio/github/kikin81/atproto/app/bsky/feed/GeneratorViewerState;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/kikin81/atproto/app/bsky/actor/ProfileView;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/Long;Ljava/lang/String;Lio/github/kikin81/atproto/app/bsky/feed/GeneratorViewerState;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -6570,7 +7192,7 @@ public final class io/github/kikin81/atproto/app/bsky/feed/Like$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class io/github/kikin81/atproto/app/bsky/feed/NotFoundPost : io/github/kikin81/atproto/app/bsky/bookmark/BookmarkViewItemUnion, io/github/kikin81/atproto/app/bsky/feed/GetPostThreadResponseThreadUnion, io/github/kikin81/atproto/app/bsky/feed/ReplyRefParentUnion, io/github/kikin81/atproto/app/bsky/feed/ReplyRefRootUnion, io/github/kikin81/atproto/app/bsky/feed/ThreadViewPostParentUnion, io/github/kikin81/atproto/app/bsky/feed/ThreadViewPostRepliesUnion {
+public final class io/github/kikin81/atproto/app/bsky/feed/NotFoundPost : io/github/kikin81/atproto/app/bsky/bookmark/BookmarkViewItemUnion, io/github/kikin81/atproto/app/bsky/feed/GetPostThreadResponseThreadUnion, io/github/kikin81/atproto/app/bsky/feed/ReplyRefParentUnion, io/github/kikin81/atproto/app/bsky/feed/ReplyRefRootUnion, io/github/kikin81/atproto/app/bsky/feed/ThreadViewPostParentUnion, io/github/kikin81/atproto/app/bsky/feed/ThreadViewPostRepliesUnion, io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsResponseRelatedViewsUnion {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/feed/NotFoundPost$Companion;
 	public synthetic fun <init> (ZLjava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Z
@@ -6812,7 +7434,7 @@ public final class io/github/kikin81/atproto/app/bsky/feed/PostTextSlice$Compani
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class io/github/kikin81/atproto/app/bsky/feed/PostView : io/github/kikin81/atproto/app/bsky/bookmark/BookmarkViewItemUnion, io/github/kikin81/atproto/app/bsky/feed/ReplyRefParentUnion, io/github/kikin81/atproto/app/bsky/feed/ReplyRefRootUnion {
+public final class io/github/kikin81/atproto/app/bsky/feed/PostView : io/github/kikin81/atproto/app/bsky/bookmark/BookmarkViewItemUnion, io/github/kikin81/atproto/app/bsky/feed/ReplyRefParentUnion, io/github/kikin81/atproto/app/bsky/feed/ReplyRefRootUnion, io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsResponseRelatedViewsUnion {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/feed/PostView$Companion;
 	public synthetic fun <init> (Lio/github/kikin81/atproto/app/bsky/actor/ProfileViewBasic;Ljava/lang/Long;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;Lio/github/kikin81/atproto/app/bsky/feed/PostViewEmbedUnion;Ljava/lang/String;Ljava/util/List;Ljava/lang/Long;Ljava/lang/Long;Lkotlinx/serialization/json/JsonObject;Ljava/lang/Long;Ljava/lang/Long;Lio/github/kikin81/atproto/app/bsky/feed/ThreadgateView;Ljava/lang/String;Lio/github/kikin81/atproto/app/bsky/feed/ViewerState;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (Lio/github/kikin81/atproto/app/bsky/actor/ProfileViewBasic;Ljava/lang/Long;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;Lio/github/kikin81/atproto/app/bsky/feed/PostViewEmbedUnion;Ljava/lang/String;Ljava/util/List;Ljava/lang/Long;Ljava/lang/Long;Lkotlinx/serialization/json/JsonObject;Ljava/lang/Long;Ljava/lang/Long;Lio/github/kikin81/atproto/app/bsky/feed/ThreadgateView;Ljava/lang/String;Lio/github/kikin81/atproto/app/bsky/feed/ViewerState;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -9140,6 +9762,8 @@ public final class io/github/kikin81/atproto/app/bsky/graph/GraphService {
 	public static synthetic fun muteThread$default (Lio/github/kikin81/atproto/app/bsky/graph/GraphService;Lio/github/kikin81/atproto/app/bsky/graph/MuteThreadRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public final fun searchStarterPacks (Lio/github/kikin81/atproto/app/bsky/graph/SearchStarterPacksRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun searchStarterPacks$default (Lio/github/kikin81/atproto/app/bsky/graph/GraphService;Lio/github/kikin81/atproto/app/bsky/graph/SearchStarterPacksRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun searchStarterPacksV2 (Lio/github/kikin81/atproto/app/bsky/graph/SearchStarterPacksV2Request;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun searchStarterPacksV2$default (Lio/github/kikin81/atproto/app/bsky/graph/GraphService;Lio/github/kikin81/atproto/app/bsky/graph/SearchStarterPacksV2Request;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public final fun unmuteActor (Lio/github/kikin81/atproto/app/bsky/graph/UnmuteActorRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun unmuteActor$default (Lio/github/kikin81/atproto/app/bsky/graph/GraphService;Lio/github/kikin81/atproto/app/bsky/graph/UnmuteActorRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public final fun unmuteActorList (Lio/github/kikin81/atproto/app/bsky/graph/UnmuteActorListRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -9181,6 +9805,8 @@ public final class io/github/kikin81/atproto/app/bsky/graph/GraphServiceKt {
 	public static synthetic fun mutesPageFlow$default (Lio/github/kikin81/atproto/app/bsky/graph/GraphService;Lio/github/kikin81/atproto/app/bsky/graph/GetMutesRequest;ILjava/lang/Object;)Lkotlinx/coroutines/flow/Flow;
 	public static final fun searchStarterPacksFlow (Lio/github/kikin81/atproto/app/bsky/graph/GraphService;Lio/github/kikin81/atproto/app/bsky/graph/SearchStarterPacksRequest;)Lkotlinx/coroutines/flow/Flow;
 	public static final fun searchStarterPacksPageFlow (Lio/github/kikin81/atproto/app/bsky/graph/GraphService;Lio/github/kikin81/atproto/app/bsky/graph/SearchStarterPacksRequest;)Lkotlinx/coroutines/flow/Flow;
+	public static final fun searchStarterPacksV2Flow (Lio/github/kikin81/atproto/app/bsky/graph/GraphService;Lio/github/kikin81/atproto/app/bsky/graph/SearchStarterPacksV2Request;)Lkotlinx/coroutines/flow/Flow;
+	public static final fun searchStarterPacksV2PageFlow (Lio/github/kikin81/atproto/app/bsky/graph/GraphService;Lio/github/kikin81/atproto/app/bsky/graph/SearchStarterPacksV2Request;)Lkotlinx/coroutines/flow/Flow;
 	public static final fun starterPacksWithMembershipFlow (Lio/github/kikin81/atproto/app/bsky/graph/GraphService;Lio/github/kikin81/atproto/app/bsky/graph/GetStarterPacksWithMembershipRequest;)Lkotlinx/coroutines/flow/Flow;
 	public static final fun starterPacksWithMembershipPageFlow (Lio/github/kikin81/atproto/app/bsky/graph/GraphService;Lio/github/kikin81/atproto/app/bsky/graph/GetStarterPacksWithMembershipRequest;)Lkotlinx/coroutines/flow/Flow;
 }
@@ -9701,6 +10327,70 @@ public final class io/github/kikin81/atproto/app/bsky/graph/SearchStarterPacksRe
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class io/github/kikin81/atproto/app/bsky/graph/SearchStarterPacksV2Request {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/graph/SearchStarterPacksV2Request$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/Long;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Long;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/Long;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/Long;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/graph/SearchStarterPacksV2Request;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/graph/SearchStarterPacksV2Request;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/graph/SearchStarterPacksV2Request;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCursor ()Ljava/lang/String;
+	public final fun getLimit ()Ljava/lang/Long;
+	public final fun getQ ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/graph/SearchStarterPacksV2Request$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/graph/SearchStarterPacksV2Request$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/graph/SearchStarterPacksV2Request;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/graph/SearchStarterPacksV2Request;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/graph/SearchStarterPacksV2Request$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/graph/SearchStarterPacksV2Response {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/graph/SearchStarterPacksV2Response$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/Long;Ljava/util/List;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Long;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/Long;
+	public final fun component3 ()Ljava/util/List;
+	public final fun copy (Ljava/lang/String;Ljava/lang/Long;Ljava/util/List;)Lio/github/kikin81/atproto/app/bsky/graph/SearchStarterPacksV2Response;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/graph/SearchStarterPacksV2Response;Ljava/lang/String;Ljava/lang/Long;Ljava/util/List;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/graph/SearchStarterPacksV2Response;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCursor ()Ljava/lang/String;
+	public final fun getHitsTotal ()Ljava/lang/Long;
+	public final fun getStarterPacks ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/graph/SearchStarterPacksV2Response$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/graph/SearchStarterPacksV2Response$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/graph/SearchStarterPacksV2Response;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/graph/SearchStarterPacksV2Response;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/graph/SearchStarterPacksV2Response$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class io/github/kikin81/atproto/app/bsky/graph/StarterPackView {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/graph/StarterPackView$Companion;
 	public synthetic fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/app/bsky/actor/ProfileViewBasic;Ljava/util/List;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Long;Ljava/util/List;Lio/github/kikin81/atproto/app/bsky/graph/ListViewBasic;Ljava/util/List;Lkotlinx/serialization/json/JsonObject;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -9749,7 +10439,7 @@ public final class io/github/kikin81/atproto/app/bsky/graph/StarterPackView$Comp
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class io/github/kikin81/atproto/app/bsky/graph/StarterPackViewBasic : io/github/kikin81/atproto/app/bsky/embed/RecordViewRecordUnion {
+public final class io/github/kikin81/atproto/app/bsky/graph/StarterPackViewBasic : io/github/kikin81/atproto/app/bsky/embed/RecordViewRecordUnion, io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsResponseRelatedViewsUnion {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/graph/StarterPackViewBasic$Companion;
 	public synthetic fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/app/bsky/actor/ProfileViewBasic;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Long;Ljava/util/List;Ljava/lang/Long;Lkotlinx/serialization/json/JsonObject;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/app/bsky/actor/ProfileViewBasic;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Long;Ljava/util/List;Ljava/lang/Long;Lkotlinx/serialization/json/JsonObject;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -10446,6 +11136,1045 @@ public final class io/github/kikin81/atproto/app/bsky/notification/FilterablePre
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsContactMatchNotification : io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnion {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsContactMatchNotification$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-UyB9Nic ()Ljava/lang/String;
+	public final fun copy-OoJ1cAE (Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsContactMatchNotification;
+	public static synthetic fun copy-OoJ1cAE$default (Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsContactMatchNotification;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsContactMatchNotification;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getActor-UyB9Nic ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsContactMatchNotification$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsContactMatchNotification$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsContactMatchNotification;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsContactMatchNotification;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsContactMatchNotification$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsFollowBackNotification : io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnion {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsFollowBackNotification$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-UyB9Nic ()Ljava/lang/String;
+	public final fun component2-XX8z880 ()Ljava/lang/String;
+	public final fun copy-oVk5TEk (Ljava/lang/String;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsFollowBackNotification;
+	public static synthetic fun copy-oVk5TEk$default (Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsFollowBackNotification;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsFollowBackNotification;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getActor-UyB9Nic ()Ljava/lang/String;
+	public final fun getStarterPack-XX8z880 ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsFollowBackNotification$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsFollowBackNotification$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsFollowBackNotification;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsFollowBackNotification;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsFollowBackNotification$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsFollowGroup : io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnion {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsFollowGroup$Companion;
+	public fun <init> (Ljava/util/List;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun copy (Ljava/util/List;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsFollowGroup;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsFollowGroup;Ljava/util/List;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsFollowGroup;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getItems ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsFollowGroup$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsFollowGroup$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsFollowGroup;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsFollowGroup;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsFollowGroup$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsFollowItem {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsFollowItem$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-UyB9Nic ()Ljava/lang/String;
+	public final fun component2-XX8z880 ()Ljava/lang/String;
+	public final fun copy-oVk5TEk (Ljava/lang/String;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsFollowItem;
+	public static synthetic fun copy-oVk5TEk$default (Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsFollowItem;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsFollowItem;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getActor-UyB9Nic ()Ljava/lang/String;
+	public final fun getStarterPack-XX8z880 ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsFollowItem$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsFollowItem$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsFollowItem;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsFollowItem;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsFollowItem$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGeneratorLikeGroup : io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnion {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGeneratorLikeGroup$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-GUXd3rc ()Ljava/lang/String;
+	public final fun component2 ()Ljava/util/List;
+	public final fun copy-QHl1K4Y (Ljava/lang/String;Ljava/util/List;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGeneratorLikeGroup;
+	public static synthetic fun copy-QHl1K4Y$default (Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGeneratorLikeGroup;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGeneratorLikeGroup;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getGenerator-GUXd3rc ()Ljava/lang/String;
+	public final fun getItems ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGeneratorLikeGroup$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGeneratorLikeGroup$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGeneratorLikeGroup;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGeneratorLikeGroup;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGeneratorLikeGroup$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGeneratorLikeItem {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGeneratorLikeItem$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-UyB9Nic ()Ljava/lang/String;
+	public final fun copy-OoJ1cAE (Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGeneratorLikeItem;
+	public static synthetic fun copy-OoJ1cAE$default (Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGeneratorLikeItem;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGeneratorLikeItem;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getActor-UyB9Nic ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGeneratorLikeItem$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGeneratorLikeItem$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGeneratorLikeItem;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGeneratorLikeItem;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGeneratorLikeItem$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroup {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroup$Companion;
+	public synthetic fun <init> (JLjava/lang/String;Ljava/lang/String;ZLio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnion;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()J
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3-DnBUIck ()Ljava/lang/String;
+	public final fun component4 ()Z
+	public final fun component5 ()Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnion;
+	public final fun copy-Sj9D43s (JLjava/lang/String;Ljava/lang/String;ZLio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnion;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroup;
+	public static synthetic fun copy-Sj9D43s$default (Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroup;JLjava/lang/String;Ljava/lang/String;ZLio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnion;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroup;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCount ()J
+	public final fun getId ()Ljava/lang/String;
+	public final fun getIndexedAt-DnBUIck ()Ljava/lang/String;
+	public final fun getKind ()Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnion;
+	public fun hashCode ()I
+	public final fun isRead ()Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroup$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroup$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroup;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroup;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroup$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public abstract interface class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnion : io/github/kikin81/atproto/runtime/OpenUnionMember {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnion$Companion;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnion$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnion$Unknown : io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnion, io/github/kikin81/atproto/runtime/UnknownOpenUnionMember {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnion$Unknown$Companion;
+	public fun <init> (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Lkotlinx/serialization/json/JsonObject;
+	public final fun copy (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnion$Unknown;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnion$Unknown;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnion$Unknown;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getRaw ()Lkotlinx/serialization/json/JsonObject;
+	public fun getType ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnion$Unknown$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnionSerializer : io/github/kikin81/atproto/runtime/OpenUnionSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnionSerializer;
+	public fun selectKnownDeserializer (Ljava/lang/String;)Lkotlinx/serialization/KSerializer;
+	public fun selectKnownSerializer (Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnion;)Lkotlinx/serialization/KSerializer;
+	public synthetic fun selectKnownSerializer (Lio/github/kikin81/atproto/runtime/OpenUnionMember;)Lkotlinx/serialization/KSerializer;
+	public fun unknownSerializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnionUnknownSerializer : io/github/kikin81/atproto/runtime/UnknownMemberSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnionUnknownSerializer;
+	public fun construct (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnion$Unknown;
+	public synthetic fun construct (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)Lio/github/kikin81/atproto/runtime/UnknownOpenUnionMember;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeGroup : io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnion {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeGroup$Companion;
+	public synthetic fun <init> (Ljava/util/List;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun component2-GUXd3rc ()Ljava/lang/String;
+	public final fun copy-HnpCerU (Ljava/util/List;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeGroup;
+	public static synthetic fun copy-HnpCerU$default (Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeGroup;Ljava/util/List;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeGroup;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getItems ()Ljava/util/List;
+	public final fun getPost-GUXd3rc ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeGroup$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeGroup$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeGroup;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeGroup;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeGroup$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeItem {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeItem$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-UyB9Nic ()Ljava/lang/String;
+	public final fun copy-OoJ1cAE (Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeItem;
+	public static synthetic fun copy-OoJ1cAE$default (Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeItem;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeItem;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getActor-UyB9Nic ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeItem$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeItem$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeItem;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeItem;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeItem$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeViaRepostGroup : io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnion {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeViaRepostGroup$Companion;
+	public synthetic fun <init> (Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun component2-GUXd3rc ()Ljava/lang/String;
+	public final fun component3-GUXd3rc ()Ljava/lang/String;
+	public final fun copy-wlD-8VI (Ljava/util/List;Ljava/lang/String;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeViaRepostGroup;
+	public static synthetic fun copy-wlD-8VI$default (Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeViaRepostGroup;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeViaRepostGroup;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getItems ()Ljava/util/List;
+	public final fun getPost-GUXd3rc ()Ljava/lang/String;
+	public final fun getViaRepost-GUXd3rc ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeViaRepostGroup$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeViaRepostGroup$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeViaRepostGroup;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeViaRepostGroup;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeViaRepostGroup$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeViaRepostItem {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeViaRepostItem$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-UyB9Nic ()Ljava/lang/String;
+	public final fun copy-OoJ1cAE (Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeViaRepostItem;
+	public static synthetic fun copy-OoJ1cAE$default (Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeViaRepostItem;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeViaRepostItem;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getActor-UyB9Nic ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeViaRepostItem$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeViaRepostItem$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeViaRepostItem;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeViaRepostItem;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsLikeViaRepostItem$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMentionNotification : io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnion {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMentionNotification$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-XX8z880 ()Ljava/lang/String;
+	public final fun component2-GUXd3rc ()Ljava/lang/String;
+	public final fun copy-cu-62J8 (Ljava/lang/String;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMentionNotification;
+	public static synthetic fun copy-cu-62J8$default (Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMentionNotification;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMentionNotification;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getParent-XX8z880 ()Ljava/lang/String;
+	public final fun getPost-GUXd3rc ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMentionNotification$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMentionNotification$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMentionNotification;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMentionNotification;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMentionNotification$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeGroup : io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnion {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeGroup$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-UyB9Nic ()Ljava/lang/String;
+	public final fun component2 ()Ljava/util/List;
+	public final fun copy-5mRca5A (Ljava/lang/String;Ljava/util/List;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeGroup;
+	public static synthetic fun copy-5mRca5A$default (Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeGroup;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeGroup;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getActor-UyB9Nic ()Ljava/lang/String;
+	public final fun getItems ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeGroup$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeGroup$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeGroup;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeGroup;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeGroup$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeItem {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeItem$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-GUXd3rc ()Ljava/lang/String;
+	public final fun copy-wvBT1Tk (Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeItem;
+	public static synthetic fun copy-wvBT1Tk$default (Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeItem;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeItem;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getPost-GUXd3rc ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeItem$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeItem$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeItem;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeItem;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeItem$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeViaRepostGroup : io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnion {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeViaRepostGroup$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-UyB9Nic ()Ljava/lang/String;
+	public final fun component2 ()Ljava/util/List;
+	public final fun copy-5mRca5A (Ljava/lang/String;Ljava/util/List;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeViaRepostGroup;
+	public static synthetic fun copy-5mRca5A$default (Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeViaRepostGroup;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeViaRepostGroup;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getActor-UyB9Nic ()Ljava/lang/String;
+	public final fun getItems ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeViaRepostGroup$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeViaRepostGroup$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeViaRepostGroup;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeViaRepostGroup;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeViaRepostGroup$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeViaRepostItem {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeViaRepostItem$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-GUXd3rc ()Ljava/lang/String;
+	public final fun component2-GUXd3rc ()Ljava/lang/String;
+	public final fun copy-xdsFrrY (Ljava/lang/String;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeViaRepostItem;
+	public static synthetic fun copy-xdsFrrY$default (Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeViaRepostItem;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeViaRepostItem;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getPost-GUXd3rc ()Ljava/lang/String;
+	public final fun getViaRepost-GUXd3rc ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeViaRepostItem$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeViaRepostItem$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeViaRepostItem;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeViaRepostItem;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostLikeViaRepostItem$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostGroup : io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnion {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostGroup$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-UyB9Nic ()Ljava/lang/String;
+	public final fun component2 ()Ljava/util/List;
+	public final fun copy-5mRca5A (Ljava/lang/String;Ljava/util/List;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostGroup;
+	public static synthetic fun copy-5mRca5A$default (Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostGroup;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostGroup;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getActor-UyB9Nic ()Ljava/lang/String;
+	public final fun getItems ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostGroup$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostGroup$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostGroup;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostGroup;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostGroup$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostItem {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostItem$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-GUXd3rc ()Ljava/lang/String;
+	public final fun copy-wvBT1Tk (Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostItem;
+	public static synthetic fun copy-wvBT1Tk$default (Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostItem;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostItem;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getPost-GUXd3rc ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostItem$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostItem$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostItem;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostItem;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostItem$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostViaRepostGroup : io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnion {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostViaRepostGroup$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-UyB9Nic ()Ljava/lang/String;
+	public final fun component2 ()Ljava/util/List;
+	public final fun copy-5mRca5A (Ljava/lang/String;Ljava/util/List;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostViaRepostGroup;
+	public static synthetic fun copy-5mRca5A$default (Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostViaRepostGroup;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostViaRepostGroup;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getActor-UyB9Nic ()Ljava/lang/String;
+	public final fun getItems ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostViaRepostGroup$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostViaRepostGroup$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostViaRepostGroup;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostViaRepostGroup;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostViaRepostGroup$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostViaRepostItem {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostViaRepostItem$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-GUXd3rc ()Ljava/lang/String;
+	public final fun component2-GUXd3rc ()Ljava/lang/String;
+	public final fun copy-xdsFrrY (Ljava/lang/String;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostViaRepostItem;
+	public static synthetic fun copy-xdsFrrY$default (Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostViaRepostItem;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostViaRepostItem;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getPost-GUXd3rc ()Ljava/lang/String;
+	public final fun getViaRepost-GUXd3rc ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostViaRepostItem$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostViaRepostItem$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostViaRepostItem;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostViaRepostItem;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsMultiPostRepostViaRepostItem$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsQuoteNotification : io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnion {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsQuoteNotification$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-XX8z880 ()Ljava/lang/String;
+	public final fun component2-GUXd3rc ()Ljava/lang/String;
+	public final fun copy-cu-62J8 (Ljava/lang/String;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsQuoteNotification;
+	public static synthetic fun copy-cu-62J8$default (Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsQuoteNotification;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsQuoteNotification;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getParent-XX8z880 ()Ljava/lang/String;
+	public final fun getPost-GUXd3rc ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsQuoteNotification$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsQuoteNotification$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsQuoteNotification;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsQuoteNotification;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsQuoteNotification$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsReplyNotification : io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnion {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsReplyNotification$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-GUXd3rc ()Ljava/lang/String;
+	public final fun component2-GUXd3rc ()Ljava/lang/String;
+	public final fun copy-xdsFrrY (Ljava/lang/String;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsReplyNotification;
+	public static synthetic fun copy-xdsFrrY$default (Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsReplyNotification;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsReplyNotification;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getParent-GUXd3rc ()Ljava/lang/String;
+	public final fun getPost-GUXd3rc ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsReplyNotification$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsReplyNotification$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsReplyNotification;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsReplyNotification;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsReplyNotification$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostGroup : io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnion {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostGroup$Companion;
+	public synthetic fun <init> (Ljava/util/List;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun component2-GUXd3rc ()Ljava/lang/String;
+	public final fun copy-HnpCerU (Ljava/util/List;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostGroup;
+	public static synthetic fun copy-HnpCerU$default (Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostGroup;Ljava/util/List;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostGroup;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getItems ()Ljava/util/List;
+	public final fun getPost-GUXd3rc ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostGroup$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostGroup$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostGroup;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostGroup;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostGroup$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostItem {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostItem$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-UyB9Nic ()Ljava/lang/String;
+	public final fun copy-OoJ1cAE (Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostItem;
+	public static synthetic fun copy-OoJ1cAE$default (Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostItem;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostItem;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getActor-UyB9Nic ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostItem$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostItem$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostItem;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostItem;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostItem$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostViaRepostGroup : io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnion {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostViaRepostGroup$Companion;
+	public synthetic fun <init> (Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun component2-GUXd3rc ()Ljava/lang/String;
+	public final fun component3-GUXd3rc ()Ljava/lang/String;
+	public final fun copy-wlD-8VI (Ljava/util/List;Ljava/lang/String;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostViaRepostGroup;
+	public static synthetic fun copy-wlD-8VI$default (Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostViaRepostGroup;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostViaRepostGroup;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getItems ()Ljava/util/List;
+	public final fun getPost-GUXd3rc ()Ljava/lang/String;
+	public final fun getViaRepost-GUXd3rc ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostViaRepostGroup$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostViaRepostGroup$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostViaRepostGroup;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostViaRepostGroup;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostViaRepostGroup$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostViaRepostItem {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostViaRepostItem$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-UyB9Nic ()Ljava/lang/String;
+	public final fun copy-OoJ1cAE (Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostViaRepostItem;
+	public static synthetic fun copy-OoJ1cAE$default (Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostViaRepostItem;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostViaRepostItem;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getActor-UyB9Nic ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostViaRepostItem$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostViaRepostItem$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostViaRepostItem;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostViaRepostItem;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRepostViaRepostItem$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRequest {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRequest$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/Long;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRequest;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRequest;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCursor ()Ljava/lang/String;
+	public final fun getFeed ()Ljava/lang/String;
+	public final fun getLimit ()Ljava/lang/Long;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsResponse {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsResponse$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/util/List;
+	public final fun component3 ()Ljava/util/List;
+	public final fun component4-G5DCnlA ()Ljava/lang/String;
+	public final fun copy-ncnrRco (Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsResponse;
+	public static synthetic fun copy-ncnrRco$default (Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsResponse;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCursor ()Ljava/lang/String;
+	public final fun getGroups ()Ljava/util/List;
+	public final fun getRelatedViews ()Ljava/util/List;
+	public final fun getSeenAt-G5DCnlA ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsResponse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsResponse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsResponse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsResponse$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public abstract interface class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsResponseRelatedViewsUnion : io/github/kikin81/atproto/runtime/OpenUnionMember {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsResponseRelatedViewsUnion$Companion;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsResponseRelatedViewsUnion$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsResponseRelatedViewsUnion$Unknown : io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsResponseRelatedViewsUnion, io/github/kikin81/atproto/runtime/UnknownOpenUnionMember {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsResponseRelatedViewsUnion$Unknown$Companion;
+	public fun <init> (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Lkotlinx/serialization/json/JsonObject;
+	public final fun copy (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsResponseRelatedViewsUnion$Unknown;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsResponseRelatedViewsUnion$Unknown;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsResponseRelatedViewsUnion$Unknown;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getRaw ()Lkotlinx/serialization/json/JsonObject;
+	public fun getType ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsResponseRelatedViewsUnion$Unknown$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsResponseRelatedViewsUnionSerializer : io/github/kikin81/atproto/runtime/OpenUnionSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsResponseRelatedViewsUnionSerializer;
+	public fun selectKnownDeserializer (Ljava/lang/String;)Lkotlinx/serialization/KSerializer;
+	public fun selectKnownSerializer (Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsResponseRelatedViewsUnion;)Lkotlinx/serialization/KSerializer;
+	public synthetic fun selectKnownSerializer (Lio/github/kikin81/atproto/runtime/OpenUnionMember;)Lkotlinx/serialization/KSerializer;
+	public fun unknownSerializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsResponseRelatedViewsUnionUnknownSerializer : io/github/kikin81/atproto/runtime/UnknownMemberSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsResponseRelatedViewsUnionUnknownSerializer;
+	public fun construct (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsResponseRelatedViewsUnion$Unknown;
+	public synthetic fun construct (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)Lio/github/kikin81/atproto/runtime/UnknownOpenUnionMember;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsStarterPackJoinedNotification : io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnion {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsStarterPackJoinedNotification$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-UyB9Nic ()Ljava/lang/String;
+	public final fun component2-GUXd3rc ()Ljava/lang/String;
+	public final fun copy-I9_9d4A (Ljava/lang/String;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsStarterPackJoinedNotification;
+	public static synthetic fun copy-I9_9d4A$default (Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsStarterPackJoinedNotification;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsStarterPackJoinedNotification;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getActor-UyB9Nic ()Ljava/lang/String;
+	public final fun getStarterPack-GUXd3rc ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsStarterPackJoinedNotification$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsStarterPackJoinedNotification$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsStarterPackJoinedNotification;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsStarterPackJoinedNotification;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsStarterPackJoinedNotification$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsSubscribedPostGroup : io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnion {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsSubscribedPostGroup$Companion;
+	public fun <init> (Ljava/util/List;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun copy (Ljava/util/List;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsSubscribedPostGroup;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsSubscribedPostGroup;Ljava/util/List;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsSubscribedPostGroup;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getItems ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsSubscribedPostGroup$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsSubscribedPostGroup$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsSubscribedPostGroup;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsSubscribedPostGroup;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsSubscribedPostGroup$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsSubscribedPostItem {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsSubscribedPostItem$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-UyB9Nic ()Ljava/lang/String;
+	public final fun component2-XX8z880 ()Ljava/lang/String;
+	public final fun component3-GUXd3rc ()Ljava/lang/String;
+	public final fun copy-6pkSvWI (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsSubscribedPostItem;
+	public static synthetic fun copy-6pkSvWI$default (Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsSubscribedPostItem;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsSubscribedPostItem;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getActor-UyB9Nic ()Ljava/lang/String;
+	public final fun getParent-XX8z880 ()Ljava/lang/String;
+	public final fun getPost-GUXd3rc ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsSubscribedPostItem$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsSubscribedPostItem$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsSubscribedPostItem;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsSubscribedPostItem;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsSubscribedPostItem$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsUnverifiedNotification : io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnion {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsUnverifiedNotification$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-UyB9Nic ()Ljava/lang/String;
+	public final fun copy-OoJ1cAE (Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsUnverifiedNotification;
+	public static synthetic fun copy-OoJ1cAE$default (Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsUnverifiedNotification;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsUnverifiedNotification;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getActor-UyB9Nic ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsUnverifiedNotification$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsUnverifiedNotification$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsUnverifiedNotification;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsUnverifiedNotification;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsUnverifiedNotification$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsVerifiedNotification : io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsGroupKindUnion {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsVerifiedNotification$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-UyB9Nic ()Ljava/lang/String;
+	public final fun copy-OoJ1cAE (Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsVerifiedNotification;
+	public static synthetic fun copy-OoJ1cAE$default (Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsVerifiedNotification;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsVerifiedNotification;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getActor-UyB9Nic ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsVerifiedNotification$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsVerifiedNotification$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsVerifiedNotification;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsVerifiedNotification;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsVerifiedNotification$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class io/github/kikin81/atproto/app/bsky/notification/GetPreferencesRequest {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/notification/GetPreferencesRequest$Companion;
 	public fun <init> ()V
@@ -10731,6 +12460,8 @@ public final class io/github/kikin81/atproto/app/bsky/notification/ListNotificat
 
 public final class io/github/kikin81/atproto/app/bsky/notification/NotificationService {
 	public fun <init> (Lio/github/kikin81/atproto/runtime/XrpcClient;)V
+	public final fun getGroupedNotifications (Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getGroupedNotifications$default (Lio/github/kikin81/atproto/app/bsky/notification/NotificationService;Lio/github/kikin81/atproto/app/bsky/notification/GetGroupedNotificationsRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public final fun getPreferences (Lio/github/kikin81/atproto/app/bsky/notification/GetPreferencesRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun getPreferences$default (Lio/github/kikin81/atproto/app/bsky/notification/NotificationService;Lio/github/kikin81/atproto/app/bsky/notification/GetPreferencesRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public final fun getUnreadCount (Lio/github/kikin81/atproto/app/bsky/notification/GetUnreadCountRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -11334,6 +13065,121 @@ public final class io/github/kikin81/atproto/app/bsky/richtext/FacetTag$Companio
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class io/github/kikin81/atproto/app/bsky/video/AbortUploadRequest {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/video/AbortUploadRequest$Companion;
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/video/AbortUploadRequest;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/video/AbortUploadRequest;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/video/AbortUploadRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getJobId ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/video/AbortUploadRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/video/AbortUploadRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/video/AbortUploadRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/video/AbortUploadRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/video/AbortUploadRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/video/AbortUploadResponse {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/video/AbortUploadResponse$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/video/AbortUploadResponse;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/video/AbortUploadResponse;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/video/AbortUploadResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCompletedJobId ()Ljava/lang/String;
+	public final fun getFailureReason ()Ljava/lang/String;
+	public final fun getState ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/video/AbortUploadResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/video/AbortUploadResponse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/video/AbortUploadResponse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/video/AbortUploadResponse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/video/AbortUploadResponse$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/video/FinishUploadRequest {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/video/FinishUploadRequest$Companion;
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/video/FinishUploadRequest;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/video/FinishUploadRequest;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/video/FinishUploadRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getJobId ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/video/FinishUploadRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/video/FinishUploadRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/video/FinishUploadRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/video/FinishUploadRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/video/FinishUploadRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/video/FinishUploadResponse {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/video/FinishUploadResponse$Companion;
+	public fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/app/bsky/video/JobStatus;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Lio/github/kikin81/atproto/app/bsky/video/JobStatus;
+	public final fun copy (Ljava/lang/String;Lio/github/kikin81/atproto/app/bsky/video/JobStatus;)Lio/github/kikin81/atproto/app/bsky/video/FinishUploadResponse;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/video/FinishUploadResponse;Ljava/lang/String;Lio/github/kikin81/atproto/app/bsky/video/JobStatus;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/video/FinishUploadResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCompletedJobId ()Ljava/lang/String;
+	public final fun getJobStatus ()Lio/github/kikin81/atproto/app/bsky/video/JobStatus;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/video/FinishUploadResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/video/FinishUploadResponse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/video/FinishUploadResponse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/video/FinishUploadResponse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/video/FinishUploadResponse$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class io/github/kikin81/atproto/app/bsky/video/GetJobStatusRequest {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/video/GetJobStatusRequest$Companion;
 	public fun <init> (Ljava/lang/String;)V
@@ -11424,6 +13270,77 @@ public final class io/github/kikin81/atproto/app/bsky/video/GetUploadLimitsRespo
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class io/github/kikin81/atproto/app/bsky/video/GetUploadStatusRequest {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/video/GetUploadStatusRequest$Companion;
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/video/GetUploadStatusRequest;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/video/GetUploadStatusRequest;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/video/GetUploadStatusRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getJobId ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/video/GetUploadStatusRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/video/GetUploadStatusRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/video/GetUploadStatusRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/video/GetUploadStatusRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/video/GetUploadStatusRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/video/GetUploadStatusResponse {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/video/GetUploadStatusResponse$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/kikin81/atproto/app/bsky/video/JobStatus;JJLjava/util/List;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/kikin81/atproto/app/bsky/video/JobStatus;JJLjava/util/List;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2-DnBUIck ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Lio/github/kikin81/atproto/app/bsky/video/JobStatus;
+	public final fun component6 ()J
+	public final fun component7 ()J
+	public final fun component8 ()Ljava/util/List;
+	public final fun component9 ()Ljava/lang/String;
+	public final fun copy-6bp4he4 (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/kikin81/atproto/app/bsky/video/JobStatus;JJLjava/util/List;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/video/GetUploadStatusResponse;
+	public static synthetic fun copy-6bp4he4$default (Lio/github/kikin81/atproto/app/bsky/video/GetUploadStatusResponse;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lio/github/kikin81/atproto/app/bsky/video/JobStatus;JJLjava/util/List;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/video/GetUploadStatusResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCompletedJobId ()Ljava/lang/String;
+	public final fun getExpiresAt-DnBUIck ()Ljava/lang/String;
+	public final fun getFailureReason ()Ljava/lang/String;
+	public final fun getJobId ()Ljava/lang/String;
+	public final fun getJobStatus ()Lio/github/kikin81/atproto/app/bsky/video/JobStatus;
+	public final fun getPartCount ()J
+	public final fun getPartSizeBytes ()J
+	public final fun getReceivedParts ()Ljava/util/List;
+	public final fun getState ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/video/GetUploadStatusResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/video/GetUploadStatusResponse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/video/GetUploadStatusResponse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/video/GetUploadStatusResponse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/video/GetUploadStatusResponse$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class io/github/kikin81/atproto/app/bsky/video/JobStatus {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/video/JobStatus$Companion;
 	public synthetic fun <init> (Lio/github/kikin81/atproto/runtime/Blob;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -11466,6 +13383,135 @@ public final class io/github/kikin81/atproto/app/bsky/video/JobStatus$Companion 
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class io/github/kikin81/atproto/app/bsky/video/StartUploadRequest {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/video/StartUploadRequest$Companion;
+	public fun <init> (Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Ljava/lang/String;Lio/github/kikin81/atproto/runtime/AtField;JLio/github/kikin81/atproto/runtime/AtField;)V
+	public synthetic fun <init> (Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Ljava/lang/String;Lio/github/kikin81/atproto/runtime/AtField;JLio/github/kikin81/atproto/runtime/AtField;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lio/github/kikin81/atproto/runtime/AtField;
+	public final fun component2 ()Lio/github/kikin81/atproto/runtime/AtField;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Lio/github/kikin81/atproto/runtime/AtField;
+	public final fun component5 ()J
+	public final fun component6 ()Lio/github/kikin81/atproto/runtime/AtField;
+	public final fun copy (Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Ljava/lang/String;Lio/github/kikin81/atproto/runtime/AtField;JLio/github/kikin81/atproto/runtime/AtField;)Lio/github/kikin81/atproto/app/bsky/video/StartUploadRequest;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/video/StartUploadRequest;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Ljava/lang/String;Lio/github/kikin81/atproto/runtime/AtField;JLio/github/kikin81/atproto/runtime/AtField;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/video/StartUploadRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDurationMs ()Lio/github/kikin81/atproto/runtime/AtField;
+	public final fun getHeight ()Lio/github/kikin81/atproto/runtime/AtField;
+	public final fun getMimeType ()Ljava/lang/String;
+	public final fun getName ()Lio/github/kikin81/atproto/runtime/AtField;
+	public final fun getSizeBytes ()J
+	public final fun getWidth ()Lio/github/kikin81/atproto/runtime/AtField;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/video/StartUploadRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/video/StartUploadRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/video/StartUploadRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/video/StartUploadRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/video/StartUploadRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/video/StartUploadResponse {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/video/StartUploadResponse$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;JJLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-DnBUIck ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()J
+	public final fun component4 ()J
+	public final fun copy-FnFYJuE (Ljava/lang/String;Ljava/lang/String;JJ)Lio/github/kikin81/atproto/app/bsky/video/StartUploadResponse;
+	public static synthetic fun copy-FnFYJuE$default (Lio/github/kikin81/atproto/app/bsky/video/StartUploadResponse;Ljava/lang/String;Ljava/lang/String;JJILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/video/StartUploadResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getExpiresAt-DnBUIck ()Ljava/lang/String;
+	public final fun getJobId ()Ljava/lang/String;
+	public final fun getPartCount ()J
+	public final fun getPartSizeBytes ()J
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/video/StartUploadResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/video/StartUploadResponse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/video/StartUploadResponse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/video/StartUploadResponse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/video/StartUploadResponse$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/video/UploadPartRequest {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/video/UploadPartRequest$Companion;
+	public fun <init> (Ljava/lang/String;J)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()J
+	public final fun copy (Ljava/lang/String;J)Lio/github/kikin81/atproto/app/bsky/video/UploadPartRequest;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/video/UploadPartRequest;Ljava/lang/String;JILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/video/UploadPartRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getJobId ()Ljava/lang/String;
+	public final fun getPartNumber ()J
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/video/UploadPartRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/video/UploadPartRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/video/UploadPartRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/video/UploadPartRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/video/UploadPartRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/video/UploadPartResponse {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/video/UploadPartResponse$Companion;
+	public fun <init> (JJ)V
+	public final fun component1 ()J
+	public final fun component2 ()J
+	public final fun copy (JJ)Lio/github/kikin81/atproto/app/bsky/video/UploadPartResponse;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/video/UploadPartResponse;JJILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/video/UploadPartResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getPartNumber ()J
+	public final fun getSizeBytes ()J
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/video/UploadPartResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/video/UploadPartResponse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/video/UploadPartResponse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/video/UploadPartResponse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/video/UploadPartResponse$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class io/github/kikin81/atproto/app/bsky/video/UploadVideoResponse {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/video/UploadVideoResponse$Companion;
 	public fun <init> (Lio/github/kikin81/atproto/app/bsky/video/JobStatus;)V
@@ -11495,10 +13541,20 @@ public final class io/github/kikin81/atproto/app/bsky/video/UploadVideoResponse$
 
 public final class io/github/kikin81/atproto/app/bsky/video/VideoService {
 	public fun <init> (Lio/github/kikin81/atproto/runtime/XrpcClient;)V
+	public final fun abortUpload (Lio/github/kikin81/atproto/app/bsky/video/AbortUploadRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun abortUpload$default (Lio/github/kikin81/atproto/app/bsky/video/VideoService;Lio/github/kikin81/atproto/app/bsky/video/AbortUploadRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun finishUpload (Lio/github/kikin81/atproto/app/bsky/video/FinishUploadRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun finishUpload$default (Lio/github/kikin81/atproto/app/bsky/video/VideoService;Lio/github/kikin81/atproto/app/bsky/video/FinishUploadRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public final fun getJobStatus (Lio/github/kikin81/atproto/app/bsky/video/GetJobStatusRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun getJobStatus$default (Lio/github/kikin81/atproto/app/bsky/video/VideoService;Lio/github/kikin81/atproto/app/bsky/video/GetJobStatusRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public final fun getUploadLimits (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun getUploadLimits$default (Lio/github/kikin81/atproto/app/bsky/video/VideoService;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getUploadStatus (Lio/github/kikin81/atproto/app/bsky/video/GetUploadStatusRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getUploadStatus$default (Lio/github/kikin81/atproto/app/bsky/video/VideoService;Lio/github/kikin81/atproto/app/bsky/video/GetUploadStatusRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun startUpload (Lio/github/kikin81/atproto/app/bsky/video/StartUploadRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun startUpload$default (Lio/github/kikin81/atproto/app/bsky/video/VideoService;Lio/github/kikin81/atproto/app/bsky/video/StartUploadRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun uploadPart (Lio/github/kikin81/atproto/app/bsky/video/UploadPartRequest;[BLio/ktor/http/ContentType;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun uploadPart$default (Lio/github/kikin81/atproto/app/bsky/video/VideoService;Lio/github/kikin81/atproto/app/bsky/video/UploadPartRequest;[BLio/ktor/http/ContentType;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public final fun uploadVideo ([BLio/ktor/http/ContentType;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun uploadVideo$default (Lio/github/kikin81/atproto/app/bsky/video/VideoService;[BLio/ktor/http/ContentType;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }

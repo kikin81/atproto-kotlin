@@ -7,6 +7,7 @@ import io.github.kikin81.atproto.generator.ir.ProcedureDef
 import io.github.kikin81.atproto.generator.ir.StringType
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -65,14 +66,22 @@ class ProcedureInputShapeTest {
     }
 
     @Test
-    fun `raw-bytes input combined with params classifies as UnsupportedRawBytesWithParams carrying lexiconId`() {
+    fun `raw-bytes input combined with params classifies as RawBytes carrying params`() {
         val def = ProcedureDef(
-            input = HttpBody(encoding = "*/*"),
+            input = HttpBody(encoding = "application/octet-stream"),
             parameters = ParamsType(properties = mapOf("did" to StringType())),
         )
         val shape = EmissionPlan.classifyProcedureInput(def, "com.example.uploadWithParams")
-        assertTrue(shape is ProcedureInputShape.UnsupportedRawBytesWithParams)
-        assertEquals("*/*", shape.encoding)
-        assertEquals("com.example.uploadWithParams", shape.lexiconId)
+        assertTrue(shape is ProcedureInputShape.RawBytes)
+        assertTrue(shape.hasParams)
+        assertEquals("application/octet-stream", shape.encoding)
+    }
+
+    @Test
+    fun `raw-bytes input without params does not carry params`() {
+        val def = ProcedureDef(input = HttpBody(encoding = "*/*"))
+        val shape = EmissionPlan.classifyProcedureInput(def, "test.example")
+        assertTrue(shape is ProcedureInputShape.RawBytes)
+        assertFalse(shape.hasParams)
     }
 }
