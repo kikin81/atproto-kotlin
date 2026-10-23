@@ -5,6 +5,7 @@
     "app.bsky.actor.getProfile",
     "app.bsky.actor.getProfiles",
     "app.bsky.actor.getSuggestions",
+    "app.bsky.actor.link",
     "app.bsky.actor.profile",
     "app.bsky.actor.putPreferences",
     "app.bsky.actor.searchActors",
@@ -178,6 +179,10 @@
     "app.bsky.actor.getSuggestions": {
       "uri": "at://did:plc:4v4y5r3lwsbtmsxhile2ljac/com.atproto.lexicon.schema/app.bsky.actor.getSuggestions",
       "cid": "bafyreig7dhef4df3n72bj6pvklzija26yk5szxdzlixm5x72bingowmf3m"
+    },
+    "app.bsky.actor.link": {
+      "uri": "at://did:plc:4v4y5r3lwsbtmsxhile2ljac/com.atproto.lexicon.schema/app.bsky.actor.link",
+      "cid": "bafyreidpr5c7556s44rorfwp4d5amzksnjoo6uvrgsny2tfzxxtiwfdnpu"
     },
     "app.bsky.actor.profile": {
       "uri": "at://did:plc:4v4y5r3lwsbtmsxhile2ljac/com.atproto.lexicon.schema/app.bsky.actor.profile",

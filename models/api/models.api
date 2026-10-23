@@ -592,6 +592,82 @@ public final class io/github/kikin81/atproto/app/bsky/actor/LabelersPref$Compani
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class io/github/kikin81/atproto/app/bsky/actor/Link {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/actor/Link$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-DnBUIck ()Ljava/lang/String;
+	public final fun component2 ()Lio/github/kikin81/atproto/runtime/AtField;
+	public final fun component3 ()Lio/github/kikin81/atproto/runtime/AtField;
+	public final fun component4 ()Lio/github/kikin81/atproto/runtime/AtField;
+	public final fun component5-jMNtXP8 ()Ljava/lang/String;
+	public final fun copy-yktgVgg (Ljava/lang/String;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/actor/Link;
+	public static synthetic fun copy-yktgVgg$default (Lio/github/kikin81/atproto/app/bsky/actor/Link;Ljava/lang/String;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/actor/Link;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCreatedAt-DnBUIck ()Ljava/lang/String;
+	public final fun getIcon ()Lio/github/kikin81/atproto/runtime/AtField;
+	public final fun getLabels ()Lio/github/kikin81/atproto/runtime/AtField;
+	public final fun getTitle ()Lio/github/kikin81/atproto/runtime/AtField;
+	public final fun getUrl-jMNtXP8 ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/actor/Link$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/actor/Link$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/actor/Link;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/actor/Link;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/actor/Link$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public abstract interface class io/github/kikin81/atproto/app/bsky/actor/LinkLabelsUnion : io/github/kikin81/atproto/runtime/OpenUnionMember {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/actor/LinkLabelsUnion$Companion;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/actor/LinkLabelsUnion$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/actor/LinkLabelsUnion$Unknown : io/github/kikin81/atproto/app/bsky/actor/LinkLabelsUnion, io/github/kikin81/atproto/runtime/UnknownOpenUnionMember {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/actor/LinkLabelsUnion$Unknown$Companion;
+	public fun <init> (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Lkotlinx/serialization/json/JsonObject;
+	public final fun copy (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)Lio/github/kikin81/atproto/app/bsky/actor/LinkLabelsUnion$Unknown;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/actor/LinkLabelsUnion$Unknown;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/actor/LinkLabelsUnion$Unknown;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getRaw ()Lkotlinx/serialization/json/JsonObject;
+	public fun getType ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/actor/LinkLabelsUnion$Unknown$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/actor/LinkLabelsUnionSerializer : io/github/kikin81/atproto/runtime/OpenUnionSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/actor/LinkLabelsUnionSerializer;
+	public fun selectKnownDeserializer (Ljava/lang/String;)Lkotlinx/serialization/KSerializer;
+	public fun selectKnownSerializer (Lio/github/kikin81/atproto/app/bsky/actor/LinkLabelsUnion;)Lkotlinx/serialization/KSerializer;
+	public synthetic fun selectKnownSerializer (Lio/github/kikin81/atproto/runtime/OpenUnionMember;)Lkotlinx/serialization/KSerializer;
+	public fun unknownSerializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/actor/LinkLabelsUnionUnknownSerializer : io/github/kikin81/atproto/runtime/UnknownMemberSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/actor/LinkLabelsUnionUnknownSerializer;
+	public fun construct (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)Lio/github/kikin81/atproto/app/bsky/actor/LinkLabelsUnion$Unknown;
+	public synthetic fun construct (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)Lio/github/kikin81/atproto/runtime/UnknownOpenUnionMember;
+}
+
 public final class io/github/kikin81/atproto/app/bsky/actor/LiveEventPreferences : io/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponsePreferencesUnion, io/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequestPreferencesUnion {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/actor/LiveEventPreferences$Companion;
 	public fun <init> ()V
@@ -17265,7 +17341,7 @@ public final class io/github/kikin81/atproto/com/atproto/label/SelfLabel$Compani
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class io/github/kikin81/atproto/com/atproto/label/SelfLabels : io/github/kikin81/atproto/app/bsky/actor/ProfileLabelsUnion, io/github/kikin81/atproto/app/bsky/draft/DraftPostLabelsUnion, io/github/kikin81/atproto/app/bsky/feed/GeneratorLabelsUnion, io/github/kikin81/atproto/app/bsky/feed/PostLabelsUnion, io/github/kikin81/atproto/app/bsky/graph/ListLabelsUnion, io/github/kikin81/atproto/app/bsky/labeler/ServiceLabelsUnion {
+public final class io/github/kikin81/atproto/com/atproto/label/SelfLabels : io/github/kikin81/atproto/app/bsky/actor/LinkLabelsUnion, io/github/kikin81/atproto/app/bsky/actor/ProfileLabelsUnion, io/github/kikin81/atproto/app/bsky/draft/DraftPostLabelsUnion, io/github/kikin81/atproto/app/bsky/feed/GeneratorLabelsUnion, io/github/kikin81/atproto/app/bsky/feed/PostLabelsUnion, io/github/kikin81/atproto/app/bsky/graph/ListLabelsUnion, io/github/kikin81/atproto/app/bsky/labeler/ServiceLabelsUnion {
 	public static final field Companion Lio/github/kikin81/atproto/com/atproto/label/SelfLabels$Companion;
 	public fun <init> (Ljava/util/List;)V
 	public final fun component1 ()Ljava/util/List;
