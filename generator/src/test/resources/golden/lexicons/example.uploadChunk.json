@@ -1,0 +1,31 @@
+{
+  "lexicon": 1,
+  "id": "example.uploadChunk",
+  "description": "Raw-bytes input with ALL-optional URL params — the generated request parameter gets a default.",
+  "defs": {
+    "main": {
+      "type": "procedure",
+      "description": "Upload a chunk, optionally resuming at an offset.",
+      "parameters": {
+        "type": "params",
+        "properties": {
+          "offset": { "type": "integer" },
+          "label": { "type": "string" }
+        }
+      },
+      "input": {
+        "encoding": "application/octet-stream"
+      },
+      "output": {
+        "encoding": "application/json",
+        "schema": {
+          "type": "object",
+          "required": ["received"],
+          "properties": {
+            "received": { "type": "integer" }
+          }
+        }
+      }
+    }
+  }
+}

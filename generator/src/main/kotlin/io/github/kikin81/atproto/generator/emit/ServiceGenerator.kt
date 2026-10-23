@@ -309,6 +309,20 @@ public class ServiceGenerator(
                 }
             }
             is ProcedureInputShape.RawBytes -> {
+                // Bytes plus URL params (e.g. video.uploadPart): the params class
+                // comes first, mirroring ParamsOnly; the bytes body follows.
+                val paramsCn = if (shape.hasParams && request != null) {
+                    ClassName(request.fqName.pkg, request.fqName.simpleName)
+                } else {
+                    null
+                }
+                if (paramsCn != null) {
+                    val param = ParameterSpec.builder("request", paramsCn)
+                    if (def.parameters != null && paramsHasNoRequiredArgs(def.parameters)) {
+                        param.defaultValue("%T()", paramsCn)
+                    }
+                    fn.addParameter(param.build())
+                }
                 fn.addParameter(ParameterSpec.builder("input", BYTE_ARRAY).build())
                 val contentTypeParam = ParameterSpec.builder("inputContentType", KTOR_CONTENT_TYPE)
                 shape.defaultContentType?.let {
@@ -319,6 +333,7 @@ public class ServiceGenerator(
                 fn.addCode(
                     buildRawBytesCall(
                         nsid = defKey.nsid.raw,
+                        paramsCn = paramsCn,
                         responseSerializerExpr = responseSerializer,
                         emitProxy = emitProxy,
                     ),
@@ -328,14 +343,6 @@ public class ServiceGenerator(
                 fn.addParameter(proxyOverrideParam())
                 fn.addCode(noInputCall(defKey, responseSerializer, emitProxy))
             }
-            is ProcedureInputShape.UnsupportedRawBytesWithParams -> throw VerificationFailure(
-                "Unsupported procedure shape: lexicon '${shape.lexiconId}' declares input.encoding " +
-                    "'${shape.encoding}' (raw bytes) AND def.parameters (URL params). The SDK does not " +
-                    "currently emit a service method shape for this combination — no AT Protocol lexicon " +
-                    "in the supported corpus exercises it. If you have hit this in a real lexicon, please " +
-                    "file an issue at https://github.com/kikin81/atproto-kotlin/issues with the lexicon " +
-                    "JSON attached so the API surface can be designed against a concrete use case.",
-            )
         }
         return fn.build()
     }
@@ -367,6 +374,7 @@ public class ServiceGenerator(
 
     private fun buildRawBytesCall(
         nsid: String,
+        paramsCn: ClassName?,
         responseSerializerExpr: CodeBlock?,
         emitProxy: Boolean,
     ): CodeBlock {
@@ -375,7 +383,7 @@ public class ServiceGenerator(
         return CodeBlock.of(
             "return client.procedure(\n" +
                 "    nsid = %S,\n" +
-                "    params = %T,\n" +
+                "    params = %L,\n" +
                 "    paramsSerializer = %T.serializer(),\n" +
                 "    input = input,\n" +
                 "    inputContentType = inputContentType,\n" +
@@ -383,8 +391,8 @@ public class ServiceGenerator(
                 proxyLine +
                 ")\n",
             nsid,
-            NO_XRPC_PARAMS,
-            NO_XRPC_PARAMS,
+            if (paramsCn != null) CodeBlock.of("request") else CodeBlock.of("%T", NO_XRPC_PARAMS),
+            paramsCn ?: NO_XRPC_PARAMS,
             rsExpr,
         )
     }
