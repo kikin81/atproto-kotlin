@@ -55,4 +55,22 @@ public class ExampleService(
       responseSerializer = UploadBlobResponse.serializer(),
       proxy = proxy,
   )
+
+  /**
+   * Upload one part of a multipart upload.
+   */
+  public suspend fun uploadPart(
+    request: UploadPartRequest,
+    input: ByteArray,
+    inputContentType: ContentType = ContentType.Application.OctetStream,
+    proxy: String? = null,
+  ): UploadPartResponse = client.procedure(
+      nsid = "example.uploadPart",
+      params = request,
+      paramsSerializer = UploadPartRequest.serializer(),
+      input = input,
+      inputContentType = inputContentType,
+      responseSerializer = UploadPartResponse.serializer(),
+      proxy = proxy,
+  )
 }
