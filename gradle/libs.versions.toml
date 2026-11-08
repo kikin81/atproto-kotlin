@@ -8,7 +8,7 @@ kotlinpoet = "2.4.0"
 junit = "5.11.0"
 spotless = "8.10.4"
 ktlint = "1.4.1"
-dokka = "2.2.0"
+dokka = "2.3.0"
 vanniktech-maven-publish = "0.37.0"
 binary-compatibility-validator = "0.18.2"
 
