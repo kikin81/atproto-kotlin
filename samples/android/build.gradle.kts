@@ -27,6 +27,12 @@ android {
         compose = true
     }
 
+    // AGP 9.5's built-in Compose Preview tasks fail to configure without
+    // Android resources in unit tests; see compose-material3/build.gradle.kts.
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -40,6 +46,14 @@ android {
                 "proguard-rules.pro",
             )
         }
+    }
+}
+
+// The preview tasks also reject variants whose unit tests are disabled,
+// which AGP 9 does for release by default.
+androidComponents {
+    beforeVariants { variant ->
+        variant.hostTests[com.android.build.api.variant.HostTestBuilder.UNIT_TEST_TYPE]?.enable = true
     }
 }
 
