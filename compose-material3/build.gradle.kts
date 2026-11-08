@@ -26,6 +26,22 @@ android {
         buildConfig = false
         compose = true
     }
+
+    // AGP 9.5's built-in Compose Preview tasks need compiled Android
+    // resources in the unit-test variant; with them excluded (the default)
+    // the tasks fail to configure, and `./gradlew tasks --all`, which the
+    // release tooling runs, fails with them.
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+    }
+}
+
+// The same preview tasks exist per variant, and AGP 9 disables unit tests for
+// the release variant by default, which those tasks also reject.
+androidComponents {
+    beforeVariants { variant ->
+        variant.hostTests[com.android.build.api.variant.HostTestBuilder.UNIT_TEST_TYPE]?.enable = true
+    }
 }
 
 dokka {
