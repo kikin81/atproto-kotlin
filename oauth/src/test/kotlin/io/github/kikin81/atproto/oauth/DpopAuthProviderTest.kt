@@ -712,6 +712,135 @@ class DpopAuthProviderTest {
      * `isAccessTokenExpired()` cannot fire and `onUnauthorized` exercises only
      * the nonce branches plus the explicit fall-through refresh.
      */
+    private fun countingOkRefreshClient(onCall: () -> Unit): HttpClient = HttpClient(
+        MockEngine { _ ->
+            onCall()
+            respond(
+                ByteReadChannel("""{"access_token":"at_new","refresh_token":"rt_new","token_type":"DPoP"}"""),
+                HttpStatusCode.OK,
+                jsonHeaders,
+            )
+        },
+    )
+
+    private fun fixtureWithAccessToken(
+        accessToken: String,
+        refreshClient: HttpClient,
+        did: String = "did:plc:x",
+    ): Pair<DpopAuthProvider, InMemorySessionStore> {
+        val signer = DpopSigner.generate()
+        val exported = signer.exportKeyPair()
+        val store = InMemorySessionStore()
+        val session = OAuthSession(
+            accessToken = accessToken,
+            refreshToken = "rt",
+            did = did,
+            handle = "x.test",
+            pdsUrl = "https://pds.test",
+            tokenEndpoint = "https://auth.test/token",
+            clientId = "https://app.test/meta.json",
+            dpopPrivateKey = exported.privateKeyEncoded,
+            dpopPublicKey = exported.publicKeyEncoded,
+            pdsNonce = "same-nonce",
+        )
+        store.session = session
+        return DpopAuthProvider(session, signer, store, refreshClient) to store
+    }
+
+    private fun unexpiredJwt() = makeJwtWithExp((System.currentTimeMillis() / 1000) + 3600)
+
+    @Test
+    fun aBare401ForAnUnexpiredTokenDoesNotSpendTheRefreshToken() = runTest {
+        // A 401 with no token challenge (e.g. one passed through from a
+        // proxied service) says nothing about our access token. Every
+        // rotation is a chance to lose the response and be logged out on
+        // replay, so the provider must not rotate on it.
+        var tokenCalls = 0
+        val (provider, _) = fixtureWithAccessToken(unexpiredJwt(), countingOkRefreshClient { tokenCalls++ })
+
+        val recovered = provider.onUnauthorized(mapOf("DPoP-Nonce" to "same-nonce"))
+
+        assertFalse(recovered)
+        assertEquals(0, tokenCalls)
+    }
+
+    @Test
+    fun aNonceChallengeWithAnUnchangedNonceDoesNotRefresh() = runTest {
+        var tokenCalls = 0
+        val (provider, _) = fixtureWithAccessToken("opaque", countingOkRefreshClient { tokenCalls++ })
+
+        val recovered = provider.onUnauthorized(
+            mapOf("dpop-nonce" to "same-nonce", "www-authenticate" to """DPoP error="use_dpop_nonce""""),
+        )
+
+        assertFalse(recovered)
+        assertEquals(0, tokenCalls)
+    }
+
+    @Test
+    fun anInvalidTokenChallengeRefreshesATokenThatLooksUnexpired() = runTest {
+        // The server is the authority on expiry (clock skew, revocation): an
+        // explicit invalid_token challenge refreshes even before `exp`.
+        var tokenCalls = 0
+        val (provider, store) = fixtureWithAccessToken(unexpiredJwt(), countingOkRefreshClient { tokenCalls++ })
+
+        val recovered = provider.onUnauthorized(
+            mapOf("www-authenticate" to """DPoP error="invalid_token", error_description="Token expired""""),
+        )
+
+        assertTrue(recovered)
+        assertEquals(1, tokenCalls)
+        assertEquals("rt_new", store.session?.refreshToken)
+    }
+
+    @Test
+    fun anErrorDescriptionMentioningInvalidTokenIsNotAnInvalidTokenChallenge() = runTest {
+        var tokenCalls = 0
+        val (provider, _) = fixtureWithAccessToken(unexpiredJwt(), countingOkRefreshClient { tokenCalls++ })
+
+        val recovered = provider.onUnauthorized(
+            mapOf("WWW-Authenticate" to """DPoP error="invalid_dpop_proof", error_description="not invalid_token""""),
+        )
+
+        assertFalse(recovered)
+        assertEquals(0, tokenCalls)
+    }
+
+    @Test
+    fun twoProvidersForTheSameAccountRefreshingAtOnceRotateOnce() = runTest {
+        // Two clients built from one stored session (two createClient()
+        // calls). Each used to hold its own lock, so both POSTed the same
+        // single-use refresh token at once and the second was a replay,
+        // which the auth server answers by deleting the session.
+        var tokenCalls = 0
+        val gate = CompletableDeferred<Unit>()
+        val refreshClient = HttpClient(
+            MockEngine { _ ->
+                tokenCalls++
+                gate.await()
+                respond(
+                    ByteReadChannel("""{"access_token":"at_new","refresh_token":"rt_new","token_type":"DPoP"}"""),
+                    HttpStatusCode.OK,
+                    jsonHeaders,
+                )
+            },
+        )
+        val did = "did:plc:shared-lock"
+        val (providerA, store) = fixtureWithAccessToken(makeJwtWithExp(0), refreshClient, did)
+        val stored = requireNotNull(store.session)
+        val signer = DpopSigner.fromExported(DpopSigner.ExportedKeyPair(stored.dpopPrivateKey, stored.dpopPublicKey))
+        val providerB = DpopAuthProvider(stored, signer, store, refreshClient)
+
+        val a = async { providerA.onUnauthorized(emptyMap()) }
+        val b = async { providerB.onUnauthorized(emptyMap()) }
+        testScheduler.advanceUntilIdle()
+        gate.complete(Unit)
+
+        assertEquals(listOf(true, true), listOf(a.await(), b.await()))
+        assertEquals(1, tokenCalls, "the second provider must adopt the rotation, not replay the token")
+        assertEquals("rt_new", store.session?.refreshToken)
+    }
+
     private fun fixtureWithOpaqueToken(refreshClient: HttpClient): Pair<DpopAuthProvider, InMemorySessionStore> {
         val signer = DpopSigner.generate()
         val exported = signer.exportKeyPair()
