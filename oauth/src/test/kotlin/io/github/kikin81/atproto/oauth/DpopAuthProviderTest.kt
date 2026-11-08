@@ -794,6 +794,25 @@ class DpopAuthProviderTest {
     }
 
     @Test
+    fun anInvalidTokenChallengeIsFoundInAnyFormTheSpecAllows() = runTest {
+        // RFC 7235: auth-param names are case-insensitive, `=` may carry
+        // whitespace, values may be a quoted string or a bare token, and one
+        // header may list several challenges.
+        val forms = listOf(
+            """DPoP ERROR = "invalid_token"""",
+            """DPoP error=invalid_token, error_description="Token expired"""",
+            """Bearer error="insufficient_scope", DPoP error="invalid_token"""",
+        )
+        for (form in forms) {
+            var tokenCalls = 0
+            val (provider, _) = fixtureWithAccessToken(unexpiredJwt(), countingOkRefreshClient { tokenCalls++ })
+
+            assertTrue(provider.onUnauthorized(mapOf("WWW-Authenticate" to form)), form)
+            assertEquals(1, tokenCalls, form)
+        }
+    }
+
+    @Test
     fun anErrorDescriptionMentioningInvalidTokenIsNotAnInvalidTokenChallenge() = runTest {
         var tokenCalls = 0
         val (provider, _) = fixtureWithAccessToken(unexpiredJwt(), countingOkRefreshClient { tokenCalls++ })

@@ -165,7 +165,7 @@ class DpopAuthProvider(
             persistNonces()
         }
 
-        if (isAccessTokenExpired() || challenge?.challengeError() == INVALID_TOKEN) {
+        if (isAccessTokenExpired() || challenge?.hasChallengeError(INVALID_TOKEN) == true) {
             return refreshTokensSingleFlight(observedAccessToken, observedRefreshToken)
         }
 
@@ -180,8 +180,15 @@ class DpopAuthProvider(
 
     private fun Map<String, String>.header(name: String): String? = entries.firstOrNull { it.key.equals(name, ignoreCase = true) }?.value
 
-    /** The `error` auth-param of a `WWW-Authenticate` challenge (RFC 6750 §3). */
-    private fun String.challengeError(): String? = CHALLENGE_ERROR.find(this)?.groupValues?.get(1)
+    /**
+     * Whether any challenge in a `WWW-Authenticate` value carries this `error`
+     * auth-param (RFC 6750 §3). A header can list several challenges, so every
+     * `error` counts, not only the first.
+     */
+    private fun String.hasChallengeError(error: String): Boolean = CHALLENGE_ERROR.findAll(this).any { match ->
+        val (quoted, token) = match.destructured
+        quoted.ifEmpty { token } == error
+    }
 
     /**
      * Serializes refreshes AND coalesces redundant ones. AT Proto refresh
@@ -486,8 +493,10 @@ class DpopAuthProvider(
 private const val INVALID_GRANT = "invalid_grant"
 private const val INVALID_TOKEN = "invalid_token"
 
-// `\b` before `error` and `=` after it keep `error_description` from matching.
-private val CHALLENGE_ERROR = Regex("""\berror="([^"]*)"""")
+// RFC 7235 auth-param: a case-insensitive name, optional whitespace around
+// `=`, and a quoted-string or token value. `\b` before `error` and `=` after
+// it keep `error_description` from matching.
+private val CHALLENGE_ERROR = Regex("""\berror\s*=\s*(?:"([^"]*)"|([^\s,"]+))""", RegexOption.IGNORE_CASE)
 
 /**
  * One refresh lock per account for the whole process, keyed by DID as the
