@@ -252,6 +252,68 @@ class AtOAuthTest {
         assertEquals("app.example:/oauth-redirect", redirectUriParamFrom(tokenBody))
     }
 
+    /**
+     * The refresh and the code exchange both spend something single-use, so a
+     * consumer can route them through a client that never silently re-sends a
+     * request (OkHttp's retryOnConnectionFailure would otherwise replay them).
+     */
+    @Test
+    fun singleUseTokenPostsGoThroughTheTokenClientWhenProvided() = runTest {
+        val store = InMemorySessionStore()
+        var generalTokenPosts = 0
+        val general = HttpClient(
+            MockEngine { request ->
+                val url = request.url.toString()
+                respondToDiscovery(url) ?: when {
+                    url.contains("/par") ->
+                        respond(
+                            ByteReadChannel("""{"request_uri":"urn:test:par","expires_in":60}"""),
+                            HttpStatusCode.OK,
+                            jsonHeaders,
+                        )
+
+                    url.contains("/token") -> {
+                        generalTokenPosts++
+                        respond(ByteReadChannel(""), HttpStatusCode.InternalServerError)
+                    }
+
+                    else -> respond(ByteReadChannel(""), HttpStatusCode.NotFound)
+                }
+            },
+        )
+        val grants = mutableListOf<String>()
+        val token = HttpClient(
+            MockEngine { request ->
+                val body = (request.body as io.ktor.http.content.OutgoingContent.ByteArrayContent).bytes().decodeToString()
+                grants += body.substringAfter("grant_type=").substringBefore("&")
+                respond(
+                    ByteReadChannel(
+                        """{"access_token":"at_${grants.size}","refresh_token":"rt_${grants.size}","token_type":"DPoP","sub":"did:plc:testuser"}""",
+                    ),
+                    HttpStatusCode.OK,
+                    jsonHeaders,
+                )
+            },
+        )
+        val oauth = AtOAuth(
+            clientMetadataUrl = "https://app.test/oauth/client-metadata.json",
+            redirectUri = "app.example:/oauth-redirect",
+            sessionStore = store,
+            httpClient = general,
+            tokenHttpClient = token,
+        )
+        oauth.beginLogin("alice.test")
+        oauth.completeLogin(
+            "app.example:/oauth-redirect?code=code_xyz&state=${extractState(oauth)}&iss=https://auth.test",
+        )
+
+        val provider = oauth.createClient().authProvider as DpopAuthProvider
+        assertTrue(provider.onUnauthorized(emptyMap()))
+
+        assertEquals(listOf("authorization_code", "refresh_token"), grants)
+        assertEquals(0, generalTokenPosts)
+    }
+
     @Test
     fun beginLoginReturnsAuthorizationUrl() = runTest {
         val store = InMemorySessionStore()

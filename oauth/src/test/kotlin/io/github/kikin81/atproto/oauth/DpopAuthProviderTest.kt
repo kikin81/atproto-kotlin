@@ -18,6 +18,7 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -628,6 +629,27 @@ class DpopAuthProviderTest {
             "pre-send failures must state the refresh token was not consumed, got: ${failure.message}",
         )
         assertNotNull(store.session, "a pre-send failure must not clear the session")
+    }
+
+    /**
+     * OkHttp re-sends a request whose connection dropped mid-flight and keeps
+     * that failure as suppressed. A DNS failure on the retry says nothing about
+     * the first POST, which may already have consumed the token.
+     */
+    @Test
+    fun aRetryThatFailedBeforeSendingDoesNotClearAnEarlierAttempt() = runTest {
+        val retried = java.net.UnknownHostException("auth.test").apply {
+            addSuppressed(java.net.SocketException("Software caused connection abort"))
+        }
+        val refreshClient = HttpClient(MockEngine { _ -> throw retried })
+        val (provider, _) = fixtureWithExpiredToken(refreshClient)
+
+        val failure = assertFailsWith<OAuthRefreshFailedException> { provider.onUnauthorized(emptyMap()) }
+
+        assertFalse(
+            failure.message!!.contains("not consumed"),
+            "an earlier attempt may have been sent, got: ${failure.message}",
+        )
     }
 
     @Test

@@ -93,6 +93,21 @@ class AtOAuth(
     private val pendingStore: PendingAuthStore = InMemoryPendingAuthStore(),
     /** Injection seam for [PENDING_AUTH_TTL_MILLIS] expiry; overridden in tests. */
     private val nowMillis: () -> Long = { System.currentTimeMillis() },
+    /**
+     * The client for the two token-endpoint POSTs that spend something
+     * single-use: the token refresh and the authorization-code exchange.
+     * Defaults to [httpClient].
+     *
+     * **Pass a client that never silently re-sends a request.** OkHttp's
+     * `retryOnConnectionFailure` (on by default) re-sends a POST whose
+     * connection dropped mid-flight. If the first one reached the server, the
+     * refresh token or code is already spent: a re-sent refresh is a replay,
+     * which AT Proto answers by deleting the whole session, and a re-sent code
+     * exchange fails the login. With OkHttp, build it with
+     * `retryOnConnectionFailure(false)`. Bound it with a request timeout too:
+     * the refresh runs non-cancellably (see [DpopAuthProvider]).
+     */
+    private val tokenHttpClient: HttpClient = httpClient,
 ) {
 
     /**
@@ -349,7 +364,7 @@ class AtOAuth(
             session = session,
             signer = signer,
             sessionStore = sessionStore,
-            refreshClient = httpClient,
+            refreshClient = tokenHttpClient,
             onPersistFailure = onSessionPersistFailure,
         )
         return XrpcClient(
@@ -502,7 +517,7 @@ class AtOAuth(
         // first attempt succeeds; the retry below still covers the rare
         // case where the nonce has rotated since PAR.
         val proof = signer.sign(method = "POST", url = metadata.tokenEndpoint, nonce = initialNonce)
-        val response = httpClient.submitForm(
+        val response = tokenHttpClient.submitForm(
             url = metadata.tokenEndpoint,
             formParameters = Parameters.build {
                 append("grant_type", "authorization_code")
@@ -524,7 +539,7 @@ class AtOAuth(
             if (nonce != null) {
                 signer.calibrateClockFromHeader(response.headers["Date"])
                 val retryProof = signer.sign(method = "POST", url = metadata.tokenEndpoint, nonce = nonce)
-                val retryResponse = httpClient.submitForm(
+                val retryResponse = tokenHttpClient.submitForm(
                     url = metadata.tokenEndpoint,
                     formParameters = Parameters.build {
                         append("grant_type", "authorization_code")

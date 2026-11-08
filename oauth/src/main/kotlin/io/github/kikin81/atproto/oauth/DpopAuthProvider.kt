@@ -56,6 +56,10 @@ class DpopAuthProvider(
     /**
      * Client used for token-endpoint POSTs.
      *
+     * Should not silently re-send a request whose connection dropped (OkHttp:
+     * `retryOnConnectionFailure(false)`): a re-sent refresh replays a token the
+     * server may already have consumed.
+     *
      * Should be bounded by a request timeout — Ktor's `HttpTimeout` plugin, or
      * timeouts configured on the engine. This library installs neither and
      * cannot enforce it, so it is the caller's responsibility.
@@ -343,10 +347,25 @@ class DpopAuthProvider(
         }
     }
 
-    private fun isPreSendFailure(e: Exception): Boolean = e is UnknownHostException ||
-        e is ConnectException ||
-        e is UnresolvedAddressException ||
-        e is ConnectTimeoutException
+    /**
+     * Pre-send only when every attempt failed before reaching the server.
+     * OkHttp re-sends a request whose connection dropped mid-flight and keeps
+     * the earlier failure as suppressed; a DNS failure on that retry says
+     * nothing about the first POST, which may already have consumed the token.
+     * kotlinx.coroutines can re-create an exception with the original as its
+     * cause, so a same-type cause's suppressed list counts too, but not the
+     * rest of the chain: a genuine DNS failure has a platform cause of its own.
+     */
+    private fun isPreSendFailure(e: Exception): Boolean {
+        val original = e.cause?.takeIf { it::class == e::class }
+        val earlier = e.suppressed.toList() + (original?.suppressed?.toList() ?: emptyList())
+        return e.isPreSendType() && earlier.all { it.isPreSendType() }
+    }
+
+    private fun Throwable.isPreSendType(): Boolean = this is UnknownHostException ||
+        this is ConnectException ||
+        this is UnresolvedAddressException ||
+        this is ConnectTimeoutException
 
     /** Callers guarantee [response] is HTTP 200; non-OK goes to [failRefresh]. */
     private suspend fun applyRefreshResponse(response: HttpResponse): Boolean {
