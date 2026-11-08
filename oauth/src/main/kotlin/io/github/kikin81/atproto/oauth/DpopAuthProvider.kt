@@ -20,6 +20,7 @@ import kotlinx.serialization.json.long
 import java.net.ConnectException
 import java.net.UnknownHostException
 import java.nio.channels.UnresolvedAddressException
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
@@ -34,8 +35,11 @@ import kotlin.io.encoding.ExperimentalEncodingApi
  *
  * When the PDS responds with HTTP 401:
  * - If `DPoP-Nonce` header is present → stores the nonce, retries
- * - If the access token is expired → refreshes via the token endpoint
- *   with the DPoP-bound refresh token, retries
+ * - If the access token is expired, or the 401 challenges it with
+ *   `WWW-Authenticate: DPoP error="invalid_token"` → refreshes via the token
+ *   endpoint with the DPoP-bound refresh token, retries. Any other 401 does
+ *   not refresh: every rotation spends a single-use token, and a rotation
+ *   whose response is lost ends the session on the next replay
  * - If the refresh token is revoked (`error=invalid_grant`) → clears the
  *   session, throws [OAuthSessionExpiredException]
  * - Otherwise (network error, 5xx/429, unparseable/captive-portal body, or any
@@ -43,8 +47,9 @@ import kotlin.io.encoding.ExperimentalEncodingApi
  *   [OAuthRefreshFailedException] and LEAVES THE SESSION INTACT, so a flaky
  *   connection can't sign the user out
  *
- * Refresh operations are serialized with a [Mutex] to prevent concurrent
- * refreshes from invalidating the session.
+ * Refresh operations are serialized with one [Mutex] per account (DID),
+ * shared by every provider in the process, so two clients built from the
+ * same session cannot spend the same refresh token at once.
  */
 class DpopAuthProvider(
     // Written under refreshMutex, but read without it (authHeaders,
@@ -55,6 +60,10 @@ class DpopAuthProvider(
     private val sessionStore: OAuthSessionStore,
     /**
      * Client used for token-endpoint POSTs.
+     *
+     * Should not silently re-send a request whose connection dropped (OkHttp:
+     * `retryOnConnectionFailure(false)`): a re-sent refresh replays a token the
+     * server may already have consumed.
      *
      * Should be bounded by a request timeout — Ktor's `HttpTimeout` plugin, or
      * timeouts configured on the engine. This library installs neither and
@@ -81,7 +90,9 @@ class DpopAuthProvider(
     private val onPersistFailure: (Throwable) -> Unit = {},
 ) : AuthProvider {
 
-    private val refreshMutex = Mutex()
+    // A signup session can lack a DID until resolution completes; with no
+    // account key to share, it keeps a lock of its own.
+    private val refreshMutex = session.did?.let(RefreshLocks::forDid) ?: Mutex()
 
     /**
      * Latches once a refresh is terminally rejected (`invalid_grant`) and the
@@ -125,12 +136,16 @@ class DpopAuthProvider(
      * 1. If the server rotated `DPoP-Nonce`, store and persist it eagerly.
      *    Persisting before any refresh attempt means a refresh that throws
      *    (e.g. transient network failure) won't lose the rotated nonce.
-     * 2. If the bound access token is a JWT whose `exp` is past (or within a
-     *    small skew window) — i.e. the next request would 401 with
-     *    `invalid_token` regardless of nonce — refresh proactively.
-     * 3. If only the nonce was recoverable (opaque/non-expired token, new
-     *    nonce already persisted in step 1), return `true`.
-     * 4. Otherwise (no nonce signal: same nonce, no nonce header) refresh.
+     * 2. Refresh if the token is provably dead: a JWT whose `exp` is past
+     *    (or within a small skew window), or an explicit
+     *    `WWW-Authenticate: ... error="invalid_token"` challenge.
+     * 3. If only the nonce was recoverable (new nonce already persisted in
+     *    step 1), return `true`.
+     * 4. With no challenge header and an opaque token there is no evidence
+     *    either way, so refresh, as before. Any other challenge
+     *    (`use_dpop_nonce` with an unchanged nonce, a rejected proof, scope),
+     *    or a bare 401 against a JWT that has not expired, says nothing
+     *    about the token: return `false` and keep the refresh token unspent.
      */
     override suspend fun onUnauthorized(responseHeaders: Map<String, String>): Boolean {
         // Snapshot the tokens this 401 was (at the latest) issued against,
@@ -139,8 +154,9 @@ class DpopAuthProvider(
         val observedAccessToken = session.accessToken
         val observedRefreshToken = session.refreshToken
 
-        val newNonce = responseHeaders["DPoP-Nonce"] ?: responseHeaders["dpop-nonce"]
-        val dateHeader = responseHeaders["Date"] ?: responseHeaders["date"]
+        val newNonce = responseHeaders.header("DPoP-Nonce")
+        val dateHeader = responseHeaders.header("Date")
+        val challenge = responseHeaders.header("WWW-Authenticate")
         if (dateHeader != null) signer.calibrateClockFromHeader(dateHeader)
 
         val nonceChanged = newNonce != null && newNonce != pdsNonce
@@ -149,13 +165,29 @@ class DpopAuthProvider(
             persistNonces()
         }
 
-        if (isAccessTokenExpired()) {
+        if (isAccessTokenExpired() || challenge?.hasChallengeError(INVALID_TOKEN) == true) {
             return refreshTokensSingleFlight(observedAccessToken, observedRefreshToken)
         }
 
         if (nonceChanged) return true
 
-        return refreshTokensSingleFlight(observedAccessToken, observedRefreshToken)
+        val noEvidenceEitherWay = challenge == null && accessTokenExpiry() == null
+        if (noEvidenceEitherWay) {
+            return refreshTokensSingleFlight(observedAccessToken, observedRefreshToken)
+        }
+        return false
+    }
+
+    private fun Map<String, String>.header(name: String): String? = entries.firstOrNull { it.key.equals(name, ignoreCase = true) }?.value
+
+    /**
+     * Whether any challenge in a `WWW-Authenticate` value carries this `error`
+     * auth-param (RFC 6750 §3). A header can list several challenges, so every
+     * `error` counts, not only the first.
+     */
+    private fun String.hasChallengeError(error: String): Boolean = CHALLENGE_ERROR.findAll(this).any { match ->
+        val (quoted, token) = match.destructured
+        quoted.ifEmpty { token } == error
     }
 
     /**
@@ -236,23 +268,24 @@ class DpopAuthProvider(
      * tokens, malformed JWTs, or JWTs without an `exp` claim — the caller
      * must not refresh on positive evidence absent.
      */
+    private fun isAccessTokenExpired(skewSeconds: Long = 30): Boolean {
+        val exp = accessTokenExpiry() ?: return false
+        val now = (System.currentTimeMillis() / 1000) + signer.clockOffsetSeconds
+        return exp <= now + skewSeconds
+    }
+
+    /** The access token's JWT `exp`, or `null` for an opaque or malformed token. */
     @OptIn(ExperimentalEncodingApi::class)
-    private fun isAccessTokenExpired(skewSeconds: Long = 30): Boolean = try {
+    private fun accessTokenExpiry(): Long? = try {
         val parts = session.accessToken.split('.')
         if (parts.size != 3) {
-            false
+            null
         } else {
             val payload = Base64.UrlSafe.decode(parts[1].padBase64()).toString(Charsets.UTF_8)
-            val exp = json.parseToJsonElement(payload).jsonObject["exp"]?.jsonPrimitive?.long
-            if (exp == null) {
-                false
-            } else {
-                val now = (System.currentTimeMillis() / 1000) + signer.clockOffsetSeconds
-                exp <= now + skewSeconds
-            }
+            json.parseToJsonElement(payload).jsonObject["exp"]?.jsonPrimitive?.long
         }
     } catch (_: Exception) {
-        false
+        null
     }
 
     private fun String.padBase64(): String = when (length % 4) {
@@ -343,10 +376,25 @@ class DpopAuthProvider(
         }
     }
 
-    private fun isPreSendFailure(e: Exception): Boolean = e is UnknownHostException ||
-        e is ConnectException ||
-        e is UnresolvedAddressException ||
-        e is ConnectTimeoutException
+    /**
+     * Pre-send only when every attempt failed before reaching the server.
+     * OkHttp re-sends a request whose connection dropped mid-flight and keeps
+     * the earlier failure as suppressed; a DNS failure on that retry says
+     * nothing about the first POST, which may already have consumed the token.
+     * kotlinx.coroutines can re-create an exception with the original as its
+     * cause, so a same-type cause's suppressed list counts too, but not the
+     * rest of the chain: a genuine DNS failure has a platform cause of its own.
+     */
+    private fun isPreSendFailure(e: Exception): Boolean {
+        val original = e.cause?.takeIf { it::class == e::class }
+        val earlier = e.suppressed.toList() + (original?.suppressed?.toList() ?: emptyList())
+        return e.isPreSendType() && earlier.all { it.isPreSendType() }
+    }
+
+    private fun Throwable.isPreSendType(): Boolean = this is UnknownHostException ||
+        this is ConnectException ||
+        this is UnresolvedAddressException ||
+        this is ConnectTimeoutException
 
     /** Callers guarantee [response] is HTTP 200; non-OK goes to [failRefresh]. */
     private suspend fun applyRefreshResponse(response: HttpResponse): Boolean {
@@ -443,6 +491,23 @@ class DpopAuthProvider(
 // binary-compatibility-validator. Top-level private consts land on the file
 // class as private statics instead.
 private const val INVALID_GRANT = "invalid_grant"
+private const val INVALID_TOKEN = "invalid_token"
+
+// RFC 7235 auth-param: a case-insensitive name, optional whitespace around
+// `=`, and a quoted-string or token value. `\b` before `error` and `=` after
+// it keep `error_description` from matching.
+private val CHALLENGE_ERROR = Regex("""\berror\s*=\s*(?:"([^"]*)"|([^\s,"]+))""", RegexOption.IGNORE_CASE)
+
+/**
+ * One refresh lock per account for the whole process, keyed by DID as the
+ * reference client keys its lock. A lock per provider let two clients built
+ * from the same session POST the same single-use refresh token at once.
+ */
+private object RefreshLocks {
+    private val locks = ConcurrentHashMap<String, Mutex>()
+
+    fun forDid(did: String): Mutex = locks.computeIfAbsent(did) { Mutex() }
+}
 private const val TERMINAL_MESSAGE = "Refresh token revoked (invalid_grant) — terminal for this session"
 
 @Serializable
