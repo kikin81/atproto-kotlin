@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "lexicons": [
     "app.bsky.actor.getPreferences",
     "app.bsky.actor.getProfile",
@@ -175,7 +175,11 @@
     "com.atproto.server.getSession",
     "com.atproto.server.refreshSession",
     "com.atproto.sync.getLatestCommit",
-    "com.atproto.sync.getRepo"
+    "com.atproto.sync.getRepo",
+    "tools.ozone.moderation.defs",
+    "tools.ozone.queue.defs",
+    "tools.ozone.report.defs",
+    "tools.ozone.team.defs"
   ],
   "resolutions": {
     "app.bsky.actor.defs": {
