@@ -1,0 +1,33 @@
+{
+  "lexicon": 1,
+  "id": "example.uploadPart",
+  "description": "Procedure with raw-bytes input AND URL params — exercises the bytes-plus-params service emission path.",
+  "defs": {
+    "main": {
+      "type": "procedure",
+      "description": "Upload one part of a multipart upload.",
+      "parameters": {
+        "type": "params",
+        "required": ["jobId", "partNumber"],
+        "properties": {
+          "jobId": { "type": "string" },
+          "partNumber": { "type": "integer", "minimum": 1 }
+        }
+      },
+      "input": {
+        "encoding": "application/octet-stream"
+      },
+      "output": {
+        "encoding": "application/json",
+        "schema": {
+          "type": "object",
+          "required": ["partNumber", "sizeBytes"],
+          "properties": {
+            "partNumber": { "type": "integer" },
+            "sizeBytes": { "type": "integer" }
+          }
+        }
+      }
+    }
+  }
+}
