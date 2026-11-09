@@ -141,9 +141,12 @@ class DpopAuthProvider(
      *    `WWW-Authenticate: ... error="invalid_token"` challenge.
      * 3. If only the nonce was recoverable (new nonce already persisted in
      *    step 1), return `true`.
+     *    Also return `true` for a `use_dpop_nonce` challenge whose nonce is
+     *    unchanged: a concurrent request stored it first, and this one was
+     *    still sent with the stale nonce.
      * 4. With no challenge header and an opaque token there is no evidence
      *    either way, so refresh, as before. Any other challenge
-     *    (`use_dpop_nonce` with an unchanged nonce, a rejected proof, scope),
+     *    (`use_dpop_nonce` without a nonce, a rejected proof, scope),
      *    or a bare 401 against a JWT that has not expired, says nothing
      *    about the token: return `false` and keep the refresh token unspent.
      */
@@ -170,6 +173,11 @@ class DpopAuthProvider(
         }
 
         if (nonceChanged) return true
+
+        // Requests sent together with a stale nonce all get a 401 with the same
+        // new nonce. Only the first sees it as changed, so the rest must still
+        // retry. This retries the request only and never spends the refresh token.
+        if (newNonce != null && challenge?.hasChallengeError(USE_DPOP_NONCE) == true) return true
 
         val noEvidenceEitherWay = challenge == null && accessTokenExpiry() == null
         if (noEvidenceEitherWay) {
@@ -492,6 +500,7 @@ class DpopAuthProvider(
 // class as private statics instead.
 private const val INVALID_GRANT = "invalid_grant"
 private const val INVALID_TOKEN = "invalid_token"
+private const val USE_DPOP_NONCE = "use_dpop_nonce"
 
 // RFC 7235 auth-param: a case-insensitive name, optional whitespace around
 // `=`, and a quoted-string or token value. `\b` before `error` and `=` after
