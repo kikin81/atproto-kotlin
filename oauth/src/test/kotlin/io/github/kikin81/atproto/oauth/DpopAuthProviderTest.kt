@@ -360,6 +360,105 @@ class DpopAuthProviderTest {
         assertEquals("at_new", store.session?.accessToken)
     }
 
+    /**
+     * A provider whose token endpoint only counts calls, for asserting that
+     * nonce recovery never spends the single-use refresh token.
+     */
+    private class NonceFixture(accessToken: String, pdsNonce: String = "stale-nonce") {
+        var tokenCalls = 0
+        val store = InMemorySessionStore()
+        val provider: DpopAuthProvider
+
+        init {
+            val refreshClient = HttpClient(
+                MockEngine { _ ->
+                    tokenCalls++
+                    respond(
+                        ByteReadChannel("""{"access_token":"at_new","refresh_token":"rt_new","token_type":"DPoP"}"""),
+                        HttpStatusCode.OK,
+                        headersOf(HttpHeaders.ContentType, "application/json"),
+                    )
+                },
+            )
+            val signer = DpopSigner.generate()
+            val exported = signer.exportKeyPair()
+            val session = OAuthSession(
+                accessToken = accessToken,
+                refreshToken = "rt_old",
+                did = "did:plc:testuser",
+                handle = "alice.test",
+                pdsUrl = "https://pds.test",
+                tokenEndpoint = "https://auth.test/token",
+                clientId = "https://app.test/meta.json",
+                dpopPrivateKey = exported.privateKeyEncoded,
+                dpopPublicKey = exported.publicKeyEncoded,
+                pdsNonce = pdsNonce,
+            )
+            store.session = session
+            provider = DpopAuthProvider(session, signer, store, refreshClient)
+        }
+    }
+
+    private fun validAccessToken() = makeJwtWithExp((System.currentTimeMillis() / 1000) + 3600)
+
+    private val useDpopNonce = """DPoP error="use_dpop_nonce""""
+
+    @Test
+    fun requestThatLosesTheNonceRaceStillRetries() = runTest {
+        // Regression: requests sent together with a stale nonce all get a 401
+        // carrying the same new nonce. The first stores it; the rest saw an
+        // "unchanged" nonce, returned false, and surfaced XrpcError.Unknown.
+        val fixture = NonceFixture(validAccessToken())
+        val challenge = mapOf("DPoP-Nonce" to "fresh-nonce", "WWW-Authenticate" to useDpopNonce)
+
+        assertTrue(fixture.provider.onUnauthorized(challenge), "first response stores the nonce and retries")
+        assertTrue(fixture.provider.onUnauthorized(challenge), "a response that lost the race must retry too")
+        assertEquals(0, fixture.tokenCalls, "nonce recovery must never spend the refresh token")
+    }
+
+    @Test
+    fun concurrentNonceChallengesAllRetryWithoutRefreshing() = runTest {
+        val fixture = NonceFixture(validAccessToken())
+        val challenge = mapOf("DPoP-Nonce" to "fresh-nonce", "WWW-Authenticate" to useDpopNonce)
+
+        val results = List(8) { async { fixture.provider.onUnauthorized(challenge) } }.awaitAll()
+
+        assertTrue(results.all { it }, "every concurrent request must retry, got $results")
+        assertEquals(0, fixture.tokenCalls, "nonce recovery must never spend the refresh token")
+        assertEquals(0, fixture.store.clearCalls)
+    }
+
+    @Test
+    fun unchangedNonceWithoutUseDpopNonceChallengeDoesNotRetry() = runTest {
+        // Guard for the replay protection: a nonce header alone is not a nonce
+        // challenge. A rejected proof must neither retry nor spend the token.
+        val fixture = NonceFixture(validAccessToken(), pdsNonce = "same-nonce")
+
+        val recovered = fixture.provider.onUnauthorized(
+            mapOf("DPoP-Nonce" to "same-nonce", "WWW-Authenticate" to """DPoP error="invalid_dpop_proof""""),
+        )
+
+        assertFalse(recovered)
+        assertEquals(0, fixture.tokenCalls)
+    }
+
+    @Test
+    fun useDpopNonceChallengeWithoutNonceHeaderDoesNotRetry() = runTest {
+        // No nonce to retry with, so a retry could only fail the same way.
+        val fixture = NonceFixture(validAccessToken())
+
+        assertFalse(fixture.provider.onUnauthorized(mapOf("WWW-Authenticate" to useDpopNonce)))
+        assertEquals(0, fixture.tokenCalls)
+    }
+
+    @Test
+    fun bareUnauthorizedWithValidJwtDoesNotRefresh() = runTest {
+        val fixture = NonceFixture(validAccessToken())
+
+        assertFalse(fixture.provider.onUnauthorized(mapOf("WWW-Authenticate" to "DPoP")))
+        assertEquals(0, fixture.tokenCalls)
+    }
+
     @Test
     fun concurrentUnauthorizedCallsRotateExactlyOnce() = runTest {
         // Refresh tokens are single-use: every redundant rotation widens the
@@ -773,7 +872,9 @@ class DpopAuthProviderTest {
             mapOf("dpop-nonce" to "same-nonce", "www-authenticate" to """DPoP error="use_dpop_nonce""""),
         )
 
-        assertFalse(recovered)
+        // Retries the request (a concurrent call may have stored the nonce
+        // first), but must not spend the refresh token.
+        assertTrue(recovered)
         assertEquals(0, tokenCalls)
     }
 
