@@ -32,12 +32,16 @@ import kotlinx.serialization.json.encodeToJsonElement
  *
  * @param baseUrl Root URL of the PDS / AppView, e.g. `https://bsky.social`.
  *   No trailing `/xrpc` — the client appends it.
+ * @param errorListener Told about every call that finally fails with an
+ *   [XrpcError], after any auth retry, just before it is thrown. A 401 that a
+ *   retry recovers never reaches it. Use it to report failures centrally.
  */
 public class XrpcClient(
     baseUrl: String,
     public val httpClient: HttpClient,
     public val json: Json = DefaultJson,
     public val authProvider: AuthProvider = NoAuth,
+    public val errorListener: XrpcErrorListener? = null,
 ) {
     private val baseUrl: String = baseUrl.trimEnd('/')
 
@@ -66,10 +70,10 @@ public class XrpcClient(
                     applyAuth(provider)
                     applyProxy(proxy)
                 }
-                return handle(retry, responseSerializer, errorMapper)
+                return handle(nsid, retry, responseSerializer, errorMapper)
             }
         }
-        return handle(response, responseSerializer, errorMapper)
+        return handle(nsid, response, responseSerializer, errorMapper)
     }
 
     public suspend fun <P, I, R> procedure(
@@ -177,10 +181,10 @@ public class XrpcClient(
                     applyProxy(proxy)
                     body()
                 }
-                return handle(retry, responseSerializer, errorMapper)
+                return handle(nsid, retry, responseSerializer, errorMapper)
             }
         }
-        return handle(response, responseSerializer, errorMapper)
+        return handle(nsid, response, responseSerializer, errorMapper)
     }
 
     private fun <P> HttpRequestBuilder.appendQueryParams(
@@ -236,6 +240,7 @@ public class XrpcClient(
     }
 
     private suspend fun <R> handle(
+        nsid: String,
         response: HttpResponse,
         responseSerializer: KSerializer<R>,
         errorMapper: XrpcErrorMapper,
@@ -259,10 +264,26 @@ public class XrpcClient(
         }.getOrNull()
         val name = decoded?.error ?: "Unknown"
         val message = decoded?.message
-        throw errorMapper.map(name, message, response.status.value)
+        val error = errorMapper.map(name, message, response.status.value)
+        notifyError(nsid, error)
+        throw error
     }
 
     private fun HttpStatusCode.isSuccess(): Boolean = value in 200..299
+
+    // A listener is for observing only: whatever it does, the caller still
+    // gets the original error.
+    private fun notifyError(
+        nsid: String,
+        error: XrpcError,
+    ) {
+        val listener = errorListener ?: return
+        try {
+            listener.onError(nsid, error)
+        } catch (listenerFailure: Exception) {
+            error.addSuppressed(listenerFailure)
+        }
+    }
 
     public companion object {
         /**
