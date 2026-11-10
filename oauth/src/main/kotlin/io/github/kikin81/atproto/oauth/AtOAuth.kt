@@ -1,6 +1,7 @@
 package io.github.kikin81.atproto.oauth
 
 import io.github.kikin81.atproto.runtime.XrpcClient
+import io.github.kikin81.atproto.runtime.XrpcErrorListener
 import io.ktor.client.HttpClient
 import io.ktor.client.request.forms.submitForm
 import io.ktor.client.request.header
@@ -343,12 +344,20 @@ class AtOAuth(
         }
     }
 
+    // Keeps the pre-9.17 JVM signature for binaries compiled against it;
+    // source callers resolve to the overload below.
+    @Deprecated("Binary compatibility only", level = DeprecationLevel.HIDDEN)
+    suspend fun createClient(): XrpcClient = createClient(errorListener = null)
+
     /**
      * Creates an authenticated [XrpcClient] from the persisted session.
      * The client uses [DpopAuthProvider] for DPoP proof-of-possession
      * on every request.
+     *
+     * @param errorListener Passed to the client: told about every call that
+     *   finally fails, after any DPoP retry. See [XrpcErrorListener].
      */
-    suspend fun createClient(): XrpcClient {
+    suspend fun createClient(errorListener: XrpcErrorListener? = null): XrpcClient {
         val session = sessionStore.load()
             ?: throw OAuthException("No session — call beginLogin/completeLogin first or restore a persisted session")
         val pdsUrl = session.pdsUrl
@@ -371,6 +380,7 @@ class AtOAuth(
             baseUrl = pdsUrl,
             httpClient = httpClient,
             authProvider = authProvider,
+            errorListener = errorListener,
         )
     }
 

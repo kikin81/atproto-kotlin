@@ -7,7 +7,9 @@ public final class io/github/kikin81/atproto/oauth/AtOAuth {
 	public final fun beginSignup (Ljava/lang/String;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun beginSignup$default (Lio/github/kikin81/atproto/oauth/AtOAuth;Ljava/lang/String;ZLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public final fun completeLogin (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun createClient (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun createClient (Lio/github/kikin81/atproto/runtime/XrpcErrorListener;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final synthetic fun createClient (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun createClient$default (Lio/github/kikin81/atproto/oauth/AtOAuth;Lio/github/kikin81/atproto/runtime/XrpcErrorListener;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public final fun logout (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
