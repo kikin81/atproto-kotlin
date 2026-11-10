@@ -99,24 +99,19 @@ class XrpcClientDpopNonceRaceTest {
         val provider = DpopAuthProvider(session, signer, store, tokenEndpoint)
         val client = XrpcClient(baseUrl = "https://pds.test", httpClient = HttpClient(pds), authProvider = provider)
 
+        // Any request that still fails throws here and fails the test.
         val results = List(requestCount) {
             async {
-                runCatching {
-                    client.query(
-                        nsid = "app.bsky.actor.getPreferences",
-                        params = Unit,
-                        paramsSerializer = Unit.serializer(),
-                        responseSerializer = JsonObject.serializer(),
-                    )
-                }
+                client.query(
+                    nsid = "app.bsky.actor.getPreferences",
+                    params = Unit,
+                    paramsSerializer = Unit.serializer(),
+                    responseSerializer = JsonObject.serializer(),
+                )
             }
         }.awaitAll()
 
-        assertEquals(
-            List(requestCount) { true },
-            results.map { it.isSuccess },
-            "every request must succeed after one retry, failures: ${results.mapNotNull { it.exceptionOrNull()?.message }}",
-        )
+        assertEquals(requestCount, results.size)
         assertEquals(0, tokenCalls.get(), "nonce recovery must never spend the refresh token")
         assertEquals(requestCount * 2, pdsCalls.get(), "each request is sent once stale and retried once")
         assertEquals(serverNonce, store.saved?.pdsNonce)
