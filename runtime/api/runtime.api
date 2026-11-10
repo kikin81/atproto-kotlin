@@ -542,9 +542,10 @@ public final class io/github/kikin81/atproto/runtime/Uri$Companion {
 
 public final class io/github/kikin81/atproto/runtime/XrpcClient {
 	public static final field Companion Lio/github/kikin81/atproto/runtime/XrpcClient$Companion;
-	public fun <init> (Ljava/lang/String;Lio/ktor/client/HttpClient;Lkotlinx/serialization/json/Json;Lio/github/kikin81/atproto/runtime/AuthProvider;)V
-	public synthetic fun <init> (Ljava/lang/String;Lio/ktor/client/HttpClient;Lkotlinx/serialization/json/Json;Lio/github/kikin81/atproto/runtime/AuthProvider;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/lang/String;Lio/ktor/client/HttpClient;Lkotlinx/serialization/json/Json;Lio/github/kikin81/atproto/runtime/AuthProvider;Lio/github/kikin81/atproto/runtime/XrpcErrorListener;)V
+	public synthetic fun <init> (Ljava/lang/String;Lio/ktor/client/HttpClient;Lkotlinx/serialization/json/Json;Lio/github/kikin81/atproto/runtime/AuthProvider;Lio/github/kikin81/atproto/runtime/XrpcErrorListener;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun getAuthProvider ()Lio/github/kikin81/atproto/runtime/AuthProvider;
+	public final fun getErrorListener ()Lio/github/kikin81/atproto/runtime/XrpcErrorListener;
 	public final fun getHttpClient ()Lio/ktor/client/HttpClient;
 	public final fun getJson ()Lkotlinx/serialization/json/Json;
 	public final fun procedure (Ljava/lang/String;Ljava/lang/Object;Lkotlinx/serialization/KSerializer;Ljava/lang/Object;Lkotlinx/serialization/KSerializer;Lkotlinx/serialization/KSerializer;Ljava/lang/String;Lio/github/kikin81/atproto/runtime/XrpcErrorMapper;Lio/github/kikin81/atproto/runtime/AuthProvider;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -574,6 +575,10 @@ public final class io/github/kikin81/atproto/runtime/XrpcError$Unknown : io/gith
 
 public final class io/github/kikin81/atproto/runtime/XrpcErrorKt {
 	public static final fun getDefaultXrpcErrorMapper ()Lio/github/kikin81/atproto/runtime/XrpcErrorMapper;
+}
+
+public abstract interface class io/github/kikin81/atproto/runtime/XrpcErrorListener {
+	public abstract fun onError (Ljava/lang/String;Lio/github/kikin81/atproto/runtime/XrpcError;)V
 }
 
 public abstract interface class io/github/kikin81/atproto/runtime/XrpcErrorMapper {
