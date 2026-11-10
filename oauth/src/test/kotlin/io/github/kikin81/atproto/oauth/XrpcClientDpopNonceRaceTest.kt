@@ -17,6 +17,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.test.Test
@@ -33,16 +34,17 @@ class XrpcClientDpopNonceRaceTest {
     fun concurrentRequestsWithAStaleNonceAllSucceedWithoutRefreshing() = runTest {
         val requestCount = 4
         val serverNonce = "fresh-nonce"
-        var staleArrivals = 0
+        // MockEngine handles requests on real threads, so the counters must be atomic.
+        val staleArrivals = AtomicInteger()
         // Hold every stale response until all requests have arrived, so each
         // one is guaranteed to have been signed with the stale nonce.
         val allSentStale = CompletableDeferred<Unit>()
-        var pdsCalls = 0
+        val pdsCalls = AtomicInteger()
 
         val pds = MockEngine { request ->
-            pdsCalls++
+            pdsCalls.incrementAndGet()
             if (proofNonce(request.headers["DPoP"]) != serverNonce) {
-                if (++staleArrivals == requestCount) allSentStale.complete(Unit)
+                if (staleArrivals.incrementAndGet() == requestCount) allSentStale.complete(Unit)
                 allSentStale.await()
                 respond(
                     ByteReadChannel("""{"error":"use_dpop_nonce","message":"DPoP nonce mismatch"}"""),
@@ -58,10 +60,10 @@ class XrpcClientDpopNonceRaceTest {
             }
         }
 
-        var tokenCalls = 0
+        val tokenCalls = AtomicInteger()
         val tokenEndpoint = HttpClient(
             MockEngine { _ ->
-                tokenCalls++
+                tokenCalls.incrementAndGet()
                 respond(
                     ByteReadChannel("""{"access_token":"at_new","refresh_token":"rt_new","token_type":"DPoP"}"""),
                     HttpStatusCode.OK,
@@ -85,7 +87,7 @@ class XrpcClientDpopNonceRaceTest {
             pdsNonce = "stale-nonce",
         )
         val store = object : OAuthSessionStore {
-            var saved: OAuthSession? = session
+            @Volatile var saved: OAuthSession? = session
             override suspend fun load(): OAuthSession? = saved
             override suspend fun save(session: OAuthSession) {
                 saved = session
@@ -115,8 +117,8 @@ class XrpcClientDpopNonceRaceTest {
             results.map { it.isSuccess },
             "every request must succeed after one retry, failures: ${results.mapNotNull { it.exceptionOrNull()?.message }}",
         )
-        assertEquals(0, tokenCalls, "nonce recovery must never spend the refresh token")
-        assertEquals(requestCount * 2, pdsCalls, "each request is sent once stale and retried once")
+        assertEquals(0, tokenCalls.get(), "nonce recovery must never spend the refresh token")
+        assertEquals(requestCount * 2, pdsCalls.get(), "each request is sent once stale and retried once")
         assertEquals(serverNonce, store.saved?.pdsNonce)
     }
 
