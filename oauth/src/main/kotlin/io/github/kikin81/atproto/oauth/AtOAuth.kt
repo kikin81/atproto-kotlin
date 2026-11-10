@@ -344,6 +344,11 @@ class AtOAuth(
         }
     }
 
+    // Keeps the pre-9.17 JVM signature for binaries compiled against it;
+    // source callers resolve to the overload below.
+    @Deprecated("Binary compatibility only", level = DeprecationLevel.HIDDEN)
+    suspend fun createClient(): XrpcClient = createClient(errorListener = null)
+
     /**
      * Creates an authenticated [XrpcClient] from the persisted session.
      * The client uses [DpopAuthProvider] for DPoP proof-of-possession
