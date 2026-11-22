@@ -17,7 +17,7 @@ through Maven coordinates. The sample SHALL NOT require any
 #### Scenario: Fresh clone can build and run the sample without publishing
 
 - **WHEN** a developer clones the repository, runs
-  `cd generator && npx lex install --ci && cd - && ./gradlew :samples:android:installDebug`
+  `./gradlew :samples:android:installDebug`
 - **THEN** the sample APK builds and installs on a connected device without
   any `publishToMavenLocal` or Maven Central network access, and the
   installed app launches to the login screen.

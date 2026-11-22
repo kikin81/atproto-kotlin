@@ -106,6 +106,33 @@ internal fun parseUpstreamNsids(treeJson: String): Set<String> {
  */
 internal fun optInCandidates(upstream: Set<String>): Set<String> = upstream.filterNot { it.endsWith(".defs") }.toSet()
 
+/** Namespaces whose new NSIDs the daily refresh adopts without a human. */
+private val AUTO_ADOPT_PREFIXES = listOf("app.bsky.", "chat.bsky.")
+
+/** Sub-namespaces under [AUTO_ADOPT_PREFIXES] that still need a human decision. */
+private val AUTO_ADOPT_EXCLUDED_PREFIXES = listOf(
+    // Experimental; renamed and removed often, so each adoption risks a major.
+    "app.bsky.unspecced.",
+    // Moderator-only chat tooling, not part of the client surface.
+    "chat.bsky.moderation.",
+)
+
+/**
+ * New upstream NSIDs that `lexicon-refresh.yaml` may adopt automatically.
+ *
+ * Stable `app.bsky.*` / `chat.bsky.*` client surface only. Excludes
+ * [AUTO_ADOPT_EXCLUDED_PREFIXES], subscriptions (the generator skips them),
+ * and 3-segment NSIDs such as `app.bsky.authFullApp`, which are OAuth
+ * permission sets rather than endpoints or records. The workflow still
+ * drops any candidate that isn't published on-network or doesn't generate.
+ */
+internal fun autoAdoptCandidates(newNsids: Set<String>): Set<String> = newNsids.filter { nsid ->
+    AUTO_ADOPT_PREFIXES.any(nsid::startsWith) &&
+        AUTO_ADOPT_EXCLUDED_PREFIXES.none(nsid::startsWith) &&
+        nsid.split('.').size >= 4 &&
+        !isSubscription(nsid)
+}.toSortedSet()
+
 @Serializable
 internal data class OverlayManifestRef(val overlays: List<OverlayRef> = emptyList())
 
@@ -239,9 +266,12 @@ internal fun renderReport(
             "(moderation tooling), `com.atproto.admin.*` (PDS-operator surface), " +
             "`com.atproto.temp.*` (deprecated/internal), `app.bsky.unspecced.*` " +
             "(experimental, churns; the thread V2 endpoints the official client ships on are vendored as " +
-            "overlays, the rest stays out), `network.bsky.jetstream.*` (relay infra). When you decide to opt into a new " +
-            "namespace, append the NSIDs to `generator/lexicons.json` and run " +
-            "the regen flow.",
+            "overlays, the rest stays out), `network.bsky.jetstream.*` (relay infra). " +
+            "Stable `app.bsky.*` / `chat.bsky.*` NSIDs are adopted automatically " +
+            "by the daily `lexicon-refresh` PR once they're published on-network, " +
+            "so stable ones still listed here are unpublished or need generator work. " +
+            "To opt into anything else, append the NSIDs to " +
+            "`generator/lexicons.json` and run the regen flow.",
     )
 }
 
@@ -341,6 +371,12 @@ public fun main(args: Array<String>) {
         )
 
     println(body)
+
+    // Machine-readable hand-off for lexicon-refresh.yaml: one NSID per line.
+    System.getenv("LEXICON_ADOPT_CANDIDATES_OUT")?.takeIf { it.isNotEmpty() }?.let { out ->
+        val candidates = autoAdoptCandidates(newNsids)
+        Files.writeString(Path.of(out), candidates.joinToString("") { "$it\n" })
+    }
 
     System.getenv("GITHUB_OUTPUT")?.takeIf { it.isNotEmpty() }?.let { outFilePath ->
         emitActionsOutputs(

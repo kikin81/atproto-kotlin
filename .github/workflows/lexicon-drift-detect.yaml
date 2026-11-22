@@ -5,7 +5,7 @@ name: Lexicon drift detection
 # app.bsky/chat.bsky/network.bsky; see UpstreamSources.kt) but are not yet in our generator/lexicons.json manifest, plus
 # manifest NSIDs no longer present upstream (deprecations or renames).
 #
-# Complements .github/workflows/lexicon-bump.yaml. That workflow refreshes
+# Complements .github/workflows/lexicon-refresh.yaml, which refreshes
 # CIDs for already-manifested NSIDs (corpus drift). This workflow detects
 # brand-new upstream namespaces that lex install --update will never
 # discover, so a maintainer can decide which to opt into.
@@ -17,9 +17,9 @@ name: Lexicon drift detection
 
 on:
   schedule:
-    # 13:00 UTC Mondays — one hour before lexicon-bump (14:00 UTC), so a
-    # fresh drift report is available when the bump PR (if any) opens.
-    - cron: "0 13 * * 1"
+    # 13:00 UTC daily — one hour after lexicon-refresh (12:00 UTC), so new
+    # upstream NSIDs surface as an issue within a day.
+    - cron: "0 13 * * *"
   workflow_dispatch: {}
 
 permissions:

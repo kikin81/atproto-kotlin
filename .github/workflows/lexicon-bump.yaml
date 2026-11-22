@@ -1,9 +1,11 @@
 name: Lexicon bump
 
 # Detect upstream @atproto/lex drift on a schedule and open a PR with
-# the bumped npm version, refreshed lexicons.json CIDs, and validated
-# generator output. Manual workflow_dispatch lets a maintainer trigger
-# an ad-hoc bump from the Actions tab.
+# the bumped npm version, refreshed corpus (generator/lexicons/ + CIDs in
+# lexicons.json), re-dumped models.api, and validated generator output.
+# Schema-only republishes are handled daily by lexicon-refresh.yaml.
+# Manual workflow_dispatch lets a maintainer trigger an ad-hoc bump from
+# the Actions tab.
 
 on:
   schedule:
@@ -67,24 +69,24 @@ jobs:
         # against whatever the newly-installed @atproto/lex package ships.
         run: npx lex install
 
-      - name: Regenerate models
+      - name: Regenerate models and API dump
         # Validates the new corpus compiles end-to-end before opening the
-        # PR. CI on the PR re-runs this, but failing here saves a noisy
-        # red PR for the maintainer.
-        run: ./gradlew :generator:generateModels --no-configuration-cache
+        # PR, and re-dumps models.api so the PR's own apiCheck passes.
+        run: |
+          ./gradlew :generator:generateModels --no-configuration-cache
+          ./gradlew :models:apiDump
 
       - name: Detect changes
         id: diff
         run: |
           set -euo pipefail
-          changed=false
-          for f in generator/package.json generator/package-lock.json generator/lexicons.json; do
-            if ! git diff --quiet -- "$f"; then
-              changed=true
-              break
-            fi
-          done
-          echo "changes=$changed" >> "$GITHUB_OUTPUT"
+          if git diff --quiet -- generator/package.json generator/package-lock.json \
+              generator/lexicons.json generator/lexicons models/api/models.api \
+            && [ -z "$(git ls-files --others --exclude-standard -- generator/lexicons)" ]; then
+            echo "changes=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changes=true" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Capture post-bump version
         id: post
@@ -103,62 +105,10 @@ jobs:
           NEW_VERSION: ${{ steps.post.outputs.new_version }}
         run: |
           set -euo pipefail
-
-          # CID-level diff of the resolutions map. lexicons.json shape:
-          #   { version, lexicons: [NSID...], resolutions: { NSID: {uri,cid} } }
-          # The CID is what changes when upstream republishes a lexicon.
-          diff_json=$(jq -n \
-            --slurpfile b "$RUNNER_TEMP/lexicons.before.json" \
-            --slurpfile a generator/lexicons.json '
-              ($b[0].resolutions // {}) as $br
-              | ($a[0].resolutions // {}) as $ar
-              | ($br | keys) as $bk
-              | ($ar | keys) as $ak
-              | {
-                  added: ($ak - $bk),
-                  removed: ($bk - $ak),
-                  updated: (($ak - ($ak - $bk)) | map(select($ar[.].cid != $br[.].cid)))
-                }
-            ')
-
-          format_section() {
-            local label="$1"
-            local key="$2"
-            local count
-            count=$(echo "$diff_json" | jq ".${key} | length")
-            echo "**${label}** (${count}):"
-            if [ "$count" -gt 0 ]; then
-              echo "$diff_json" | jq -r ".${key} | .[0:20] | .[] | \"- \`\" + . + \"\`\""
-              if [ "$count" -gt 20 ]; then
-                echo "- _…and $((count - 20)) more_"
-              fi
-            else
-              echo "- _(none)_"
-            fi
-            echo
-          }
-
-          {
-            echo "## Lexicon corpus update"
-            echo
-            echo "Bumps \`@atproto/lex\` from \`${OLD_VERSION}\` to \`${NEW_VERSION}\`."
-            echo
-            echo "### lexicons.json changes"
-            echo
-            format_section "Added" "added"
-            format_section "Removed" "removed"
-            format_section "Updated" "updated"
-            echo "### What reviewers should check"
-            echo
-            echo "- [ ] CI passes (generator regeneration, runtime tests, sample APK build)"
-            echo "- [ ] Skim the generator golden-file diff if any generator logic was affected"
-            echo "- [ ] Verify no new lexicon references are missing Kotlin types (compile failure in \`:models\`)"
-            echo
-            echo "### Release impact"
-            echo
-            echo "If this PR merges with only additive changes (new types, new fields), expect a \`feat:\` release. If it removes or renames anything, expect a \`BREAKING CHANGE:\` release — update the PR title to \`feat!: bump @atproto/lex to <version>\` before merging."
-          } > "$RUNNER_TEMP/pr_body.md"
-
+          .github/scripts/lexicon-change-report.sh \
+            "$RUNNER_TEMP/lexicons.before.json" \
+            "Bumps \`@atproto/lex\` from \`${OLD_VERSION}\` to \`${NEW_VERSION}\`." \
+            > "$RUNNER_TEMP/pr_body.md"
           {
             echo 'body<<PR_BODY_EOF'
             cat "$RUNNER_TEMP/pr_body.md"
@@ -180,6 +130,7 @@ jobs:
           labels: |
             lexicon-bump
             dependencies
+            ${{ steps.body.outputs.breaking == 'true' && 'breaking-change' || '' }}
           commit-message: |
             chore(lexicons): bump @atproto/lex to ${{ steps.post.outputs.new_version }}
 

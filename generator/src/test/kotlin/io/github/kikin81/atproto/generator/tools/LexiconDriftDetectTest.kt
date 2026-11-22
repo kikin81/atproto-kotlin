@@ -168,6 +168,40 @@ class LexiconDriftDetectTest {
     }
 
     @Test
+    fun `autoAdoptCandidates keeps stable app and chat bsky NSIDs`() {
+        val newNsids = setOf(
+            "app.bsky.actor.contentVisibilityDeclaration",
+            "app.bsky.graph.referencelistoptout",
+            "chat.bsky.notification.getPreferences",
+            "chat.bsky.actor.exportAccountData",
+        )
+
+        assertEquals(newNsids, autoAdoptCandidates(newNsids))
+    }
+
+    @Test
+    fun `autoAdoptCandidates leaves experimental, moderation, scopes and other namespaces to a human`() {
+        val newNsids = setOf(
+            "app.bsky.unspecced.getTrendsV2",
+            "chat.bsky.moderation.getConvo",
+            "app.bsky.authFullApp",
+            "chat.bsky.authFullChatClient",
+            "tools.ozone.team.addMember",
+            "com.atproto.admin.getAccountInfo",
+            "network.bsky.jetstream.getBlock",
+        )
+
+        assertTrue(autoAdoptCandidates(newNsids).isEmpty())
+    }
+
+    @Test
+    fun `autoAdoptCandidates skips subscriptions the generator cannot emit`() {
+        val newNsids = setOf("chat.bsky.convo.subscribeEvents", "chat.bsky.convo.getLog")
+
+        assertEquals(setOf("chat.bsky.convo.getLog"), autoAdoptCandidates(newNsids))
+    }
+
+    @Test
     fun `parseManifest reads the opt-in lexicons array`() {
         assertEquals(
             listOf("app.bsky.feed.getTimeline", "com.atproto.repo.createRecord"),
