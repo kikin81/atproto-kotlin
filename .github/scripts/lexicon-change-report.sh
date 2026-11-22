@@ -48,7 +48,7 @@ api_symbols() {
       line = substr($0, 2)
       sub(/ : .*/, "", line); sub(/ \{$/, "", line)
       n = split(line, parts, " "); cls = parts[n]
-      if (substr($0, 1, 1) == mark && cls !~ /\$\$serializer|\$Companion/) print cls
+      if (substr($0, 1, 1) == mark && cls !~ /[$][$]serializer|[$]Companion/) print cls
       next
     }
     /^[ +-][ \t]+public final fun get/ {
