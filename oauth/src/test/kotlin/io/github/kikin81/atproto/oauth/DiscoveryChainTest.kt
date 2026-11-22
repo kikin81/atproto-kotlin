@@ -5,12 +5,14 @@ import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.Url
 import io.ktor.http.headersOf
 import io.ktor.utils.io.ByteReadChannel
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class DiscoveryChainTest {
@@ -426,5 +428,64 @@ class DiscoveryChainTest {
         assertFailsWith<OAuthDiscoveryException> {
             DiscoveryChain(client).resolvePds("did:example:abc")
         }
+    }
+
+    @Test
+    fun dnsLookupEncodesTheHandleAsOneQueryValue() = runTest {
+        val requested = mutableListOf<Url>()
+        val client = HttpClient(
+            MockEngine { request ->
+                requested += request.url
+                respond(ByteReadChannel("{}"), HttpStatusCode.NotFound, jsonHeaders)
+            },
+        )
+
+        assertFailsWith<OAuthDiscoveryException> {
+            DiscoveryChain(client).resolveHandle("alice.test&type=A")
+        }
+
+        val doh = requested.single { it.host == "cloudflare-dns.com" }
+        assertEquals("_atproto.alice.test&type=A", doh.parameters["name"])
+        assertEquals(listOf("TXT"), doh.parameters.getAll("type"))
+    }
+
+    @Test
+    fun httpFallbackIsSkippedForAHandleThatIsNotAHostname() = runTest {
+        val requested = mutableListOf<Url>()
+        val client = HttpClient(
+            MockEngine { request ->
+                requested += request.url
+                respond(ByteReadChannel("{}"), HttpStatusCode.NotFound, jsonHeaders)
+            },
+        )
+
+        assertFailsWith<OAuthDiscoveryException> {
+            DiscoveryChain(client).resolveHandle("evil.test/redirect?x=")
+        }
+
+        // Only the DoH lookup; no request to a host built from the raw handle.
+        assertEquals(listOf("cloudflare-dns.com"), requested.map { it.host })
+    }
+
+    @Test
+    fun resolveDidRejectsADidWebHostThatIsNotAHostname() = runTest {
+        val client = HttpClient(MockEngine { error("no request expected") })
+
+        assertFailsWith<OAuthDiscoveryException> {
+            DiscoveryChain(client).resolveDid("did:web:evil.test/x")
+        }
+    }
+
+    @Test
+    fun isHostnameAcceptsDnsNamesOnly() {
+        assertTrue(isHostname("alice.bsky.social"))
+        assertTrue(isHostname("pds.example.com"))
+        assertTrue(isHostname("localhost"))
+        assertFalse(isHostname(""))
+        assertFalse(isHostname("evil.test/path"))
+        assertFalse(isHostname("evil.test?x=1"))
+        assertFalse(isHostname("user@evil.test"))
+        assertFalse(isHostname("-bad.test"))
+        assertFalse(isHostname("example.com%3A8443"))
     }
 }
