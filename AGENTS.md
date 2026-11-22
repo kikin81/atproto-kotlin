@@ -95,7 +95,7 @@ To maintain parity for **Nubecita** with the official Bluesky client:
    ```
    Golden files only change when generator code changes (they use their own test lexicons), so a corpus refresh never needs `GOLDEN_UPDATE=1`.
 8. **Automated workflows:**
-   - `.github/workflows/lexicon-refresh.yaml`: Daily. Re-resolves pinned lexicons from the network and opens/updates a `chore/lexicon-refresh` PR (labels `breaking-change` when `models.api` loses public symbols).
+   - `.github/workflows/lexicon-refresh.yaml`: Daily. Re-resolves pinned lexicons from the network, auto-adopts new stable `app.bsky.*` / `chat.bsky.*` NSIDs (rules in `autoAdoptCandidates()` in `LexiconDriftDetect.kt`; install/verify in `.github/scripts/lexicon-adopt.sh`), and opens/updates a `chore/lexicon-refresh` PR. Title is `feat(lexicons): …` when it adopted something, `chore(lexicons): …` otherwise; labeled `breaking-change` when `models.api` loses public symbols.
    - `.github/workflows/lexicon-bump.yaml`: Weekly `@atproto/lex` npm bump PR.
    - `.github/workflows/lexicon-drift-detect.yaml`: Daily drift detection against the upstream git tree (new/removed NSIDs → tracking issue).
    - `.github/workflows/overlay-staleness.yaml`: Audits vendored overlays against upstream.
@@ -141,7 +141,7 @@ Generated source lands in `models/build/generated/source/lexicon/commonMain/kotl
 
 - `.github/workflows/ci.yaml`: lint + test + build on every push/PR
 - `.github/workflows/release.yaml`: gate jobs -> semantic-release -> publish -> API docs to GitHub Pages
-- `.github/workflows/lexicon-refresh.yaml`: daily PR that refreshes the committed Lexicon corpus and CIDs
+- `.github/workflows/lexicon-refresh.yaml`: daily PR that refreshes the committed Lexicon corpus and CIDs and adopts new stable bsky lexicons
 - `.github/workflows/lexicon-drift-detect.yaml`: daily check for new/removed upstream NSIDs
 - `.github/workflows/lexicon-bump.yaml`: weekly PR that bumps `@atproto/lex`
 - `.github/workflows/overlay-staleness.yaml`: audits vendored overlays against upstream

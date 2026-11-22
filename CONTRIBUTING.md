@@ -132,9 +132,15 @@ files and never contacts the network, so an upstream republish can't
 break unrelated PRs. Two scheduled workflows keep it current:
 
 - [`lexicon-refresh`](.github/workflows/lexicon-refresh.yaml) runs daily
-  (12:00 UTC). When upstream has republished any pinned lexicon it opens
-  or updates a `chore(lexicons): refresh pinned lexicons from upstream`
-  PR on `chore/lexicon-refresh` with the new files, CIDs and `models.api`.
+  (12:00 UTC). It re-resolves every pinned lexicon and also adopts new
+  stable `app.bsky.*` / `chat.bsky.*` lexicons that drift detection finds,
+  as long as they're published on-network, aren't OAuth permission sets,
+  and generate and compile. `app.bsky.unspecced.*` and
+  `chat.bsky.moderation.*` are left to a human. When anything changed it
+  opens or updates a PR on `chore/lexicon-refresh` with the new files,
+  CIDs and `models.api`, titled `feat(lexicons): …` if it adopted
+  something (new API, so merging releases it) and `chore(lexicons): …`
+  for a pin-only refresh.
 - [`lexicon-bump`](.github/workflows/lexicon-bump.yaml) runs weekly
   (Mondays 14:00 UTC) and opens a `chore(lexicons): bump @atproto/lex to <v>`
   PR on `chore/lexicon-bump` when a new `@atproto/lex` is published.

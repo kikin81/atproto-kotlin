@@ -2,7 +2,10 @@
 # Builds the PR body for a lexicon corpus change and decides whether it
 # looks breaking. Shared by lexicon-refresh.yaml and lexicon-bump.yaml.
 #
-# Usage: lexicon-change-report.sh <manifest-before.json> <intro-markdown>
+# Usage: lexicon-change-report.sh <manifest-before.json> <intro-markdown> [extra.md]
+#
+# [extra.md], when given and non-empty, is inserted after the CID summary
+# (lexicon-refresh.yaml passes the adoption report from lexicon-adopt.sh).
 #
 # Run from the repo root after `npx lex install`, `generateModels` and
 # `apiDump` have rewritten the working tree. Prints the PR body on stdout.
@@ -16,6 +19,7 @@ set -euo pipefail
 
 before_manifest="$1"
 intro="$2"
+extra="${3:-}"
 after_manifest="generator/lexicons.json"
 api_dump="models/api/models.api"
 
@@ -94,6 +98,10 @@ echo
 format_section "Added" "added"
 format_section "Removed" "removed"
 format_section "Updated" "updated"
+
+if [ -n "$extra" ] && [ -s "$extra" ]; then
+  cat "$extra"
+fi
 
 echo "### Public API"
 echo

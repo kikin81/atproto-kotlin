@@ -1,9 +1,11 @@
 name: Lexicon refresh
 
 # Re-resolves every pinned lexicon against the live AT Proto network at the
-# current @atproto/lex version and opens a PR when upstream has republished
-# any of them. CI builds from the committed corpus in generator/lexicons/,
-# so upstream drift never breaks PRs; it shows up here as a reviewable diff.
+# current @atproto/lex version, adopts brand-new stable app.bsky.* /
+# chat.bsky.* lexicons (see autoAdoptCandidates() in LexiconDriftDetect.kt
+# and .github/scripts/lexicon-adopt.sh), and opens a PR when anything
+# changed. CI builds from the committed corpus in generator/lexicons/, so
+# upstream drift never breaks PRs; it shows up here as a reviewable diff.
 #
 # Separate from lexicon-bump.yaml (weekly @atproto/lex npm bump) so a stuck
 # tooling bump never blocks schema refreshes. Both rebuild their branch from
@@ -66,6 +68,23 @@ jobs:
           npm ci
           npx lex install
 
+      - name: Find new stable lexicons upstream
+        # Same detector as lexicon-drift-detect.yaml, filtered to the
+        # namespaces we adopt without a human. A failed GitHub fetch only
+        # skips adoption; the pin refresh above still goes ahead.
+        run: |
+          set -euo pipefail
+          if ! LEXICON_ADOPT_CANDIDATES_OUT="$RUNNER_TEMP/candidates.txt" \
+            ./gradlew :generator:detectLexiconDrift --quiet --no-configuration-cache > /dev/null; then
+            echo "::warning::Drift detection failed; skipping lexicon adoption this run."
+            : > "$RUNNER_TEMP/candidates.txt"
+          fi
+          echo "Candidates:"; cat "$RUNNER_TEMP/candidates.txt"
+
+      - name: Adopt new stable lexicons
+        id: adopt
+        run: .github/scripts/lexicon-adopt.sh "$RUNNER_TEMP/candidates.txt" "$RUNNER_TEMP/adoption.md"
+
       - name: Detect changes
         id: diff
         run: |
@@ -92,13 +111,28 @@ jobs:
           set -euo pipefail
           .github/scripts/lexicon-change-report.sh \
             "$RUNNER_TEMP/lexicons.before.json" \
-            "Upstream republished pinned lexicons. Refreshes \`generator/lexicons/\`, their CIDs in \`lexicons.json\`, and \`models.api\`." \
+            "Refreshes \`generator/lexicons/\` against the AT Proto network: republished pins, newly adopted stable lexicons, their CIDs in \`lexicons.json\`, and \`models.api\`." \
+            "$RUNNER_TEMP/adoption.md" \
             > "$RUNNER_TEMP/pr_body.md"
           {
             echo 'body<<PR_BODY_EOF'
             cat "$RUNNER_TEMP/pr_body.md"
             echo 'PR_BODY_EOF'
           } >> "$GITHUB_OUTPUT"
+
+      - name: Choose PR title
+        id: meta
+        if: steps.diff.outputs.changes == 'true'
+        # New lexicons are new public API, so they ship as a feat release;
+        # a pin-only refresh stays a chore and doesn't publish.
+        env:
+          ADOPTED: ${{ steps.adopt.outputs.adopted_count }}
+        run: |
+          if [ "${ADOPTED:-0}" != "0" ]; then
+            echo "title=feat(lexicons): adopt new upstream lexicons and refresh pins" >> "$GITHUB_OUTPUT"
+          else
+            echo "title=chore(lexicons): refresh pinned lexicons from upstream" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Open or update refresh PR
         if: steps.diff.outputs.changes == 'true'
@@ -113,13 +147,13 @@ jobs:
             generator/lexicons.json
             generator/lexicons/**
             models/api/models.api
-          title: "chore(lexicons): refresh pinned lexicons from upstream"
+          title: ${{ steps.meta.outputs.title }}
           body: ${{ steps.body.outputs.body }}
           labels: |
             lexicon-refresh
             ${{ steps.body.outputs.breaking == 'true' && 'breaking-change' || '' }}
           commit-message: |
-            chore(lexicons): refresh pinned lexicons from upstream
+            ${{ steps.meta.outputs.title }}
 
-            Re-resolve generator/lexicons/ against the AT Proto network and
-            re-dump models.api.
+            Re-resolve generator/lexicons/ against the AT Proto network, adopt
+            new stable app.bsky/chat.bsky lexicons, and re-dump models.api.
