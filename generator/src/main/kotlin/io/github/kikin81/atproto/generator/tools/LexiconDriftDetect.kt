@@ -265,10 +265,11 @@ internal fun renderReport(
             "Namespaces typically intentionally out of scope: `tools.ozone.*` " +
             "(moderation tooling), `com.atproto.admin.*` (PDS-operator surface), " +
             "`com.atproto.temp.*` (deprecated/internal), `app.bsky.unspecced.*` " +
-            "(experimental, churns), `network.bsky.jetstream.*` (relay infra). " +
+            "(experimental, churns; the thread V2 endpoints the official client ships on are vendored as " +
+            "overlays, the rest stays out), `network.bsky.jetstream.*` (relay infra). " +
             "Stable `app.bsky.*` / `chat.bsky.*` NSIDs are adopted automatically " +
             "by the daily `lexicon-refresh` PR once they're published on-network, " +
-            "so anything still listed there is unpublished or failed to generate. " +
+            "so stable ones still listed here are unpublished or need generator work. " +
             "To opt into anything else, append the NSIDs to " +
             "`generator/lexicons.json` and run the regen flow.",
     )
