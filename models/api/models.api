@@ -148,6 +148,33 @@ public final class io/github/kikin81/atproto/app/bsky/actor/ContentLabelPref$Com
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class io/github/kikin81/atproto/app/bsky/actor/ContentVisibilityDeclaration {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/actor/ContentVisibilityDeclaration$Companion;
+	public fun <init> (Z)V
+	public final fun component1 ()Z
+	public final fun copy (Z)Lio/github/kikin81/atproto/app/bsky/actor/ContentVisibilityDeclaration;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/app/bsky/actor/ContentVisibilityDeclaration;ZILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/actor/ContentVisibilityDeclaration;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getHideFromAlgorithmicRecommendations ()Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/actor/ContentVisibilityDeclaration$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/actor/ContentVisibilityDeclaration$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/actor/ContentVisibilityDeclaration;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/actor/ContentVisibilityDeclaration;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/actor/ContentVisibilityDeclaration$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class io/github/kikin81/atproto/app/bsky/actor/DeclaredAgePref : io/github/kikin81/atproto/app/bsky/actor/GetPreferencesResponsePreferencesUnion, io/github/kikin81/atproto/app/bsky/actor/PutPreferencesRequestPreferencesUnion {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/actor/DeclaredAgePref$Companion;
 	public fun <init> ()V
@@ -10379,6 +10406,35 @@ public final class io/github/kikin81/atproto/app/bsky/graph/NotFoundActor$Compan
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class io/github/kikin81/atproto/app/bsky/graph/Referencelistoptout {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/graph/Referencelistoptout$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-DnBUIck ()Ljava/lang/String;
+	public final fun component2-GUXd3rc ()Ljava/lang/String;
+	public final fun copy-11Nbroo (Ljava/lang/String;Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/graph/Referencelistoptout;
+	public static synthetic fun copy-11Nbroo$default (Lio/github/kikin81/atproto/app/bsky/graph/Referencelistoptout;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/graph/Referencelistoptout;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCreatedAt-DnBUIck ()Ljava/lang/String;
+	public final fun getSubject-GUXd3rc ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/graph/Referencelistoptout$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/graph/Referencelistoptout$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/graph/Referencelistoptout;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/graph/Referencelistoptout;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/graph/Referencelistoptout$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class io/github/kikin81/atproto/app/bsky/graph/Relationship : io/github/kikin81/atproto/app/bsky/graph/GetRelationshipsResponseRelationshipsUnion {
 	public static final field Companion Lio/github/kikin81/atproto/app/bsky/graph/Relationship$Companion;
 	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -19694,6 +19750,158 @@ public final synthetic class io/github/kikin81/atproto/chat/bsky/group/WithdrawJ
 }
 
 public final class io/github/kikin81/atproto/chat/bsky/group/WithdrawJoinRequestResponse$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/notification/ChatPreference {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/notification/ChatPreference$Companion;
+	public fun <init> (Ljava/lang/String;Z)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Z
+	public final fun copy (Ljava/lang/String;Z)Lio/github/kikin81/atproto/chat/bsky/notification/ChatPreference;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/notification/ChatPreference;Ljava/lang/String;ZILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/notification/ChatPreference;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getInclude ()Ljava/lang/String;
+	public final fun getPush ()Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/notification/ChatPreference$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/notification/ChatPreference$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/notification/ChatPreference;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/notification/ChatPreference;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/notification/ChatPreference$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/notification/GetPreferencesResponse {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/notification/GetPreferencesResponse$Companion;
+	public fun <init> (Lio/github/kikin81/atproto/chat/bsky/notification/Preferences;)V
+	public final fun component1 ()Lio/github/kikin81/atproto/chat/bsky/notification/Preferences;
+	public final fun copy (Lio/github/kikin81/atproto/chat/bsky/notification/Preferences;)Lio/github/kikin81/atproto/chat/bsky/notification/GetPreferencesResponse;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/notification/GetPreferencesResponse;Lio/github/kikin81/atproto/chat/bsky/notification/Preferences;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/notification/GetPreferencesResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getPreferences ()Lio/github/kikin81/atproto/chat/bsky/notification/Preferences;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/notification/GetPreferencesResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/notification/GetPreferencesResponse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/notification/GetPreferencesResponse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/notification/GetPreferencesResponse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/notification/GetPreferencesResponse$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/notification/NotificationService {
+	public fun <init> (Lio/github/kikin81/atproto/runtime/XrpcClient;Ljava/lang/String;)V
+	public synthetic fun <init> (Lio/github/kikin81/atproto/runtime/XrpcClient;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getPreferences (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getPreferences$default (Lio/github/kikin81/atproto/chat/bsky/notification/NotificationService;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun putPreferences (Lio/github/kikin81/atproto/chat/bsky/notification/PutPreferencesRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun putPreferences$default (Lio/github/kikin81/atproto/chat/bsky/notification/NotificationService;Lio/github/kikin81/atproto/chat/bsky/notification/PutPreferencesRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/notification/Preferences {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/notification/Preferences$Companion;
+	public fun <init> (Lio/github/kikin81/atproto/chat/bsky/notification/ChatPreference;Lio/github/kikin81/atproto/chat/bsky/notification/ChatPreference;)V
+	public final fun component1 ()Lio/github/kikin81/atproto/chat/bsky/notification/ChatPreference;
+	public final fun component2 ()Lio/github/kikin81/atproto/chat/bsky/notification/ChatPreference;
+	public final fun copy (Lio/github/kikin81/atproto/chat/bsky/notification/ChatPreference;Lio/github/kikin81/atproto/chat/bsky/notification/ChatPreference;)Lio/github/kikin81/atproto/chat/bsky/notification/Preferences;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/notification/Preferences;Lio/github/kikin81/atproto/chat/bsky/notification/ChatPreference;Lio/github/kikin81/atproto/chat/bsky/notification/ChatPreference;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/notification/Preferences;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getChat ()Lio/github/kikin81/atproto/chat/bsky/notification/ChatPreference;
+	public final fun getChatRequest ()Lio/github/kikin81/atproto/chat/bsky/notification/ChatPreference;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/notification/Preferences$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/notification/Preferences$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/notification/Preferences;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/notification/Preferences;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/notification/Preferences$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/notification/PutPreferencesRequest {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/notification/PutPreferencesRequest$Companion;
+	public fun <init> ()V
+	public fun <init> (Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;)V
+	public synthetic fun <init> (Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lio/github/kikin81/atproto/runtime/AtField;
+	public final fun component2 ()Lio/github/kikin81/atproto/runtime/AtField;
+	public final fun copy (Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;)Lio/github/kikin81/atproto/chat/bsky/notification/PutPreferencesRequest;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/notification/PutPreferencesRequest;Lio/github/kikin81/atproto/runtime/AtField;Lio/github/kikin81/atproto/runtime/AtField;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/notification/PutPreferencesRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getChat ()Lio/github/kikin81/atproto/runtime/AtField;
+	public final fun getChatRequest ()Lio/github/kikin81/atproto/runtime/AtField;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/notification/PutPreferencesRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/notification/PutPreferencesRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/notification/PutPreferencesRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/notification/PutPreferencesRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/notification/PutPreferencesRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/notification/PutPreferencesResponse {
+	public static final field Companion Lio/github/kikin81/atproto/chat/bsky/notification/PutPreferencesResponse$Companion;
+	public fun <init> (Lio/github/kikin81/atproto/chat/bsky/notification/Preferences;)V
+	public final fun component1 ()Lio/github/kikin81/atproto/chat/bsky/notification/Preferences;
+	public final fun copy (Lio/github/kikin81/atproto/chat/bsky/notification/Preferences;)Lio/github/kikin81/atproto/chat/bsky/notification/PutPreferencesResponse;
+	public static synthetic fun copy$default (Lio/github/kikin81/atproto/chat/bsky/notification/PutPreferencesResponse;Lio/github/kikin81/atproto/chat/bsky/notification/Preferences;ILjava/lang/Object;)Lio/github/kikin81/atproto/chat/bsky/notification/PutPreferencesResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getPreferences ()Lio/github/kikin81/atproto/chat/bsky/notification/Preferences;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/chat/bsky/notification/PutPreferencesResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/chat/bsky/notification/PutPreferencesResponse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/chat/bsky/notification/PutPreferencesResponse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/chat/bsky/notification/PutPreferencesResponse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/chat/bsky/notification/PutPreferencesResponse$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
