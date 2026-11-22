@@ -3,8 +3,12 @@ package io.github.kikin81.atproto.oauth
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.header
+import io.ktor.client.request.parameter
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.URLBuilder
+import io.ktor.http.URLProtocol
+import io.ktor.http.appendPathSegments
 import kotlinx.coroutines.delay
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -209,9 +213,11 @@ class DiscoveryChain(
     }
 
     private suspend fun tryResolveDns(handle: String): String? {
-        val dohUrl = "https://cloudflare-dns.com/dns-query?name=_atproto.$handle&type=TXT"
         return try {
-            val response = httpClient.get(dohUrl) {
+            val response = httpClient.get("https://cloudflare-dns.com/dns-query") {
+                // `parameter` percent-encodes, so a handle can't add query params.
+                parameter("name", "_atproto.$handle")
+                parameter("type", "TXT")
                 header("Accept", "application/dns-json")
             }
             if (response.status != HttpStatusCode.OK) return null
@@ -232,7 +238,10 @@ class DiscoveryChain(
     }
 
     private suspend fun tryResolveHttp(handle: String): String? {
-        val url = "https://$handle/.well-known/atproto-did"
+        // The handle is the host here. URLBuilder doesn't encode hosts, so
+        // anything that isn't a plain hostname can't resolve this way.
+        if (!isHostname(handle)) return null
+        val url = httpsUrl(host = handle, ".well-known", "atproto-did")
         return try {
             val response = httpClient.get(url)
             if (response.status != HttpStatusCode.OK) return null
@@ -249,11 +258,8 @@ class DiscoveryChain(
      */
     internal suspend fun resolveDid(did: String): DidDocument {
         val url = when {
-            did.startsWith("did:plc:") -> "https://plc.directory/$did"
-            did.startsWith("did:web:") -> {
-                val host = did.removePrefix("did:web:")
-                "https://$host/.well-known/did.json"
-            }
+            did.startsWith("did:plc:") -> httpsUrl(host = "plc.directory", did)
+            did.startsWith("did:web:") -> didWebDocumentUrl(did)
             else -> throw OAuthDiscoveryException("Unsupported DID method: $did")
         }
         val response = try {
@@ -405,3 +411,38 @@ internal data class DnsAnswer(
     val type: Int = 0,
     val data: String? = null,
 )
+
+/** `https://<host>[:port]/<segments…>`, with each path segment percent-encoded. */
+private fun httpsUrl(host: String, vararg pathSegments: String, port: Int = 0): String = URLBuilder(protocol = URLProtocol.HTTPS, host = host, port = port)
+    .appendPathSegments(*pathSegments)
+    .buildString()
+
+private val DID_WEB_LOCALHOST_PORT = Regex("^localhost%3[Aa]([0-9]{1,5})$")
+
+/**
+ * `did:web:<host>` → `https://<host>/.well-known/did.json`.
+ *
+ * AT Protocol only supports hostname-level did:web (https://atproto.com/specs/did):
+ * path-based DIDs (`did:web:example.com:user:alice`) are rejected, and a port
+ * (colon hex-encoded as `%3A`) is only accepted on `localhost`, for testing
+ * and development.
+ */
+internal fun didWebDocumentUrl(did: String): String {
+    val id = did.removePrefix("did:web:")
+    DID_WEB_LOCALHOST_PORT.matchEntire(id)?.let { match ->
+        val port = match.groupValues[1].toInt()
+        if (port in 1..65535) return httpsUrl(host = "localhost", ".well-known", "did.json", port = port)
+    }
+    if (':' in id) {
+        throw OAuthDiscoveryException("Path-based did:web is not supported by AT Protocol: $did")
+    }
+    if (!isHostname(id)) {
+        throw OAuthDiscoveryException("Unsupported did:web host '$id' in $did")
+    }
+    return httpsUrl(host = id, ".well-known", "did.json")
+}
+
+private val HOSTNAME = Regex("^(?=.{1,253}$)([A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?)(\\.[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*$")
+
+/** True for a plain DNS hostname: letters, digits, hyphens and dots only. */
+internal fun isHostname(value: String): Boolean = HOSTNAME.matches(value)

@@ -7,6 +7,7 @@ import io.ktor.client.engine.mock.respond
 import io.ktor.client.request.HttpResponseData
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.Url
 import io.ktor.http.headersOf
 import io.ktor.http.parseQueryString
 import io.ktor.utils.io.ByteReadChannel
@@ -327,6 +328,25 @@ class AtOAuthTest {
         assertContains(authUrl, "https://auth.test/authorize")
         assertContains(authUrl, "client_id=")
         assertContains(authUrl, "request_uri=")
+    }
+
+    @Test
+    fun beginLoginEncodesAuthorizationUrlParameters() = runTest {
+        val oauth = AtOAuth(
+            clientMetadataUrl = "https://app.test/oauth/client-metadata.json",
+            redirectUri = "app.example:/oauth-redirect",
+            sessionStore = InMemorySessionStore(),
+            httpClient = fullFlowMockClient(),
+        )
+        val authUrl = Url(oauth.beginLogin("alice.test"))
+
+        assertEquals("auth.test", authUrl.host)
+        assertEquals("/authorize", authUrl.encodedPath)
+        // Values round-trip exactly, so reserved characters in either one
+        // can't leak into the query structure.
+        assertEquals("https://app.test/oauth/client-metadata.json", authUrl.parameters["client_id"])
+        assertEquals("urn:ietf:params:oauth:request_uri:test123", authUrl.parameters["request_uri"])
+        assertEquals(setOf("client_id", "request_uri"), authUrl.parameters.names())
     }
 
     @Test

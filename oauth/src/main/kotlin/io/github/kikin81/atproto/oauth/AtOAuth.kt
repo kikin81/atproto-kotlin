@@ -8,6 +8,8 @@ import io.ktor.client.request.header
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Parameters
+import io.ktor.http.URLBuilder
+import io.ktor.http.parseQueryString
 import kotlinx.serialization.json.Json
 import java.security.SecureRandom
 import kotlin.io.encoding.Base64
@@ -224,7 +226,12 @@ class AtOAuth(
             ),
         )
 
-        return "${metadata.authorizationEndpoint}?client_id=$clientMetadataUrl&request_uri=${parResult.requestUri}"
+        // URLBuilder keeps any query the endpoint already carries and
+        // percent-encodes both values.
+        return URLBuilder(metadata.authorizationEndpoint).apply {
+            parameters.append("client_id", clientMetadataUrl)
+            parameters.append("request_uri", parResult.requestUri)
+        }.buildString()
     }
 
     /**
@@ -586,16 +593,10 @@ class AtOAuth(
     private fun parseRedirectParams(uri: String): Map<String, String> {
         val queryStart = uri.indexOf('?')
         if (queryStart < 0) return emptyMap()
-        return uri.substring(queryStart + 1)
-            .split('&')
-            .associate { param ->
-                val eq = param.indexOf('=')
-                if (eq < 0) {
-                    param to ""
-                } else {
-                    param.substring(0, eq) to java.net.URLDecoder.decode(param.substring(eq + 1), "UTF-8")
-                }
-            }
+        // The query ends at the fragment, if any. On a repeated key the last
+        // value wins, as before.
+        val query = uri.substring(queryStart + 1).substringBefore('#')
+        return parseQueryString(query).entries().associate { (key, values) -> key to values.lastOrNull().orEmpty() }
     }
 
     /**
