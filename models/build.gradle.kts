@@ -44,8 +44,8 @@ kotlin {
     }
 }
 
-// Regenerate lexicon sources before compiling this module. No-ops when
-// `:generator/lexicons/` is empty (fresh clone without lexicons).
+// Regenerate lexicon sources before compiling this module from the
+// committed corpus in `:generator/lexicons/`.
 tasks.matching {
     it.name.startsWith("compileKotlin") ||
         it.name == "compileCommonMainKotlinMetadata" ||
