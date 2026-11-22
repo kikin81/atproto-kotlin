@@ -38,7 +38,7 @@
             </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
         </button>
         <div class="navigation-controls--break ui-kit_mobile-only"></div>
-        <div class="library-version" id="library-version">10.1.0
+        <div class="library-version" id="library-version">10.2.0
         </div>
         <div class="navigation-controls">
         <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
@@ -96,7 +96,7 @@
     <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":runtime/commonMain"><div class="symbol monospace"><span class="token keyword">sealed </span><span class="token keyword">interface </span><a href="index.html">AtField</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="index.html">T</a><span class="token operator">&gt;</span></div><p class="paragraph">Three-state optional field for AT Protocol mutation payloads.</p><p class="paragraph">The AT Protocol wire format distinguishes three states for an optional field:</p><ul><li><p class="paragraph"><strong>Absent</strong> from the JSON object entirely — caller didn't touch it</p></li><li><p class="paragraph">Present with value <code class="strong lang-kotlin"><strong>null</strong></code> — caller explicitly cleared it</p></li><li><p class="paragraph">Present with a concrete <strong>value</strong> — caller set it</p></li></ul><p class="paragraph">This distinction matters for mutations like <code class="lang-kotlin">app.bsky.actor.putPreferences</code> where "leave unchanged" and "clear this field" are different operations. A plain <code class="lang-kotlin">T? = null</code> collapses the first two states, making the distinction unrepresentable — see the design doc for the full rationale.</p><p class="paragraph">Usage on a generated data class:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">@Serializable<br>data class PutPreferencesInput(<br>    val did: Did,<br>    @EncodeDefault(EncodeDefault.Mode.NEVER)<br>    val displayName: AtField&lt;String&gt; = AtField.Missing,<br>)</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><p class="paragraph">The <code class="lang-kotlin">= AtField.Missing</code> default is what makes the absent-key → <code class="lang-kotlin">Missing</code> decode path work (kotlinx-serialization only invokes the field serializer when the key is present). The <code class="lang-kotlin">@EncodeDefault(NEVER)</code> is what makes the encode path skip the field when it equals <code class="lang-kotlin">Missing</code>. Both annotations are required when <code class="lang-kotlin">encodeDefaults = true</code>; see <a href="../-at-field-serializer/serialize.html">AtFieldSerializer.serialize</a> for the fail-loud diagnostic if they're missing.</p><p class="paragraph">The runtime Json configuration MUST keep <code class="lang-kotlin">explicitNulls = true</code> (the default). Setting it to <code class="lang-kotlin">false</code> would silently collapse <a href="-null/index.html">Null</a> into <a href="-missing/index.html">Missing</a> on the wire and defeat the whole design.</p><h4 class="tableheader">Inheritors</h4><div class="table"><div class="table-row table-row_content" data-filterable-current=":runtime/commonMain" data-filterable-set=":runtime/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="-missing/index.html">Missing</a></div></span></div><div></div></div></div><div class="table-row table-row_content" data-filterable-current=":runtime/commonMain" data-filterable-set=":runtime/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="-null/index.html">Null</a></div></span></div><div></div></div></div><div class="table-row table-row_content" data-filterable-current=":runtime/commonMain" data-filterable-set=":runtime/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="-defined/index.html">Defined</a></div></span></div><div></div></div></div></div></div></div>
   </div>
   <div class="tabbedcontent">
-    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button><button class="section-tab" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION,EXTENSION_PROPERTY,EXTENSION_FUNCTION">Members &amp; Extensions</button></div>
     <div class="tabs-section-body">
       <div data-togglable="TYPE">
         <h2 class="tableheader">Types</h2>
@@ -141,6 +141,40 @@
               <div>
                 <div class="title">
                   <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":runtime/commonMain"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">object </span><a href="-null/index.html">Null</a> : <a href="index.html">AtField</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-nothing/index.html">Nothing</a><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph">The field key is present with an explicit JSON <code class="lang-kotlin">null</code> value.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="EXTENSION_FUNCTION">
+        <h2 class="tableheader">Functions</h2>
+        <div class="table"><a data-name="-1154838091%2FFunctions%2F-1312573867" anchor-label="valueOrEmpty" id="-1154838091%2FFunctions%2F-1312573867" data-filterable-set=":runtime/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":runtime/commonMain" data-filterable-set=":runtime/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../value-or-empty.html"><span>value</span><wbr><span>Or</span><wbr><span><span>Empty</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1154838091%2FFunctions%2F-1312573867"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":runtime/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="../value-or-empty.html">T</a><span class="token operator">&gt; </span><a href="index.html">AtField</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../value-or-empty.html">T</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="../value-or-empty.html"><span class="token function">valueOrEmpty</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../value-or-empty.html">T</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Flattens a list-shaped <a href="index.html">AtField</a> into a list: the wrapped list when <a href="-defined/index.html">AtField.Defined</a>, otherwise an empty list.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-572115363%2FFunctions%2F-1312573867" anchor-label="valueOrNull" id="-572115363%2FFunctions%2F-1312573867" data-filterable-set=":runtime/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":runtime/commonMain" data-filterable-set=":runtime/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../value-or-null.html"><span>value</span><wbr><span>Or</span><wbr><span><span>Null</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-572115363%2FFunctions%2F-1312573867"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":runtime/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="../value-or-null.html">T</a><span class="token operator">&gt; </span><a href="index.html">AtField</a><span class="token operator">&lt;</span><a href="../value-or-null.html">T</a><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="../value-or-null.html"><span class="token function">valueOrNull</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../value-or-null.html">T</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Flattens this <a href="index.html">AtField</a> into a nullable: the wrapped value when <a href="-defined/index.html">AtField.Defined</a>, otherwise <code class="lang-kotlin">null</code>.</p></div></div></div>
                 </div>
               </div>
             </div>
