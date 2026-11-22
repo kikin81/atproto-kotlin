@@ -29,6 +29,8 @@ public final class io/github/kikin81/atproto/runtime/AtField$Null : io/github/ki
 public final class io/github/kikin81/atproto/runtime/AtFieldKt {
 	public static final fun present (Ljava/lang/Object;)Lio/github/kikin81/atproto/runtime/AtField$Defined;
 	public static final fun presentOrNull (Ljava/lang/Object;)Lio/github/kikin81/atproto/runtime/AtField;
+	public static final fun valueOrEmpty (Lio/github/kikin81/atproto/runtime/AtField;)Ljava/util/List;
+	public static final fun valueOrNull (Lio/github/kikin81/atproto/runtime/AtField;)Ljava/lang/Object;
 }
 
 public final class io/github/kikin81/atproto/runtime/AtFieldSerializer : kotlinx/serialization/KSerializer {
