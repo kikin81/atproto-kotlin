@@ -7,6 +7,7 @@ import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class AtFieldTest {
@@ -173,5 +174,40 @@ class AtFieldTest {
             err.message?.contains("EncodeDefault") == true,
             "diagnostic must mention @EncodeDefault, got: ${err.message}",
         )
+    }
+
+    @Test
+    fun valueOrNull_returnsValueForDefined() {
+        assertEquals("hi", AtField.Defined("hi").valueOrNull())
+    }
+
+    @Test
+    fun valueOrNull_collapsesMissingAndNullToNull() {
+        val missing: AtField<String> = AtField.Missing
+        val explicitNull: AtField<String> = AtField.Null
+        assertNull(missing.valueOrNull())
+        assertNull(explicitNull.valueOrNull())
+    }
+
+    @Test
+    fun valueOrEmpty_returnsListForDefined() {
+        assertEquals(listOf(1, 2), AtField.Defined(listOf(1, 2)).valueOrEmpty())
+    }
+
+    @Test
+    fun valueOrEmpty_collapsesMissingAndNullToEmptyList() {
+        val missing: AtField<List<Int>> = AtField.Missing
+        val explicitNull: AtField<List<Int>> = AtField.Null
+        assertEquals(emptyList(), missing.valueOrEmpty())
+        assertEquals(emptyList(), explicitNull.valueOrEmpty())
+    }
+
+    @Test
+    fun valueOrNull_readsAllThreeWireStates() {
+        // a: absent → Missing, b: explicit null → Null, c: value → Defined.
+        val decoded = json.decodeFromString(Correct.serializer(), """{"b":null,"c":"set"}""")
+        assertNull(decoded.a.valueOrNull())
+        assertNull(decoded.b.valueOrNull())
+        assertEquals("set", decoded.c.valueOrNull())
     }
 }

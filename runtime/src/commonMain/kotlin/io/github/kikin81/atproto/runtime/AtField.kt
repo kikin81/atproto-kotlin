@@ -58,25 +58,6 @@ public sealed interface AtField<out T> {
 }
 
 /**
- * Generic serializer for [AtField] values. The compiler plugin wires [inner]
- * automatically when the field type is resolved (e.g. `AtField<String>` picks
- * up `String.serializer()`).
- *
- * On decode: any time this serializer is invoked, the field key was present in
- * the input (otherwise kotlinx-serialization would have used the default param
- * and never called us). We inspect the element: [JsonNull] becomes [AtField.Null],
- * anything else becomes [AtField.Defined] wrapping the inner-decoded value.
- *
- * On encode: [AtField.Null] emits a JSON null token, [AtField.Defined] delegates
- * to [inner], and [AtField.Missing] is an error — it should have been filtered
- * out by `@EncodeDefault(NEVER)` on the field (or by the global `encodeDefaults
- * = false`) before reaching us.
- *
- * JSON-only: [deserialize] casts the decoder to [JsonDecoder] to inspect the
- * raw element. V1 is JSON/XRPC-only; a CBOR path can be added later without
- * breaking the public surface.
- */
-/**
  * Wraps [value] as [AtField.Defined]. Reads like natural English at call sites:
  *
  * ```
@@ -100,6 +81,58 @@ public inline fun <T : Any> present(value: T): AtField.Defined<T> = AtField.Defi
  */
 public inline fun <T : Any> presentOrNull(value: T?): AtField<T> = if (value != null) AtField.Defined(value) else AtField.Null
 
+/**
+ * Flattens this [AtField] into a nullable: the wrapped value when
+ * [AtField.Defined], otherwise `null`.
+ *
+ * Both [AtField.Missing] (key absent) and [AtField.Null] (key present with an
+ * explicit JSON `null`) collapse to `null`. That's what most read-side code
+ * wants, e.g. mapping a record into UI state:
+ *
+ * ```
+ * val facets: List<Facet>? = post.facets.valueOrNull()
+ * ```
+ *
+ * When absent and explicitly-null mean different things (a PATCH-style
+ * update, for example), match on the three states with `when` instead.
+ */
+public fun <T> AtField<T>.valueOrNull(): T? = when (this) {
+    is AtField.Defined -> value
+    AtField.Missing, AtField.Null -> null
+}
+
+/**
+ * Flattens a list-shaped [AtField] into a list: the wrapped list when
+ * [AtField.Defined], otherwise an empty list.
+ *
+ * Like [valueOrNull], this collapses [AtField.Missing] and [AtField.Null]
+ * into the same result; use `when` when the difference matters.
+ *
+ * ```
+ * val facets: List<Facet> = post.facets.valueOrEmpty()
+ * ```
+ */
+public fun <T> AtField<List<T>>.valueOrEmpty(): List<T> = valueOrNull() ?: emptyList()
+
+/**
+ * Generic serializer for [AtField] values. The compiler plugin wires [inner]
+ * automatically when the field type is resolved (e.g. `AtField<String>` picks
+ * up `String.serializer()`).
+ *
+ * On decode: any time this serializer is invoked, the field key was present in
+ * the input (otherwise kotlinx-serialization would have used the default param
+ * and never called us). We inspect the element: [JsonNull] becomes [AtField.Null],
+ * anything else becomes [AtField.Defined] wrapping the inner-decoded value.
+ *
+ * On encode: [AtField.Null] emits a JSON null token, [AtField.Defined] delegates
+ * to [inner], and [AtField.Missing] is an error — it should have been filtered
+ * out by `@EncodeDefault(NEVER)` on the field (or by the global `encodeDefaults
+ * = false`) before reaching us.
+ *
+ * JSON-only: [deserialize] casts the decoder to [JsonDecoder] to inspect the
+ * raw element. V1 is JSON/XRPC-only; a CBOR path can be added later without
+ * breaking the public surface.
+ */
 public class AtFieldSerializer<T : Any>(
     private val inner: KSerializer<T>,
 ) : KSerializer<AtField<T>> {
