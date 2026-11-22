@@ -238,7 +238,8 @@ internal fun renderReport(
             "Namespaces typically intentionally out of scope: `tools.ozone.*` " +
             "(moderation tooling), `com.atproto.admin.*` (PDS-operator surface), " +
             "`com.atproto.temp.*` (deprecated/internal), `app.bsky.unspecced.*` " +
-            "(experimental, churns), `network.bsky.jetstream.*` (relay infra). When you decide to opt into a new " +
+            "(experimental, churns; the thread V2 endpoints the official client ships on are vendored as " +
+            "overlays, the rest stays out), `network.bsky.jetstream.*` (relay infra). When you decide to opt into a new " +
             "namespace, append the NSIDs to `generator/lexicons.json` and run " +
             "the regen flow.",
     )

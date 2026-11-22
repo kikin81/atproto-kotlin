@@ -20,6 +20,30 @@
       "removeWhenPublished": false,
       "expectDrift": true,
       "driftReason": "Upstream removed getGroupPublicInfo in favor of getJoinLinkPreviews; vendored to retain API backwards compatibility."
+    },
+    {
+      "nsid": "app.bsky.unspecced.defs",
+      "source": "https://github.com/bluesky-social/bsky/blob/10568c14656d87e6d7d3dfba7b6877fa1dd3a81e/lexicons/app/bsky/unspecced/defs.json",
+      "commit": "10568c14656d87e6d7d3dfba7b6877fa1dd3a81e",
+      "vendoredAt": "2026-11-21",
+      "reason": "Vendored for the thread V2 item types (threadItemPost and its siblings, including opThreadPostIndex / opThreadPostCount). app.bsky.unspecced.* has no on-network lexicon authority (`_lexicon.unspecced.bsky.app` does not resolve), so `lex install` cannot fetch it. The rest of the namespace stays out of scope; the file is vendored whole so the staleness detector can compare it byte-for-byte with upstream.",
+      "removeWhenPublished": true
+    },
+    {
+      "nsid": "app.bsky.unspecced.getPostThreadV2",
+      "source": "https://github.com/bluesky-social/bsky/blob/10568c14656d87e6d7d3dfba7b6877fa1dd3a81e/lexicons/app/bsky/unspecced/getPostThreadV2.json",
+      "commit": "10568c14656d87e6d7d3dfba7b6877fa1dd3a81e",
+      "vendoredAt": "2026-11-21",
+      "reason": "The thread read the official Bluesky client ships on: a flat, server-ordered list with OP-thread numbering. Not resolvable on-network (see app.bsky.unspecced.defs). Upstream marks it experimental; re-vendor when the staleness detector reports drift.",
+      "removeWhenPublished": true
+    },
+    {
+      "nsid": "app.bsky.unspecced.getPostThreadOtherV2",
+      "source": "https://github.com/bluesky-social/bsky/blob/10568c14656d87e6d7d3dfba7b6877fa1dd3a81e/lexicons/app/bsky/unspecced/getPostThreadOtherV2.json",
+      "commit": "10568c14656d87e6d7d3dfba7b6877fa1dd3a81e",
+      "vendoredAt": "2026-11-21",
+      "reason": "Companion to getPostThreadV2: returns the replies the main call leaves out (muted, hidden by threadgate). Not resolvable on-network (see app.bsky.unspecced.defs).",
+      "removeWhenPublished": true
     }
   ]
 }
