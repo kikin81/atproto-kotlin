@@ -259,13 +259,7 @@ class DiscoveryChain(
     internal suspend fun resolveDid(did: String): DidDocument {
         val url = when {
             did.startsWith("did:plc:") -> httpsUrl(host = "plc.directory", did)
-            did.startsWith("did:web:") -> {
-                val host = did.removePrefix("did:web:")
-                if (!isHostname(host)) {
-                    throw OAuthDiscoveryException("Unsupported did:web host '$host' in $did")
-                }
-                httpsUrl(host = host, ".well-known", "did.json")
-            }
+            did.startsWith("did:web:") -> didWebDocumentUrl(did)
             else -> throw OAuthDiscoveryException("Unsupported DID method: $did")
         }
         val response = try {
@@ -418,10 +412,35 @@ internal data class DnsAnswer(
     val data: String? = null,
 )
 
-/** `https://<host>/<segments…>`, with each path segment percent-encoded. */
-private fun httpsUrl(host: String, vararg pathSegments: String): String = URLBuilder(protocol = URLProtocol.HTTPS, host = host)
+/** `https://<host>[:port]/<segments…>`, with each path segment percent-encoded. */
+private fun httpsUrl(host: String, vararg pathSegments: String, port: Int = 0): String = URLBuilder(protocol = URLProtocol.HTTPS, host = host, port = port)
     .appendPathSegments(*pathSegments)
     .buildString()
+
+private val DID_WEB_LOCALHOST_PORT = Regex("^localhost%3[Aa]([0-9]{1,5})$")
+
+/**
+ * `did:web:<host>` → `https://<host>/.well-known/did.json`.
+ *
+ * AT Protocol only supports hostname-level did:web (https://atproto.com/specs/did):
+ * path-based DIDs (`did:web:example.com:user:alice`) are rejected, and a port
+ * (colon hex-encoded as `%3A`) is only accepted on `localhost`, for testing
+ * and development.
+ */
+internal fun didWebDocumentUrl(did: String): String {
+    val id = did.removePrefix("did:web:")
+    DID_WEB_LOCALHOST_PORT.matchEntire(id)?.let { match ->
+        val port = match.groupValues[1].toInt()
+        if (port in 1..65535) return httpsUrl(host = "localhost", ".well-known", "did.json", port = port)
+    }
+    if (':' in id) {
+        throw OAuthDiscoveryException("Path-based did:web is not supported by AT Protocol: $did")
+    }
+    if (!isHostname(id)) {
+        throw OAuthDiscoveryException("Unsupported did:web host '$id' in $did")
+    }
+    return httpsUrl(host = id, ".well-known", "did.json")
+}
 
 private val HOSTNAME = Regex("^(?=.{1,253}$)([A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?)(\\.[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*$")
 

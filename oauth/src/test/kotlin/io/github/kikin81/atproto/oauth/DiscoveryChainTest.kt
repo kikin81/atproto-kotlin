@@ -477,6 +477,21 @@ class DiscoveryChainTest {
     }
 
     @Test
+    fun didWebAllowsAnEncodedPortOnLocalhostOnly() {
+        assertEquals("https://localhost:8080/.well-known/did.json", didWebDocumentUrl("did:web:localhost%3A8080"))
+        assertEquals("https://localhost:8080/.well-known/did.json", didWebDocumentUrl("did:web:localhost%3a8080"))
+        assertFailsWith<OAuthDiscoveryException> { didWebDocumentUrl("did:web:example.com%3A8443") }
+        assertFailsWith<OAuthDiscoveryException> { didWebDocumentUrl("did:web:localhost%3A99999") }
+    }
+
+    @Test
+    fun didWebRejectsPathBasedIdentifiers() {
+        // atproto supports hostname-level did:web only.
+        assertFailsWith<OAuthDiscoveryException> { didWebDocumentUrl("did:web:example.com:user:alice") }
+        assertFailsWith<OAuthDiscoveryException> { didWebDocumentUrl("did:web:localhost%3A8080:user") }
+    }
+
+    @Test
     fun isHostnameAcceptsDnsNamesOnly() {
         assertTrue(isHostname("alice.bsky.social"))
         assertTrue(isHostname("pds.example.com"))
