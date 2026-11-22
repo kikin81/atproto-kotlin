@@ -7,18 +7,18 @@ about before you open a PR.
 ## Quick start
 
 ```bash
-# 1. Clone and install the upstream lexicon corpus (pinned by CID).
+# The upstream lexicon corpus is committed under generator/lexicons/.
 git clone https://github.com/kikin81/atproto-kotlin.git
-cd atproto-kotlin/generator && npx lex install --ci && cd -
+cd atproto-kotlin
 
-# 2. Build everything: runtime, generator, models, oauth, sample.
+# Build everything: runtime, generator, models, oauth, sample.
 ./gradlew build
 ```
 
 **Prerequisites:**
 
 - **JDK 17** (tracked by `.java-version` / `.sdkmanrc`)
-- **Node 22+** (for `npx lex install`)
+- **Node 22+** (only to refresh the lexicon corpus with `npx lex install`)
 - **Android SDK** (API 37+, only if you're touching `:samples:android`)
 
 Gradle 9.3.1 ships via the wrapper — no separate install needed.
@@ -126,19 +126,26 @@ externally, so their public surface is internal.
 
 ## Lexicon updates
 
-Upstream AT Protocol lexicons are bumped automatically. A scheduled
-[`lexicon-bump`](.github/workflows/lexicon-bump.yaml) workflow runs
-weekly (Mondays 14:00 UTC) and opens a PR titled
-`chore(lexicons): bump @atproto/lex to <v>` whenever upstream has
-drifted from the pinned version. The PR includes the updated
-`generator/package.json`, `generator/package-lock.json`, and
-`generator/lexicons.json`, plus a CID-level summary of what changed.
+The lexicon corpus is committed under `generator/lexicons/`, with each
+file's CID pinned in `generator/lexicons.json`. CI builds from those
+files and never contacts the network, so an upstream republish can't
+break unrelated PRs. Two scheduled workflows keep it current:
 
-To trigger an ad-hoc bump, run the `Lexicon bump` workflow manually
-via the **Actions** tab on GitHub (`workflow_dispatch`).
+- [`lexicon-refresh`](.github/workflows/lexicon-refresh.yaml) runs daily
+  (12:00 UTC). When upstream has republished any pinned lexicon it opens
+  or updates a `chore(lexicons): refresh pinned lexicons from upstream`
+  PR on `chore/lexicon-refresh` with the new files, CIDs and `models.api`.
+- [`lexicon-bump`](.github/workflows/lexicon-bump.yaml) runs weekly
+  (Mondays 14:00 UTC) and opens a `chore(lexicons): bump @atproto/lex to <v>`
+  PR on `chore/lexicon-bump` when a new `@atproto/lex` is published.
 
-Successive runs reuse a stable `chore/lexicon-bump` branch, so a
-newer upstream release will update the existing PR rather than
+Both PRs carry a CID-level summary and a public-API section. When
+`models.api` loses a public class or property they're labeled
+`breaking-change` and list the removed symbols.
+
+To trigger either ad hoc, run the workflow manually via the **Actions**
+tab on GitHub (`workflow_dispatch`). Successive runs reuse their stable
+branch, so new upstream changes update the existing PR rather than
 opening a second one.
 
 Merging the PR cuts a release whose semver bump depends on whether
@@ -160,7 +167,7 @@ auto-merge once CI is green; major bumps wait for a human.
 `@atproto/lex` is deliberately excluded from Renovate — the
 [`lexicon-bump`](.github/workflows/lexicon-bump.yaml) workflow above
 owns it because a Renovate-only npm bump would leave
-`generator/lexicons.json` out of sync and fail `npx lex install --ci`.
+`generator/lexicons.json` and the committed corpus out of sync.
 
 The Renovate dashboard issue (auto-created by the bot) is the source
 of truth for queued and ignored updates.

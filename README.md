@@ -63,15 +63,15 @@ instructions and architecture details.
 ## Getting started as a contributor
 
 ```bash
-# 1. Install the upstream lexicon corpus (pinned by CID in lexicons.json).
-cd generator && npx lex install --ci && cd -
-
-# 2. Run the whole test suite (runtime, generator, sample, golden files).
+# Run the whole test suite (runtime, generator, sample, golden files).
 ./gradlew build
 ```
 
+The upstream lexicon corpus is committed under `generator/lexicons/` (pinned
+by CID in `generator/lexicons.json`) and refreshed by a daily workflow PR.
+
 Local prerequisites: **JDK 17** (tracked by `.java-version` / `.sdkmanrc`),
-**Node 22+** (for `npx lex install`), and the **Android SDK** if you want to
+**Node 22+** (only to refresh the lexicon corpus), and the **Android SDK** if you want to
 build the sample. Spotless + ktlint run on every commit via pre-commit hooks
 and on every push via the CI workflow.
 

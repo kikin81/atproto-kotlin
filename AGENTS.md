@@ -29,7 +29,7 @@ This repository contains **atproto-kotlin**, a code-generated Kotlin Multiplatfo
 ## Build Prerequisites
 
 - **JDK 17** (tracked by `.java-version`)
-- **Node 22+** (for `npx lex install` — installs the Lexicon corpus)
+- **Node 22+** (only to refresh the Lexicon corpus with `npx lex install`; normal builds use the committed corpus)
 - **Android SDK** (API 37+, needed for `:samples:android`, `:compose`, `:compose-material3`)
 - **Gradle 9.3.1** (wrapper included: `./gradlew`)
 
@@ -38,9 +38,6 @@ This repository contains **atproto-kotlin**, a code-generated Kotlin Multiplatfo
 ## Key Commands
 
 ```bash
-# Install lexicon corpus (required before first build or after lexicon bump)
-cd generator && npx lex install --ci && cd -
-
 # Full build (all modules + tests + spotless)
 ./gradlew build
 
@@ -76,7 +73,7 @@ To maintain parity for **Nubecita** with the official Bluesky client:
    ```
 2. **Update dependency pin:**
    In `generator/package.json`, bump `@atproto/lex` to the latest version.
-3. **Refresh the corpus:**
+3. **Refresh the corpus** (rewrites the committed `generator/lexicons/` and the CIDs in `lexicons.json`; commit both):
    ```bash
    cd generator && npm install @atproto/lex@latest --save-exact && npx lex install && cd ..
    ```
@@ -92,13 +89,15 @@ To maintain parity for **Nubecita** with the official Bluesky client:
    ```bash
    ./gradlew :generator:detectStaleOverlays
    ```
-7. **Update golden test files:**
+7. **Re-dump the public API:**
    ```bash
-   GOLDEN_UPDATE=1 ./gradlew :generator:test --tests '*GoldenFileTest*'
+   ./gradlew :models:apiDump
    ```
+   Golden files only change when generator code changes (they use their own test lexicons), so a corpus refresh never needs `GOLDEN_UPDATE=1`.
 8. **Automated workflows:**
-   - `.github/workflows/lexicon-bump.yaml`: Weekly scheduled check & PR opening.
-   - `.github/workflows/lexicon-drift-detect.yaml`: Daily/PR drift detection against upstream git tree.
+   - `.github/workflows/lexicon-refresh.yaml`: Daily. Re-resolves pinned lexicons from the network and opens/updates a `chore/lexicon-refresh` PR (labels `breaking-change` when `models.api` loses public symbols).
+   - `.github/workflows/lexicon-bump.yaml`: Weekly `@atproto/lex` npm bump PR.
+   - `.github/workflows/lexicon-drift-detect.yaml`: Daily drift detection against the upstream git tree (new/removed NSIDs → tracking issue).
    - `.github/workflows/overlay-staleness.yaml`: Audits vendored overlays against upstream.
 
 ---
@@ -123,6 +122,7 @@ Generated source lands in `models/build/generated/source/lexicon/commonMain/kotl
 - **MockEngine** (Ktor) for HTTP-level tests in OAuth and sample modules
 - **GoldenFileTest**: byte-for-byte regression test for generator output. Update with `GOLDEN_UPDATE=1`
 - Golden lexicons: `generator/src/test/resources/golden/lexicons/`
+- Production corpus: `generator/lexicons/` is committed; CI builds from it offline and only checks that its NSIDs match the `lexicons.json` pins
 - Golden output: `generator/src/test/resources/golden/kotlin/`
 
 ---
@@ -141,8 +141,9 @@ Generated source lands in `models/build/generated/source/lexicon/commonMain/kotl
 
 - `.github/workflows/ci.yaml`: lint + test + build on every push/PR
 - `.github/workflows/release.yaml`: gate jobs -> semantic-release -> publish -> API docs to GitHub Pages
-- `.github/workflows/lexicon-drift-detect.yaml`: scheduled check for upstream Lexicon changes
-- `.github/workflows/lexicon-bump.yaml`: opens a PR that pins refreshed Lexicon CIDs
+- `.github/workflows/lexicon-refresh.yaml`: daily PR that refreshes the committed Lexicon corpus and CIDs
+- `.github/workflows/lexicon-drift-detect.yaml`: daily check for new/removed upstream NSIDs
+- `.github/workflows/lexicon-bump.yaml`: weekly PR that bumps `@atproto/lex`
 - `.github/workflows/overlay-staleness.yaml`: audits vendored overlays against upstream
 - GitHub Pages serves `docs/` (includes `oauth/client-metadata.json` and `api/` Dokka docs)
 

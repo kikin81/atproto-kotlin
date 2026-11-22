@@ -1,0 +1,125 @@
+name: Lexicon refresh
+
+# Re-resolves every pinned lexicon against the live AT Proto network at the
+# current @atproto/lex version and opens a PR when upstream has republished
+# any of them. CI builds from the committed corpus in generator/lexicons/,
+# so upstream drift never breaks PRs; it shows up here as a reviewable diff.
+#
+# Separate from lexicon-bump.yaml (weekly @atproto/lex npm bump) so a stuck
+# tooling bump never blocks schema refreshes. Both rebuild their branch from
+# main on every run, so whichever merges first, the other catches up on its
+# next run.
+
+on:
+  schedule:
+    # 12:00 UTC daily (4-5am PT), before the Monday drift / bump jobs.
+    - cron: "0 12 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: lexicon-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    name: Refresh lexicon corpus
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+          # PAT (not GITHUB_TOKEN) so the PR opened below triggers CI.
+          token: ${{ secrets.RELEASE_PAT }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 26
+          cache: npm
+          cache-dependency-path: generator/package-lock.json
+
+      - name: Set up JDK
+        uses: actions/setup-java@v6
+        with:
+          distribution: zulu
+          java-version-file: .java-version
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v4
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Snapshot manifest
+        run: cp generator/lexicons.json "$RUNNER_TEMP/lexicons.before.json"
+
+      - name: Re-resolve lexicons from the network
+        working-directory: generator
+        # No --ci: rewrite lexicons.json and generator/lexicons/ to match
+        # whatever is currently published.
+        run: |
+          npm ci
+          npx lex install
+
+      - name: Detect changes
+        id: diff
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- generator/lexicons.json generator/lexicons \
+            && [ -z "$(git ls-files --others --exclude-standard -- generator/lexicons)" ]; then
+            echo "changes=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changes=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Regenerate models and API dump
+        if: steps.diff.outputs.changes == 'true'
+        # Fails the run (no PR) if the new corpus doesn't generate; the
+        # API dump keeps the PR's own apiCheck green.
+        run: |
+          ./gradlew :generator:generateModels --no-configuration-cache
+          ./gradlew :models:apiDump
+
+      - name: Build PR body
+        id: body
+        if: steps.diff.outputs.changes == 'true'
+        run: |
+          set -euo pipefail
+          .github/scripts/lexicon-change-report.sh \
+            "$RUNNER_TEMP/lexicons.before.json" \
+            "Upstream republished pinned lexicons. Refreshes \`generator/lexicons/\`, their CIDs in \`lexicons.json\`, and \`models.api\`." \
+            > "$RUNNER_TEMP/pr_body.md"
+          {
+            echo 'body<<PR_BODY_EOF'
+            cat "$RUNNER_TEMP/pr_body.md"
+            echo 'PR_BODY_EOF'
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Open or update refresh PR
+        if: steps.diff.outputs.changes == 'true'
+        uses: peter-evans/create-pull-request@v8
+        with:
+          token: ${{ secrets.RELEASE_PAT }}
+          base: main
+          # Stable branch: successive runs update one PR instead of piling up.
+          branch: chore/lexicon-refresh
+          delete-branch: true
+          add-paths: |
+            generator/lexicons.json
+            generator/lexicons/**
+            models/api/models.api
+          title: "chore(lexicons): refresh pinned lexicons from upstream"
+          body: ${{ steps.body.outputs.body }}
+          labels: |
+            lexicon-refresh
+            ${{ steps.body.outputs.breaking == 'true' && 'breaking-change' || '' }}
+          commit-message: |
+            chore(lexicons): refresh pinned lexicons from upstream
+
+            Re-resolve generator/lexicons/ against the AT Proto network and
+            re-dump models.api.
