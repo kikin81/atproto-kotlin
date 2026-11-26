@@ -5960,6 +5960,8 @@ public final class io/github/kikin81/atproto/app/bsky/feed/FeedService {
 	public static synthetic fun getListFeed$default (Lio/github/kikin81/atproto/app/bsky/feed/FeedService;Lio/github/kikin81/atproto/app/bsky/feed/GetListFeedRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public final fun getPostThread (Lio/github/kikin81/atproto/app/bsky/feed/GetPostThreadRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun getPostThread$default (Lio/github/kikin81/atproto/app/bsky/feed/FeedService;Lio/github/kikin81/atproto/app/bsky/feed/GetPostThreadRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun getPostVersions (Lio/github/kikin81/atproto/app/bsky/feed/GetPostVersionsRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getPostVersions$default (Lio/github/kikin81/atproto/app/bsky/feed/FeedService;Lio/github/kikin81/atproto/app/bsky/feed/GetPostVersionsRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public final fun getPosts (Lio/github/kikin81/atproto/app/bsky/feed/GetPostsRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun getPosts$default (Lio/github/kikin81/atproto/app/bsky/feed/FeedService;Lio/github/kikin81/atproto/app/bsky/feed/GetPostsRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public final fun getQuotes (Lio/github/kikin81/atproto/app/bsky/feed/GetQuotesRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -6949,6 +6951,62 @@ public final class io/github/kikin81/atproto/app/bsky/feed/GetPostThreadResponse
 	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/feed/GetPostThreadResponseThreadUnionUnknownSerializer;
 	public fun construct (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)Lio/github/kikin81/atproto/app/bsky/feed/GetPostThreadResponseThreadUnion$Unknown;
 	public synthetic fun construct (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)Lio/github/kikin81/atproto/runtime/UnknownOpenUnionMember;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/feed/GetPostVersionsRequest {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/feed/GetPostVersionsRequest$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-GUXd3rc ()Ljava/lang/String;
+	public final fun copy-wvBT1Tk (Ljava/lang/String;)Lio/github/kikin81/atproto/app/bsky/feed/GetPostVersionsRequest;
+	public static synthetic fun copy-wvBT1Tk$default (Lio/github/kikin81/atproto/app/bsky/feed/GetPostVersionsRequest;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/feed/GetPostVersionsRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getUri-GUXd3rc ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/feed/GetPostVersionsRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/feed/GetPostVersionsRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/feed/GetPostVersionsRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/feed/GetPostVersionsRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/feed/GetPostVersionsRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/feed/GetPostVersionsResponse {
+	public static final field Companion Lio/github/kikin81/atproto/app/bsky/feed/GetPostVersionsResponse$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-GUXd3rc ()Ljava/lang/String;
+	public final fun component2 ()Ljava/util/List;
+	public final fun copy-QHl1K4Y (Ljava/lang/String;Ljava/util/List;)Lio/github/kikin81/atproto/app/bsky/feed/GetPostVersionsResponse;
+	public static synthetic fun copy-QHl1K4Y$default (Lio/github/kikin81/atproto/app/bsky/feed/GetPostVersionsResponse;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lio/github/kikin81/atproto/app/bsky/feed/GetPostVersionsResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getUri-GUXd3rc ()Ljava/lang/String;
+	public final fun getVersions ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class io/github/kikin81/atproto/app/bsky/feed/GetPostVersionsResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/github/kikin81/atproto/app/bsky/feed/GetPostVersionsResponse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/github/kikin81/atproto/app/bsky/feed/GetPostVersionsResponse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/github/kikin81/atproto/app/bsky/feed/GetPostVersionsResponse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/github/kikin81/atproto/app/bsky/feed/GetPostVersionsResponse$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
 public final class io/github/kikin81/atproto/app/bsky/feed/GetPostsRequest {
