@@ -362,4 +362,40 @@ class DpopAuthProviderTransportTest {
 
         assertTrue(failure.message.orEmpty().contains("refresh token not consumed"))
     }
+
+    @Test
+    fun requestNotSentTakesBackTheMarkItWrote() = runTest {
+        val f = fixture(
+            script = arrayOf(
+                { throw TokenRequestNotSentException("backend unreachable") },
+                success(),
+            ),
+        )
+
+        assertFailsWith<OAuthRefreshFailedException> { f.refresh() }
+
+        assertEquals(listOf<Boolean?>(true), f.transport.inDoubtOnDiskAtSend, "The mark is still written before sending")
+        assertEquals(false, f.store.session?.refreshInDoubt, "A request that never left leaves no doubt on disk either")
+
+        assertTrue(f.refresh())
+        assertFalse(f.transport.requests[1].outcomeInDoubt)
+    }
+
+    @Test
+    fun requestNotSentAfterAnUnknownOutcomeKeepsTheMark() = runTest {
+        val f = fixture(
+            script = arrayOf(
+                { throw IOException("response lost") },
+                { throw TokenRequestNotSentException("backend unreachable") },
+                success(),
+            ),
+        )
+
+        assertFailsWith<OAuthRefreshFailedException> { f.refresh() }
+        assertFailsWith<OAuthRefreshFailedException> { f.refresh() }
+
+        assertEquals(true, f.store.session?.refreshInDoubt, "The first attempt's outcome is still unknown")
+        assertTrue(f.refresh())
+        assertTrue(f.transport.requests[2].outcomeInDoubt)
+    }
 }

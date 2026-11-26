@@ -415,8 +415,14 @@ class DpopAuthProvider(
             // lost) stay ambiguous — the server may have already rotated.
             val notSent = e is TokenRequestNotSentException || isPreSendFailure(e)
             // A request that never left adds no doubt of its own: whatever was
-            // known about this token before the attempt still holds.
-            if (notSent) priorRefreshOutcomeUnknown = outcomeInDoubt
+            // known about this token before the attempt still holds. If this
+            // attempt wrote the mark, take it back, or a restart would find a
+            // doubt on disk that nothing justifies and keep the token off
+            // routes that are perfectly safe for it.
+            if (notSent) {
+                priorRefreshOutcomeUnknown = outcomeInDoubt
+                if (!outcomeInDoubt) clearRefreshInDoubt()
+            }
             val notConsumed = if (notSent) " (request not sent; refresh token not consumed)" else ""
             throw OAuthRefreshFailedException("Refresh request failed$failureContext$notConsumed", e)
         }
