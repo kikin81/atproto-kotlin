@@ -33,6 +33,32 @@ data class OAuthSession(
     val authServerNonce: String? = null,
     val clockOffsetSeconds: Long = 0,
     val pdsNonce: String? = null,
+    /**
+     * The authorization server's issuer identifier. `null` on sessions stored
+     * before it was recorded; the origin of [tokenEndpoint] is used then.
+     */
+    val issuer: String? = null,
+    /**
+     * The id of the client signing key this session is bound to, once a
+     * [TokenEndpointTransport] has reported one for a confidential client.
+     * Set once and never replaced: the authorization server deletes a session
+     * that is refreshed with a different key.
+     */
+    val clientAuthKid: String? = null,
+    /**
+     * The client's `token_endpoint_auth_method` as last reported by the
+     * [TokenEndpointTransport] (`"none"` or `"private_key_jwt"`), or `null`
+     * when no transport has reported one. Tells a consumer which session
+     * lifetime the authorization server applies.
+     */
+    val clientAuthMethod: String? = null,
+    /**
+     * `true` while a refresh has been sent with this [refreshToken] and no
+     * definitive answer has come back, so the token may already be spent.
+     * Only maintained for a transport whose
+     * [TokenEndpointTransport.tracksRefreshOutcome] is set.
+     */
+    val refreshInDoubt: Boolean = false,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

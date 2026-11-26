@@ -3,11 +3,6 @@ package io.github.kikin81.atproto.oauth
 import io.github.kikin81.atproto.runtime.AuthProvider
 import io.ktor.client.HttpClient
 import io.ktor.client.network.sockets.ConnectTimeoutException
-import io.ktor.client.request.forms.submitForm
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.Parameters
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -59,24 +54,25 @@ class DpopAuthProvider(
     private val signer: DpopSigner,
     private val sessionStore: OAuthSessionStore,
     /**
-     * Client used for token-endpoint POSTs.
+     * How the refresh request reaches the token endpoint. See
+     * [TokenEndpointTransport].
      *
-     * Should not silently re-send a request whose connection dropped (OkHttp:
-     * `retryOnConnectionFailure(false)`): a re-sent refresh replays a token the
-     * server may already have consumed.
+     * Whatever sends the request should not silently re-send one whose
+     * connection dropped (OkHttp: `retryOnConnectionFailure(false)`): a
+     * re-sent refresh replays a token the server may already have consumed.
      *
-     * Should be bounded by a request timeout — Ktor's `HttpTimeout` plugin, or
-     * timeouts configured on the engine. This library installs neither and
-     * cannot enforce it, so it is the caller's responsibility.
+     * It should also be bounded by a request timeout — Ktor's `HttpTimeout`
+     * plugin, or timeouts configured on the engine. This library installs
+     * neither and cannot enforce it, so it is the caller's responsibility.
      *
      * It matters more here than for an ordinary request: the refresh runs under
      * `NonCancellable`, because once the token endpoint has been POSTed the
      * refresh token is consumed server-side and abandoning the call would
      * strand the rotation. That removes cancellation as an escape hatch, so a
-     * timeout is what bounds a hung socket. An unbounded client will hold the
-     * calling coroutine until the socket resolves on its own.
+     * timeout is what bounds a hung socket. An unbounded transport will hold
+     * the calling coroutine until the socket resolves on its own.
      */
-    private val refreshClient: HttpClient,
+    private val refreshTransport: TokenEndpointTransport,
     private val json: Json = Json { ignoreUnknownKeys = true },
     /**
      * Invoked when persisting a rotated session fails even after one retry.
@@ -89,6 +85,28 @@ class DpopAuthProvider(
      */
     private val onPersistFailure: (Throwable) -> Unit = {},
 ) : AuthProvider {
+
+    /**
+     * Refreshes by posting directly to the token endpoint with [refreshClient]
+     * — the behaviour of a public client. Equivalent to passing a
+     * [DirectTokenEndpointTransport] built from that client, so the same
+     * requirements apply to it: no silent re-sends, and a request timeout.
+     */
+    constructor(
+        session: OAuthSession,
+        signer: DpopSigner,
+        sessionStore: OAuthSessionStore,
+        refreshClient: HttpClient,
+        json: Json = Json { ignoreUnknownKeys = true },
+        onPersistFailure: (Throwable) -> Unit = {},
+    ) : this(
+        session = session,
+        signer = signer,
+        sessionStore = sessionStore,
+        refreshTransport = DirectTokenEndpointTransport(refreshClient),
+        json = json,
+        onPersistFailure = onPersistFailure,
+    )
 
     // A signup session can lack a DID until resolution completes; with no
     // account key to share, it keeps a lock of its own.
@@ -113,6 +131,13 @@ class DpopAuthProvider(
 
     @Volatile
     private var authServerNonce: String? = session.authServerNonce
+
+    /**
+     * `true` when an earlier attempt with the current refresh token ended
+     * without a definitive answer. Starts from what was persisted, so it
+     * survives a process restart. Written and read under [refreshMutex].
+     */
+    private var priorRefreshOutcomeUnknown = session.refreshInDoubt
 
     override suspend fun authHeaders(method: String, url: String): Map<String, String> {
         val ath = DpopSigner.accessTokenHash(session.accessToken)
@@ -247,7 +272,7 @@ class DpopAuthProvider(
             //
             // Bounded by the refresh client's request timeout, not by
             // withTimeout: a timeout wrapper here would reintroduce the very
-            // cancellation this exists to prevent. See [refreshClient].
+            // cancellation this exists to prevent. See [refreshTransport].
             return withContext(NonCancellable) { refreshTokens() }
         }
     }
@@ -267,6 +292,7 @@ class DpopAuthProvider(
         if (!rotatedByOtherInstance) return false
         session = stored
         authServerNonce = stored.authServerNonce
+        priorRefreshOutcomeUnknown = stored.refreshInDoubt
         return true
     }
 
@@ -304,12 +330,11 @@ class DpopAuthProvider(
     }
 
     private suspend fun refreshTokens(): Boolean {
-        val response = postRefreshForm(failureContext = "")
-        if (response.status == HttpStatusCode.OK) return applyRefreshResponse(response)
+        val response = sendRefresh(failureContext = "")
+        if (response.isSuccess()) return applyRefreshResponse(response)
 
-        // Classify before deciding to retry: an HTTP body can only be consumed
-        // once, and both the nonce-retry decision and the terminal split need
-        // the `error` field.
+        // Classify before deciding to retry: both the nonce-retry decision and
+        // the terminal split need the `error` field.
         val error = parseErrorField(response)
 
         // A rotated DPoP-Nonce on a 401/400 is a recoverable use_dpop_nonce
@@ -319,57 +344,66 @@ class DpopAuthProvider(
         // rotated a nonce: retrying would re-POST the refresh token the server
         // just rejected, and replaying a single-use refresh token is precisely
         // what trips AT Proto reuse detection. Classify first, retry second.
-        val nonceHeader = response.headers["DPoP-Nonce"]
-        val isNonceRetryStatus =
-            response.status == HttpStatusCode.Unauthorized ||
-                response.status == HttpStatusCode.BadRequest
-        val canRetryWithNonce = error != INVALID_GRANT && isNonceRetryStatus && nonceHeader != null
+        //
+        // Only the authorization server issues nonce challenges. A nonce on an
+        // answer from anything in between is not one to sign with.
+        val nonceHeader = response.dpopNonce
+        val isNonceRetryStatus = response.status == HTTP_UNAUTHORIZED || response.status == HTTP_BAD_REQUEST
+        val canRetryWithNonce =
+            response.isFromAuthorizationServer() && error != INVALID_GRANT && isNonceRetryStatus && nonceHeader != null
         if (canRetryWithNonce) {
-            signer.calibrateClockFromHeader(response.headers["Date"]?.toString())
+            signer.calibrateClockFromHeader(response.serverDate)
             authServerNonce = nonceHeader
             return refreshTokensWithNonce()
         }
 
-        failRefresh(response.status, error)
+        failRefresh(response, error)
     }
 
     private suspend fun refreshTokensWithNonce(): Boolean {
-        val response = postRefreshForm(failureContext = " (nonce retry)")
-        if (response.status == HttpStatusCode.OK) return applyRefreshResponse(response)
-        failRefresh(response.status, parseErrorField(response))
+        val response = sendRefresh(failureContext = " (nonce retry)")
+        if (response.isSuccess()) return applyRefreshResponse(response)
+        failRefresh(response, parseErrorField(response))
     }
+
+    /** Tokens only ever come from the authorization server, whatever a status says. */
+    private fun TokenEndpointResponse.isSuccess(): Boolean = status == HTTP_OK && isFromAuthorizationServer()
+
+    private fun TokenEndpointResponse.isFromAuthorizationServer(): Boolean = origin == TokenEndpointResponseOrigin.AuthorizationServer
 
     /**
-     * Reads the response body and extracts the OAuth `error` field (RFC 6749
-     * §5.2). Returns `null` for an unparseable body (proxy/captive-portal HTML),
+     * Extracts the OAuth `error` field (RFC 6749 §5.2) from a response body.
+     * Returns `null` for an unparseable body (proxy/captive-portal HTML),
      * which the caller must treat as transient rather than as a rejection.
      */
-    private suspend fun parseErrorField(response: HttpResponse): String? {
-        // bodyAsText() is a suspend call — must not sit inside runCatching,
-        // which would swallow CancellationException. Only the parse is guarded.
-        val body = response.bodyAsText()
-        return runCatching {
-            json.parseToJsonElement(body).jsonObject["error"]?.jsonPrimitive?.content
-        }.getOrNull()
-    }
+    private fun parseErrorField(response: TokenEndpointResponse): String? = runCatching {
+        json.parseToJsonElement(response.body).jsonObject["error"]?.jsonPrimitive?.content
+    }.getOrNull()
 
-    private suspend fun postRefreshForm(failureContext: String): HttpResponse {
+    private suspend fun sendRefresh(failureContext: String): TokenEndpointResponse {
         val proof = signer.sign(
             method = "POST",
             url = session.tokenEndpoint,
             nonce = authServerNonce,
         )
-        return try {
-            refreshClient.submitForm(
-                url = session.tokenEndpoint,
-                formParameters = Parameters.build {
-                    append("grant_type", "refresh_token")
-                    append("refresh_token", session.refreshToken)
-                    append("client_id", session.clientId ?: "")
-                },
-            ) {
-                headers.append("DPoP", proof)
-            }
+        val outcomeInDoubt = priorRefreshOutcomeUnknown
+        markRefreshInDoubt()
+        val response = try {
+            refreshTransport.send(
+                TokenEndpointRequest(
+                    kind = TokenEndpointRequestKind.Refresh,
+                    endpointUrl = session.tokenEndpoint,
+                    issuer = session.issuer ?: issuerFromEndpoint(session.tokenEndpoint),
+                    formParameters = mapOf(
+                        "grant_type" to "refresh_token",
+                        "refresh_token" to session.refreshToken,
+                        "client_id" to (session.clientId ?: ""),
+                    ),
+                    dpopProof = proof,
+                    clientAuthKid = session.clientAuthKid,
+                    outcomeInDoubt = outcomeInDoubt,
+                ),
+            )
         } catch (e: CancellationException) {
             throw e // never swallow cooperative cancellation
         } catch (e: Exception) {
@@ -379,8 +413,41 @@ class DpopAuthProvider(
             // so the single-use refresh token was provably NOT consumed and a
             // retry with the same token is safe. Post-send failures (response
             // lost) stay ambiguous — the server may have already rotated.
-            val notConsumed = if (isPreSendFailure(e)) " (request not sent; refresh token not consumed)" else ""
+            val notSent = e is TokenRequestNotSentException || isPreSendFailure(e)
+            // A request that never left adds no doubt of its own: whatever was
+            // known about this token before the attempt still holds.
+            if (notSent) priorRefreshOutcomeUnknown = outcomeInDoubt
+            val notConsumed = if (notSent) " (request not sent; refresh token not consumed)" else ""
             throw OAuthRefreshFailedException("Refresh request failed$failureContext$notConsumed", e)
+        }
+        // The authorization server answered, so this token's state is known
+        // again: either it was rotated (success) or it was not consumed.
+        if (response.isFromAuthorizationServer()) priorRefreshOutcomeUnknown = false
+        return response
+    }
+
+    /**
+     * Records, durably and BEFORE the request leaves, that this refresh
+     * token's outcome is about to become unknown. If the response is then
+     * lost — or the process dies waiting for it — the next attempt can tell
+     * the transport the token may already be spent, so it is not sent by a
+     * route that would replay it. A no-op for a transport that does not ask
+     * for this, and when the mark is already on disk (a nonce retry).
+     */
+    private suspend fun markRefreshInDoubt() {
+        if (!refreshTransport.tracksRefreshOutcome) return
+        priorRefreshOutcomeUnknown = true
+        if (session.refreshInDoubt) return
+        session = session.copy(refreshInDoubt = true, authServerNonce = authServerNonce, pdsNonce = pdsNonce)
+        try {
+            sessionStore.save(session)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            // The refresh itself is still worth attempting: a store that
+            // cannot take this write is reported, not allowed to strand the
+            // session on an expired access token.
+            onPersistFailure(e)
         }
     }
 
@@ -404,14 +471,22 @@ class DpopAuthProvider(
         this is UnresolvedAddressException ||
         this is ConnectTimeoutException
 
-    /** Callers guarantee [response] is HTTP 200; non-OK goes to [failRefresh]. */
-    private suspend fun applyRefreshResponse(response: HttpResponse): Boolean {
-        val tokenResponse = json.decodeFromString(TokenResponse.serializer(), response.bodyAsText())
+    /** Callers guarantee [response] is a success from the authorization server; anything else goes to [failRefresh]. */
+    private suspend fun applyRefreshResponse(response: TokenEndpointResponse): Boolean {
+        val tokenResponse = json.decodeFromString(TokenResponse.serializer(), response.body)
         session = session.copy(
             accessToken = tokenResponse.access_token,
             refreshToken = tokenResponse.refresh_token ?: session.refreshToken,
             authServerNonce = authServerNonce,
             pdsNonce = pdsNonce,
+            refreshInDoubt = false,
+            clientAuthMethod = response.clientAuthMethod ?: session.clientAuthMethod,
+            // Recorded once, and only when the client is reported confidential:
+            // while it is public the server binds the session to nothing. Never
+            // replaced, because the server deletes a session refreshed with a
+            // different key.
+            clientAuthKid = session.clientAuthKid
+                ?: response.clientAuthKid.takeIf { response.clientAuthMethod == CLIENT_AUTH_PRIVATE_KEY_JWT },
         )
         persistRotatedSession()
         return true
@@ -446,17 +521,26 @@ class DpopAuthProvider(
     }
 
     /**
-     * Terminates a non-OK refresh response. Clears the session and throws
-     * [OAuthSessionExpiredException] ONLY when the token endpoint reports the
-     * refresh token is revoked/expired (`error=invalid_grant`, RFC 6749 §5.2).
+     * Terminates a refresh that did not succeed. Clears the session and throws
+     * [OAuthSessionExpiredException] ONLY when the authorization server itself
+     * reports the refresh token is revoked/expired (`error=invalid_grant`,
+     * RFC 6749 §5.2).
      *
-     * Every other failure — 5xx, 429, 408, a proxy/captive-portal body, or any
-     * non-`invalid_grant` error — is treated as transient: throw the retryable
+     * Every other failure — 5xx, 429, 408, a proxy/captive-portal body, any
+     * non-`invalid_grant` error, or ANY answer that did not come from the
+     * authorization server — is treated as transient: throw the retryable
      * [OAuthRefreshFailedException] and leave the session intact so a later
-     * request with real connectivity can refresh cleanly. This is what keeps a
-     * flaky connection from silently signing the user out.
+     * request can refresh cleanly. This is what keeps a flaky connection, or
+     * a misbehaving backend in front of the server, from silently signing the
+     * user out.
      */
-    private suspend fun failRefresh(status: HttpStatusCode, error: String?): Nothing {
+    private suspend fun failRefresh(response: TokenEndpointResponse, error: String?): Nothing {
+        val status = response.status
+        if (!response.isFromAuthorizationServer()) {
+            throw OAuthRefreshFailedException(
+                "Refresh not answered by the authorization server (HTTP $status${error?.let { ", error=$it" } ?: ""})",
+            )
+        }
         if (error == INVALID_GRANT) {
             // Latch BEFORE clearing so any waiter that acquires the mutex next
             // short-circuits instead of replaying this now-dead token.
@@ -464,9 +548,28 @@ class DpopAuthProvider(
             sessionStore.clear()
             throw OAuthSessionExpiredException("Refresh token revoked (invalid_grant, HTTP $status)")
         }
+        clearRefreshInDoubt()
         throw OAuthRefreshFailedException(
             "Refresh failed (HTTP $status${error?.let { ", error=$it" } ?: ""})",
         )
+    }
+
+    /**
+     * The authorization server rejected the request without consuming the
+     * refresh token, so the doubt recorded by [markRefreshInDoubt] is over.
+     * Best effort: a mark left on disk only makes the next attempt more
+     * cautious than it needs to be.
+     */
+    private suspend fun clearRefreshInDoubt() {
+        if (!session.refreshInDoubt) return
+        session = session.copy(refreshInDoubt = false)
+        try {
+            sessionStore.save(session)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            onPersistFailure(e)
+        }
     }
 
     /**
@@ -501,6 +604,9 @@ class DpopAuthProvider(
 private const val INVALID_GRANT = "invalid_grant"
 private const val INVALID_TOKEN = "invalid_token"
 private const val USE_DPOP_NONCE = "use_dpop_nonce"
+private const val HTTP_OK = 200
+private const val HTTP_BAD_REQUEST = 400
+private const val HTTP_UNAUTHORIZED = 401
 
 // RFC 7235 auth-param: a case-insensitive name, optional whitespace around
 // `=`, and a quoted-string or token value. `\b` before `error` and `=` after

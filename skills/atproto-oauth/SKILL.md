@@ -82,7 +82,7 @@ template. Key rules:
   per Bluesky's authorization server.
 - `application_type` must be `"native"`.
 - `dpop_bound_access_tokens` must be `true`.
-- `token_endpoint_auth_method` must be `"none"` (public client).
+- `token_endpoint_auth_method` must be `"none"` (public client). A confidential client (`"private_key_jwt"`, `"application_type": "web"`, https redirects only) needs a backend that signs client assertions; route the token requests to it with a `TokenEndpointTransport` — see "Confidential clients" in `oauth/README.md`.
 
 **Hosting options:**
 - GitHub Pages (`docs/oauth/client-metadata.json` with Pages enabled)

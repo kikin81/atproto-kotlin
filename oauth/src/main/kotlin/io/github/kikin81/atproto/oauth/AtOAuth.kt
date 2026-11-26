@@ -3,11 +3,6 @@ package io.github.kikin81.atproto.oauth
 import io.github.kikin81.atproto.runtime.XrpcClient
 import io.github.kikin81.atproto.runtime.XrpcErrorListener
 import io.ktor.client.HttpClient
-import io.ktor.client.request.forms.submitForm
-import io.ktor.client.request.header
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.Parameters
 import io.ktor.http.URLBuilder
 import io.ktor.http.parseQueryString
 import kotlinx.serialization.json.Json
@@ -111,7 +106,51 @@ class AtOAuth(
      * the refresh runs non-cancellably (see [DpopAuthProvider]).
      */
     private val tokenHttpClient: HttpClient = httpClient,
+    /**
+     * How the four client-authenticated requests (pushed authorization
+     * request, code exchange, refresh, revocation) reach the authorization
+     * server. Defaults to posting directly, with [httpClient] and
+     * [tokenHttpClient] used as described above — the behaviour of a public
+     * client.
+     *
+     * Supply a transport to send them through a token-mediating backend that
+     * adds a client assertion, making the client confidential. Discovery and
+     * every XRPC call still use [httpClient] directly. See
+     * [TokenEndpointTransport].
+     */
+    tokenTransport: TokenEndpointTransport? = null,
 ) {
+
+    // Keeps the pre-10.3 JVM constructors for binaries compiled against them;
+    // source callers resolve to the primary constructor.
+    @Deprecated("Binary compatibility only", level = DeprecationLevel.HIDDEN)
+    constructor(
+        clientMetadataUrl: String,
+        redirectUri: String,
+        sessionStore: OAuthSessionStore,
+        httpClient: HttpClient,
+        json: Json = Json { ignoreUnknownKeys = true },
+        scope: String = "atproto transition:generic",
+        onSessionPersistFailure: (Throwable) -> Unit = {},
+        pendingStore: PendingAuthStore = InMemoryPendingAuthStore(),
+        nowMillis: () -> Long = { System.currentTimeMillis() },
+        tokenHttpClient: HttpClient = httpClient,
+    ) : this(
+        clientMetadataUrl = clientMetadataUrl,
+        redirectUri = redirectUri,
+        sessionStore = sessionStore,
+        httpClient = httpClient,
+        json = json,
+        scope = scope,
+        onSessionPersistFailure = onSessionPersistFailure,
+        pendingStore = pendingStore,
+        nowMillis = nowMillis,
+        tokenHttpClient = tokenHttpClient,
+        tokenTransport = null,
+    )
+
+    private val transport: TokenEndpointTransport =
+        tokenTransport ?: DirectTokenEndpointTransport(httpClient = httpClient, singleUseHttpClient = tokenHttpClient)
 
     /**
      * Starts the OAuth login flow.
@@ -223,6 +262,7 @@ class AtOAuth(
                 handle = metadata.handle,
                 promptValuesSupported = metadata.promptValuesSupported,
                 createdAtEpochMillis = nowMillis(),
+                clientAuthKid = parResult.clientAuthKid,
             ),
         )
 
@@ -285,14 +325,16 @@ class AtOAuth(
             )
         }
 
-        val tokenResponse = exchangeCode(
+        val exchange = exchangeCode(
             metadata = pending.metadata,
             signer = pending.signer,
             code = code,
             codeVerifier = pending.codeVerifier,
             redirectUri = pending.redirectUri,
             initialNonce = pending.authServerNonce,
+            clientAuthKid = pending.clientAuthKid,
         )
+        val tokenResponse = exchange.tokens
 
         val exported = pending.signer.exportKeyPair()
         val refreshToken = tokenResponse.refresh_token
@@ -310,6 +352,12 @@ class AtOAuth(
             dpopPrivateKey = exported.privateKeyEncoded,
             dpopPublicKey = exported.publicKeyEncoded,
             clockOffsetSeconds = pending.signer.clockOffsetSeconds,
+            issuer = pending.metadata.issuer,
+            // A key is recorded only once the client is reported confidential:
+            // while it is public the server binds the session to nothing, and
+            // pinning a key then could outlive that key.
+            clientAuthKid = exchange.clientAuthKid.takeIf { exchange.clientAuthMethod == CLIENT_AUTH_PRIVATE_KEY_JWT },
+            clientAuthMethod = exchange.clientAuthMethod,
         )
 
         when (pending.flowOrigin) {
@@ -380,7 +428,7 @@ class AtOAuth(
             session = session,
             signer = signer,
             sessionStore = sessionStore,
-            refreshClient = tokenHttpClient,
+            refreshTransport = transport,
             onPersistFailure = onSessionPersistFailure,
         )
         return XrpcClient(
@@ -411,35 +459,28 @@ class AtOAuth(
             DpopSigner.ExportedKeyPair(session.dpopPrivateKey, session.dpopPublicKey),
         )
         signer.clockOffsetSeconds = session.clockOffsetSeconds
+        val form = mapOf(
+            "token" to session.refreshToken,
+            "token_type_hint" to "refresh_token",
+            "client_id" to clientId,
+        )
+        suspend fun send(nonce: String?): TokenEndpointResponse = transport.send(
+            TokenEndpointRequest(
+                kind = TokenEndpointRequestKind.Revoke,
+                endpointUrl = endpoint,
+                issuer = session.issuer ?: issuerFromEndpoint(session.tokenEndpoint),
+                formParameters = form,
+                dpopProof = signer.sign(method = "POST", url = endpoint, nonce = nonce),
+                clientAuthKid = session.clientAuthKid,
+            ),
+        )
         try {
-            val proof = signer.sign(method = "POST", url = endpoint, nonce = session.authServerNonce)
-            val response = httpClient.submitForm(
-                url = endpoint,
-                formParameters = Parameters.build {
-                    append("token", session.refreshToken)
-                    append("token_type_hint", "refresh_token")
-                    append("client_id", clientId)
-                },
-            ) {
-                header("DPoP", proof)
-            }
+            val response = send(session.authServerNonce)
             // Revocation may require a nonce retry
-            if (response.status == HttpStatusCode.Unauthorized || response.status == HttpStatusCode.BadRequest) {
-                val nonce = response.headers["DPoP-Nonce"]
-                if (nonce != null) {
-                    signer.calibrateClockFromHeader(response.headers["Date"])
-                    val retryProof = signer.sign(method = "POST", url = endpoint, nonce = nonce)
-                    httpClient.submitForm(
-                        url = endpoint,
-                        formParameters = Parameters.build {
-                            append("token", session.refreshToken)
-                            append("token_type_hint", "refresh_token")
-                            append("client_id", clientId)
-                        },
-                    ) {
-                        header("DPoP", retryProof)
-                    }
-                }
+            val nonce = response.dpopNonce
+            if (response.isNonceChallengeStatus() && response.isFromAuthorizationServer() && nonce != null) {
+                signer.calibrateClockFromHeader(response.serverDate)
+                send(nonce)
             }
         } catch (_: Exception) {
             // Best-effort: if revocation fails, we still clear locally
@@ -457,48 +498,58 @@ class AtOAuth(
         loginHint: String?,
         prompt: String?,
     ): ParResult {
-        // First attempt: no nonce (expected to fail with use_dpop_nonce)
-        val firstProof = signer.sign(method = "POST", url = metadata.parEndpoint)
-        val firstResponse = httpClient.submitForm(
-            url = metadata.parEndpoint,
-            formParameters = parParams(codeChallenge, state, redirectUri, loginHint, prompt),
-        ) {
-            header("DPoP", firstProof)
-        }
+        val form = parParams(codeChallenge, state, redirectUri, loginHint, prompt)
+        suspend fun send(nonce: String?, clientAuthKid: String?): TokenEndpointResponse = transport.send(
+            TokenEndpointRequest(
+                kind = TokenEndpointRequestKind.PushedAuthorization,
+                endpointUrl = metadata.parEndpoint,
+                issuer = metadata.issuer,
+                formParameters = form,
+                dpopProof = signer.sign(method = "POST", url = metadata.parEndpoint, nonce = nonce),
+                clientAuthKid = clientAuthKid,
+            ),
+        )
 
-        if (firstResponse.status == HttpStatusCode.OK) {
-            val body = json.decodeFromString(ParResponse.serializer(), firstResponse.bodyAsText())
-            return ParResult(requestUri = body.request_uri, dpopNonce = firstResponse.headers["DPoP-Nonce"])
+        // First attempt: no nonce (expected to fail with use_dpop_nonce)
+        val firstResponse = send(nonce = null, clientAuthKid = null)
+
+        if (firstResponse.status == HTTP_OK && firstResponse.isFromAuthorizationServer()) {
+            val body = json.decodeFromString(ParResponse.serializer(), firstResponse.body)
+            return ParResult(
+                requestUri = body.request_uri,
+                dpopNonce = firstResponse.dpopNonce,
+                clientAuthKid = firstResponse.clientAuthKid,
+            )
+        }
+        if (!firstResponse.isFromAuthorizationServer()) {
+            throw OAuthException("PAR was not answered by the authorization server (HTTP ${firstResponse.status}): ${firstResponse.body}")
         }
 
         // Expected: 401 with use_dpop_nonce. Also calibrate the clock
         // from the server's Date header to fix iat drift on devices
         // whose clock is off.
-        signer.calibrateClockFromHeader(firstResponse.headers["Date"])
+        signer.calibrateClockFromHeader(firstResponse.serverDate)
 
-        val nonce = firstResponse.headers["DPoP-Nonce"]
+        val nonce = firstResponse.dpopNonce
             ?: throw OAuthException("PAR failed (${firstResponse.status}) and no DPoP-Nonce header in response")
 
-        // Retry with nonce + calibrated clock
-        val retryProof = signer.sign(method = "POST", url = metadata.parEndpoint, nonce = nonce)
-        val retryResponse = httpClient.submitForm(
-            url = metadata.parEndpoint,
-            formParameters = parParams(codeChallenge, state, redirectUri, loginHint, prompt),
-        ) {
-            header("DPoP", retryProof)
+        // Retry with nonce + calibrated clock. A relay names the key it signed
+        // the first attempt with; the retry asks for the same one, so the two
+        // attempts cannot straddle a change of the relay's default key.
+        val retryResponse = send(nonce = nonce, clientAuthKid = firstResponse.clientAuthKid)
+
+        if (!retryResponse.isFromAuthorizationServer() || (retryResponse.status != HTTP_OK && retryResponse.status != HTTP_CREATED)) {
+            throw OAuthException("PAR retry failed with HTTP ${retryResponse.status}: ${retryResponse.body}")
         }
 
-        if (retryResponse.status != HttpStatusCode.OK && retryResponse.status != HttpStatusCode.Created) {
-            throw OAuthException("PAR retry failed with HTTP ${retryResponse.status}: ${retryResponse.bodyAsText()}")
-        }
-
-        val body = json.decodeFromString(ParResponse.serializer(), retryResponse.bodyAsText())
+        val body = json.decodeFromString(ParResponse.serializer(), retryResponse.body)
         // Prefer the nonce echoed on the successful retry; the `?: nonce`
         // fallback is defense-in-depth — atproto auth servers echo DPoP-Nonce
         // on every response per the spec, so it should be unreachable.
         return ParResult(
             requestUri = body.request_uri,
-            dpopNonce = retryResponse.headers["DPoP-Nonce"] ?: nonce,
+            dpopNonce = retryResponse.dpopNonce ?: nonce,
+            clientAuthKid = retryResponse.clientAuthKid ?: firstResponse.clientAuthKid,
         )
     }
 
@@ -508,16 +559,16 @@ class AtOAuth(
         redirectUri: String,
         loginHint: String?,
         prompt: String?,
-    ): Parameters = Parameters.build {
-        append("client_id", clientMetadataUrl)
-        append("response_type", "code")
-        append("redirect_uri", redirectUri)
-        append("scope", scope)
-        append("state", state)
-        append("code_challenge", codeChallenge)
-        append("code_challenge_method", "S256")
-        if (loginHint != null) append("login_hint", loginHint)
-        if (prompt != null) append("prompt", prompt)
+    ): Map<String, String> = buildMap {
+        put("client_id", clientMetadataUrl)
+        put("response_type", "code")
+        put("redirect_uri", redirectUri)
+        put("scope", scope)
+        put("state", state)
+        put("code_challenge", codeChallenge)
+        put("code_challenge_method", "S256")
+        if (loginHint != null) put("login_hint", loginHint)
+        if (prompt != null) put("prompt", prompt)
     }
 
     private suspend fun exchangeCode(
@@ -527,61 +578,72 @@ class AtOAuth(
         codeVerifier: String,
         redirectUri: String,
         initialNonce: String?,
-    ): TokenResponse {
+        clientAuthKid: String?,
+    ): CodeExchangeResult {
+        val form = mapOf(
+            "grant_type" to "authorization_code",
+            "code" to code,
+            "code_verifier" to codeVerifier,
+            "redirect_uri" to redirectUri,
+            "client_id" to clientMetadataUrl,
+        )
+        suspend fun send(nonce: String?): TokenEndpointResponse = transport.send(
+            TokenEndpointRequest(
+                kind = TokenEndpointRequestKind.CodeExchange,
+                endpointUrl = metadata.tokenEndpoint,
+                issuer = metadata.issuer,
+                formParameters = form,
+                dpopProof = signer.sign(method = "POST", url = metadata.tokenEndpoint, nonce = nonce),
+                // The server binds the pushed request to the key that signed
+                // it, so the exchange must name that same key.
+                clientAuthKid = clientAuthKid,
+            ),
+        )
+        fun TokenEndpointResponse.toResult() = CodeExchangeResult(
+            tokens = json.decodeFromString(TokenResponse.serializer(), body),
+            clientAuthKid = this.clientAuthKid ?: clientAuthKid,
+            clientAuthMethod = clientAuthMethod,
+        )
+
         // The authorization code is single-use: bsky.social's auth server
         // consumes it even when it rejects the request for use_dpop_nonce.
         // Sign the first proof with the nonce we captured from PAR so the
         // first attempt succeeds; the retry below still covers the rare
         // case where the nonce has rotated since PAR.
-        val proof = signer.sign(method = "POST", url = metadata.tokenEndpoint, nonce = initialNonce)
-        val response = tokenHttpClient.submitForm(
-            url = metadata.tokenEndpoint,
-            formParameters = Parameters.build {
-                append("grant_type", "authorization_code")
-                append("code", code)
-                append("code_verifier", codeVerifier)
-                append("redirect_uri", redirectUri)
-                append("client_id", clientMetadataUrl)
-            },
-        ) {
-            header("DPoP", proof)
+        val response = send(initialNonce)
+
+        // Only the authorization server issues tokens or nonce challenges. An
+        // answer produced by anything in between is a failed login, whatever
+        // its status says.
+        if (!response.isFromAuthorizationServer()) {
+            throw OAuthException("Token exchange was not answered by the authorization server (HTTP ${response.status}): ${response.body}")
         }
 
         // Token endpoint returns 400 (not 401) for use_dpop_nonce.
         // Also handle 401 defensively in case the server behavior changes.
-        val needsNonce = response.status == HttpStatusCode.BadRequest ||
-            response.status == HttpStatusCode.Unauthorized
-        if (needsNonce) {
-            val nonce = response.headers["DPoP-Nonce"]
+        if (response.isNonceChallengeStatus()) {
+            val nonce = response.dpopNonce
             if (nonce != null) {
-                signer.calibrateClockFromHeader(response.headers["Date"])
-                val retryProof = signer.sign(method = "POST", url = metadata.tokenEndpoint, nonce = nonce)
-                val retryResponse = tokenHttpClient.submitForm(
-                    url = metadata.tokenEndpoint,
-                    formParameters = Parameters.build {
-                        append("grant_type", "authorization_code")
-                        append("code", code)
-                        append("code_verifier", codeVerifier)
-                        append("redirect_uri", redirectUri)
-                        append("client_id", clientMetadataUrl)
-                    },
-                ) {
-                    header("DPoP", retryProof)
-                }
-                if (retryResponse.status != HttpStatusCode.OK) {
+                signer.calibrateClockFromHeader(response.serverDate)
+                val retryResponse = send(nonce)
+                if (!retryResponse.isFromAuthorizationServer() || retryResponse.status != HTTP_OK) {
                     throw OAuthException("Token exchange retry failed: HTTP ${retryResponse.status}")
                 }
-                return json.decodeFromString(TokenResponse.serializer(), retryResponse.bodyAsText())
+                return retryResponse.toResult()
             }
-            throw OAuthException("Token exchange failed: HTTP ${response.status} without DPoP-Nonce: ${response.bodyAsText()}")
+            throw OAuthException("Token exchange failed: HTTP ${response.status} without DPoP-Nonce: ${response.body}")
         }
 
-        if (response.status != HttpStatusCode.OK) {
-            throw OAuthException("Token exchange failed: HTTP ${response.status}: ${response.bodyAsText()}")
+        if (response.status != HTTP_OK) {
+            throw OAuthException("Token exchange failed: HTTP ${response.status}: ${response.body}")
         }
 
-        return json.decodeFromString(TokenResponse.serializer(), response.bodyAsText())
+        return response.toResult()
     }
+
+    private fun TokenEndpointResponse.isFromAuthorizationServer(): Boolean = origin == TokenEndpointResponseOrigin.AuthorizationServer
+
+    private fun TokenEndpointResponse.isNonceChallengeStatus(): Boolean = status == HTTP_BAD_REQUEST || status == HTTP_UNAUTHORIZED
 
     @OptIn(ExperimentalEncodingApi::class)
     private fun generateState(): String {
@@ -633,6 +695,7 @@ class AtOAuth(
         flowOrigin = FlowOrigin.entries.firstOrNull { it.name == flowOrigin }
             ?: throw OAuthException("Unrecognized pending-login flow origin '$flowOrigin' — start the login again"),
         authServerNonce = authServerNonce,
+        clientAuthKid = clientAuthKid,
     )
 
     companion object {
@@ -657,13 +720,26 @@ class AtOAuth(
         val redirectUri: String,
         val flowOrigin: FlowOrigin,
         val authServerNonce: String?,
+        val clientAuthKid: String?,
     )
 
     private data class ParResult(
         val requestUri: String,
         val dpopNonce: String?,
+        val clientAuthKid: String?,
+    )
+
+    private class CodeExchangeResult(
+        val tokens: TokenResponse,
+        val clientAuthKid: String?,
+        val clientAuthMethod: String?,
     )
 }
+
+private const val HTTP_OK = 200
+private const val HTTP_CREATED = 201
+private const val HTTP_BAD_REQUEST = 400
+private const val HTTP_UNAUTHORIZED = 401
 
 @kotlinx.serialization.Serializable
 internal data class ParResponse(
