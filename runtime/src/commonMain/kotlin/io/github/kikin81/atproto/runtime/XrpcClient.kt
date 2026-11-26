@@ -55,16 +55,19 @@ public class XrpcClient(
         proxy: String? = null,
     ): R {
         val provider = auth ?: authProvider
+        var sentAuthHeaders = emptyMap<String, String>()
         val response = httpClient.get("$baseUrl/xrpc/$nsid") {
             appendQueryParams(params, paramsSerializer)
-            applyAuth(provider)
+            sentAuthHeaders = applyAuth(provider)
             applyProxy(proxy)
         }
-        // DPoP nonce retry: if 401 + DPoP-Nonce, let the auth provider
-        // update its nonce and retry once.
+        // On a 401 the auth provider gets one chance to recover (a new DPoP
+        // nonce, a token refresh) before a single retry. It is told what auth
+        // this request carried: by now the provider may hold newer credentials
+        // than the ones the server rejected.
         if (response.status == HttpStatusCode.Unauthorized) {
             val headers = response.headers.entries().associate { it.key to it.value.first() }
-            if (provider.onUnauthorized(headers)) {
+            if (provider.onUnauthorized(headers, sentAuthHeaders)) {
                 val retry = httpClient.get("$baseUrl/xrpc/$nsid") {
                     appendQueryParams(params, paramsSerializer)
                     applyAuth(provider)
@@ -166,15 +169,16 @@ public class XrpcClient(
         body: HttpRequestBuilder.() -> Unit,
     ): R {
         val provider = auth ?: authProvider
+        var sentAuthHeaders = emptyMap<String, String>()
         val response = httpClient.post("$baseUrl/xrpc/$nsid") {
             appendQueryParams(params, paramsSerializer)
-            applyAuth(provider)
+            sentAuthHeaders = applyAuth(provider)
             applyProxy(proxy)
             body()
         }
         if (response.status == HttpStatusCode.Unauthorized) {
             val headers = response.headers.entries().associate { it.key to it.value.first() }
-            if (provider.onUnauthorized(headers)) {
+            if (provider.onUnauthorized(headers, sentAuthHeaders)) {
                 val retry = httpClient.post("$baseUrl/xrpc/$nsid") {
                     appendQueryParams(params, paramsSerializer)
                     applyAuth(provider)
@@ -223,7 +227,8 @@ public class XrpcClient(
         }
     }
 
-    private suspend fun HttpRequestBuilder.applyAuth(provider: AuthProvider) {
+    /** Attaches the provider's auth headers and returns them, for [AuthProvider.onUnauthorized]. */
+    private suspend fun HttpRequestBuilder.applyAuth(provider: AuthProvider): Map<String, String> {
         // Build the target URL without query string for the DPoP `htu` claim.
         // Per the DPoP spec, `htu` is scheme + host + path (no query/fragment).
         val targetUrl = url.buildString().substringBefore('?')
@@ -231,6 +236,7 @@ public class XrpcClient(
         for ((name, value) in headers) {
             header(name, value)
         }
+        return headers
     }
 
     private fun HttpRequestBuilder.applyProxy(proxy: String?) {
