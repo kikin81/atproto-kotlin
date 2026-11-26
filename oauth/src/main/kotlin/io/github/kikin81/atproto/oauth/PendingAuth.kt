@@ -50,6 +50,12 @@ data class PendingAuth(
     val handle: String? = null,
     val promptValuesSupported: List<String> = emptyList(),
     val createdAtEpochMillis: Long = 0,
+    /**
+     * The id of the client signing key the pushed authorization request was
+     * signed with, when a [TokenEndpointTransport] reported one. The code
+     * exchange must name the same key.
+     */
+    val clientAuthKid: String? = null,
 ) {
     // Full structural equality, with contentEquals for the ByteArray fields
     // (the generated equals would compare those by reference).
@@ -78,7 +84,8 @@ data class PendingAuth(
             did == other.did &&
             handle == other.handle &&
             promptValuesSupported == other.promptValuesSupported &&
-            createdAtEpochMillis == other.createdAtEpochMillis
+            createdAtEpochMillis == other.createdAtEpochMillis &&
+            clientAuthKid == other.clientAuthKid
     }
 
     override fun hashCode(): Int {
@@ -99,6 +106,7 @@ data class PendingAuth(
         result = 31 * result + (handle?.hashCode() ?: 0)
         result = 31 * result + promptValuesSupported.hashCode()
         result = 31 * result + createdAtEpochMillis.hashCode()
+        result = 31 * result + (clientAuthKid?.hashCode() ?: 0)
         return result
     }
 }

@@ -20,6 +20,11 @@ generation and signing so no external JWT library is pulled in.
   carrying the DPoP private key + tokens, plus a `SessionStore` interface
   for persistence. Consumer apps implement `SessionStore` (typically
   backed by `EncryptedSharedPreferences` on Android).
+- **`TokenEndpointTransport`** — how the pushed authorization request,
+  code exchange, refresh and revocation reach the authorization server.
+  `DirectTokenEndpointTransport` (the default) posts to it directly, as a
+  public client does. Supply your own to send them through a backend
+  that adds a client assertion, making the client confidential.
 - **`DpopSigner`** — EC P-256 DPoP JWT signer built on `java.security`.
   Calibrates its clock against the server's `Date` header to prevent
   `iat` rejection on devices with clock drift.

@@ -189,6 +189,92 @@ adb shell am kill your.package.name
 # then let the redirect come back
 ```
 
+## Confidential clients: a token-mediating backend
+
+By default this module is a *public* client: it posts the pushed authorization
+request, the code exchange, the refresh and the revocation straight to the
+authorization server, and the server gives the session a public client's
+lifetime (two weeks on the reference implementation).
+
+A *confidential* client authenticates those four requests with a signing key
+(`private_key_jwt`) and gets a much longer session. An app cannot hold that
+key, so the requests go through a backend you run that adds the client
+assertion and relays the server's answer. Supply a `TokenEndpointTransport` to
+route them there. Discovery and every XRPC call still go direct.
+
+```kotlin
+class MediatedTransport(
+    private val backendUrl: String,
+    private val httpClient: HttpClient,
+) : TokenEndpointTransport {
+
+    // Ask the SDK to remember a refresh whose outcome is unknown, so a lost
+    // response is never followed by a retry over a different route.
+    override val tracksRefreshOutcome: Boolean = true
+
+    override suspend fun send(request: TokenEndpointRequest): TokenEndpointResponse {
+        val path = when (request.kind) {
+            TokenEndpointRequestKind.PushedAuthorization -> "par"
+            TokenEndpointRequestKind.CodeExchange, TokenEndpointRequestKind.Refresh -> "token"
+            TokenEndpointRequestKind.Revoke -> "revoke"
+        }
+        val response = httpClient.submitForm(
+            url = "$backendUrl/$path",
+            formParameters = Parameters.build {
+                request.formParameters.forEach { (name, value) -> append(name, value) }
+            },
+        ) {
+            header("DPoP", request.dpopProof) // made for the server's endpoint; forward unchanged
+            header("X-Issuer", request.issuer) // the backend looks the endpoint up itself
+            request.clientAuthKid?.let { header("X-Client-Auth-Kid", it) }
+        }
+        val relayed = response.headers["X-Origin"] == "upstream"
+        return TokenEndpointResponse(
+            status = response.status.value,
+            body = response.bodyAsText(),
+            dpopNonce = response.headers["DPoP-Nonce"],
+            serverDate = response.headers["X-Upstream-Date"],
+            origin = if (relayed) {
+                TokenEndpointResponseOrigin.AuthorizationServer
+            } else {
+                TokenEndpointResponseOrigin.Mediator
+            },
+            clientAuthKid = response.headers["X-Client-Auth-Kid"],
+            clientAuthMethod = response.headers["X-Client-Auth-Method"],
+        )
+    }
+}
+
+val oauth = AtOAuth(
+    clientMetadataUrl = "https://example.com/oauth/client-metadata.json",
+    redirectUri = "https://example.com/oauth-redirect",
+    sessionStore = sessionStore,
+    httpClient = httpClient,
+    tokenTransport = MediatedTransport("https://auth.example.com", tokenHttpClient),
+)
+```
+
+The header names are yours to choose; the wire format between your app and
+your backend is not part of this library. What the library relies on:
+
+- **Say who answered.** Mark a response `AuthorizationServer` only when your
+  backend relayed the server's own status and body. Anything the backend
+  produced itself is `Mediator`. Only an authorization-server `invalid_grant`
+  ends a session, so a backend error or outage can never sign a user out.
+- **Report the key.** The authorization server binds a session to the key that
+  signed for it and deletes the session if another key is used. The library
+  stores the key id your backend reports (once the client is confidential) in
+  `OAuthSession.clientAuthKid` and sends it back on every request. A backend
+  that no longer holds a named key must refuse, not substitute.
+- **Throw `TokenRequestNotSentException`** when a request provably never left.
+  Any other failure is treated as an unknown outcome.
+- **Use a client that never re-sends** for the code exchange and the refresh,
+  exactly as for `tokenHttpClient`.
+
+A confidential client's metadata must declare `"application_type": "web"`,
+`"token_endpoint_auth_method": "private_key_jwt"`, a signing algorithm and its
+public keys, and may only list `https` redirect URIs.
+
 ## Security considerations
 
 - **DPoP (RFC 9449)**: Every request carries a proof-of-possession JWT signed
@@ -213,6 +299,7 @@ oauth/src/main/kotlin/io/github/kikin81/atproto/oauth/
 ├── DpopSigner.kt           # EC P-256 DPoP JWT signer (java.security, no Nimbus)
 ├── DpopAuthProvider.kt     # AuthProvider impl: DPoP headers + transparent refresh
 ├── OAuthSession.kt         # Serializable session + OAuthSessionStore interface
+├── TokenEndpointTransport.kt # How PAR, token and revoke requests reach the server (direct by default)
 ├── Pkce.kt                 # PKCE S256 verifier + challenge generation
 └── OAuthExceptions.kt      # OAuthException, OAuthSessionExpiredException, etc.
 ```
