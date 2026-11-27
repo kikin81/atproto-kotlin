@@ -67,6 +67,7 @@ public final class io/github/kikin81/atproto/oauth/DpopAuthProvider : io/github/
 	public fun <init> (Lio/github/kikin81/atproto/oauth/OAuthSession;Lio/github/kikin81/atproto/oauth/DpopSigner;Lio/github/kikin81/atproto/oauth/OAuthSessionStore;Lio/ktor/client/HttpClient;Lkotlinx/serialization/json/Json;Lkotlin/jvm/functions/Function1;)V
 	public synthetic fun <init> (Lio/github/kikin81/atproto/oauth/OAuthSession;Lio/github/kikin81/atproto/oauth/DpopSigner;Lio/github/kikin81/atproto/oauth/OAuthSessionStore;Lio/ktor/client/HttpClient;Lkotlinx/serialization/json/Json;Lkotlin/jvm/functions/Function1;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun authHeaders (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun onUnauthorized (Ljava/util/Map;Ljava/util/Map;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun onUnauthorized (Ljava/util/Map;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 

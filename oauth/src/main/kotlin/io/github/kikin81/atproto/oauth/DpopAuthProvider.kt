@@ -35,6 +35,9 @@ import kotlin.io.encoding.ExperimentalEncodingApi
  *   endpoint with the DPoP-bound refresh token, retries. Any other 401 does
  *   not refresh: every rotation spends a single-use token, and a rotation
  *   whose response is lost ends the session on the next replay
+ * - If the request was sent with an access token the session has since
+ *   replaced (a refresh finished while it was in flight) → retries with the
+ *   current token and does not refresh again
  * - If the refresh token is revoked (`error=invalid_grant`) → clears the
  *   session, throws [OAuthSessionExpiredException]
  * - Otherwise (network error, 5xx/429, unparseable/captive-portal body, or any
@@ -154,6 +157,13 @@ class DpopAuthProvider(
     }
 
     /**
+     * A 401 reported without the headers its request carried. The token that
+     * was rejected is then unknown and taken to be the session's current one.
+     * [XrpcClient] calls the two-argument overload; prefer it.
+     */
+    override suspend fun onUnauthorized(responseHeaders: Map<String, String>): Boolean = onUnauthorized(responseHeaders, emptyMap())
+
+    /**
      * Called by [XrpcClient] on HTTP 401. Recovers every recoverable cause in
      * one call so the single retry that [XrpcClient] performs always carries
      * fresh state. Control flow:
@@ -161,26 +171,44 @@ class DpopAuthProvider(
      * 1. If the server rotated `DPoP-Nonce`, store and persist it eagerly.
      *    Persisting before any refresh attempt means a refresh that throws
      *    (e.g. transient network failure) won't lose the rotated nonce.
-     * 2. Refresh if the token is provably dead: a JWT whose `exp` is past
-     *    (or within a small skew window), or an explicit
+     * 2. Refresh if the session's current token is a JWT whose `exp` is past
+     *    (or within a small skew window).
+     * 3. If the request was sent with an access token the session no longer
+     *    holds, a refresh finished while it was in flight. The 401 is about
+     *    the old token: return `true` so the request is re-sent with the
+     *    current one, and keep the refresh token unspent.
+     * 4. Refresh on an explicit
      *    `WWW-Authenticate: ... error="invalid_token"` challenge.
-     * 3. If only the nonce was recoverable (new nonce already persisted in
+     * 5. If only the nonce was recoverable (new nonce already persisted in
      *    step 1), return `true`.
      *    Also return `true` for a `use_dpop_nonce` challenge whose nonce is
      *    unchanged: a concurrent request stored it first, and this one was
      *    still sent with the stale nonce.
-     * 4. With no challenge header and an opaque token there is no evidence
+     * 6. With no challenge header and an opaque token there is no evidence
      *    either way, so refresh, as before. Any other challenge
      *    (`use_dpop_nonce` without a nonce, a rejected proof, scope),
      *    or a bare 401 against a JWT that has not expired, says nothing
      *    about the token: return `false` and keep the refresh token unspent.
+     *
+     * @param requestAuthHeaders What [authHeaders] returned for the rejected
+     *   request. When it carries no `Authorization: DPoP <token>`, the
+     *   rejected token is taken to be the session's current one.
      */
-    override suspend fun onUnauthorized(responseHeaders: Map<String, String>): Boolean {
+    override suspend fun onUnauthorized(
+        responseHeaders: Map<String, String>,
+        requestAuthHeaders: Map<String, String>,
+    ): Boolean {
         // Snapshot the tokens this 401 was (at the latest) issued against,
         // before any suspension below — the single-flight check compares
         // against them to detect a rotation that lands while this call waits.
         val observedAccessToken = session.accessToken
         val observedRefreshToken = session.refreshToken
+
+        // The snapshot only catches a rotation that lands from here on. One
+        // that finished while the request was in flight is already in it, so
+        // that case needs the token the request actually carried.
+        val rejectedAccessToken = requestAuthHeaders.header("Authorization")?.dpopAccessToken()
+        val rotatedSinceRequestWasSent = rejectedAccessToken != null && rejectedAccessToken != observedAccessToken
 
         val newNonce = responseHeaders.header("DPoP-Nonce")
         val dateHeader = responseHeaders.header("Date")
@@ -193,7 +221,17 @@ class DpopAuthProvider(
             persistNonces()
         }
 
-        if (isAccessTokenExpired() || challenge?.hasChallengeError(INVALID_TOKEN) == true) {
+        // Expiry is read from the token the session holds now, so it is a
+        // reason to refresh whichever token this request carried.
+        if (isAccessTokenExpired()) {
+            return refreshTokensSingleFlight(observedAccessToken, observedRefreshToken)
+        }
+
+        // Every rotation spends the single-use refresh token, and the one this
+        // 401 could ask for has already happened.
+        if (rotatedSinceRequestWasSent) return true
+
+        if (challenge?.hasChallengeError(INVALID_TOKEN) == true) {
             return refreshTokensSingleFlight(observedAccessToken, observedRefreshToken)
         }
 
@@ -212,6 +250,17 @@ class DpopAuthProvider(
     }
 
     private fun Map<String, String>.header(name: String): String? = entries.firstOrNull { it.key.equals(name, ignoreCase = true) }?.value
+
+    /**
+     * The token of an `Authorization: DPoP <token>` value, as [authHeaders]
+     * writes it. `null` for any other scheme or an empty token, so a header
+     * this provider did not produce is never read as a replaced token.
+     */
+    private fun String.dpopAccessToken(): String? {
+        val scheme = substringBefore(' ')
+        val token = substringAfter(' ', missingDelimiterValue = "").trim()
+        return token.takeIf { scheme.equals(DPOP_SCHEME, ignoreCase = true) && it.isNotEmpty() }
+    }
 
     /**
      * Whether any challenge in a `WWW-Authenticate` value carries this `error`
@@ -610,6 +659,7 @@ class DpopAuthProvider(
 private const val INVALID_GRANT = "invalid_grant"
 private const val INVALID_TOKEN = "invalid_token"
 private const val USE_DPOP_NONCE = "use_dpop_nonce"
+private const val DPOP_SCHEME = "DPoP"
 private const val HTTP_OK = 200
 private const val HTTP_BAD_REQUEST = 400
 private const val HTTP_UNAUTHORIZED = 401
