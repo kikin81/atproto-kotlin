@@ -278,6 +278,71 @@ class XrpcClientTest {
     }
 
     @Test
+    fun query_tells_the_provider_which_auth_headers_the_rejected_request_carried() = runTest {
+        // The provider's token changes while the request is in flight, as it
+        // does when another request refreshes it. The 401 is about the token
+        // the request was sent with, and that is what the provider must see.
+        val auth = RotatingAuth(initial = "sent-token")
+        var calls = 0
+        val (client, engine) = makeClient(auth = auth) {
+            calls++
+            if (calls == 1) {
+                auth.token = "rotated-token"
+                respond(ByteReadChannel("""{"error":"ExpiredToken"}"""), HttpStatusCode.Unauthorized, jsonHeaders)
+            } else {
+                ok("""{"feed":[]}""")
+            }
+        }
+
+        client.query(
+            nsid = "app.bsky.feed.getTimeline",
+            params = TimelineParams(),
+            paramsSerializer = TimelineParams.serializer(),
+            responseSerializer = TimelineResponse.serializer(),
+        )
+
+        assertEquals(listOf(mapOf("Authorization" to "Bearer sent-token")), auth.rejectedAuthHeaders)
+        assertEquals("Bearer rotated-token", engine.requestHistory[1].headers[HttpHeaders.Authorization])
+    }
+
+    @Test
+    fun procedure_tells_the_provider_which_auth_headers_the_rejected_request_carried() = runTest {
+        val auth = RotatingAuth(initial = "sent-token")
+        var calls = 0
+        val (client, engine) = makeClient(auth = auth) {
+            calls++
+            if (calls == 1) {
+                auth.token = "rotated-token"
+                respond(ByteReadChannel("""{"error":"ExpiredToken"}"""), HttpStatusCode.Unauthorized, jsonHeaders)
+            } else {
+                ok("{}")
+            }
+        }
+
+        client.procedure(
+            nsid = "com.atproto.server.deleteSession",
+            params = Unit,
+            paramsSerializer = Unit.serializer(),
+            responseSerializer = Unit.serializer(),
+        )
+
+        assertEquals(listOf(mapOf("Authorization" to "Bearer sent-token")), auth.rejectedAuthHeaders)
+        assertEquals("Bearer rotated-token", engine.requestHistory[1].headers[HttpHeaders.Authorization])
+    }
+
+    @Test
+    fun a_provider_overriding_only_the_one_argument_onUnauthorized_is_still_asked() = runTest {
+        // Providers written before the two-argument overload existed keep
+        // working: its default hands the 401 to the overload they override.
+        val auth = RefreshingAuth(initial = "stale-token", refreshed = "fresh-token")
+
+        val retry = auth.onUnauthorized(emptyMap(), mapOf("Authorization" to "Bearer stale-token"))
+
+        assertTrue(retry)
+        assertEquals(mapOf("Authorization" to "Bearer fresh-token"), auth.authHeaders("GET", "https://bsky.social/xrpc/x"))
+    }
+
+    @Test
     fun raw_bytes_procedure_maps_typed_error() = runTest {
         val mapper = XrpcErrorMapper { name, message, status ->
             when (name) {
@@ -532,6 +597,20 @@ class XrpcClientTest {
 private class AuthMissing(message: String?, status: Int) : XrpcError("AuthMissing", message, status)
 
 private class InvalidBlobSize(message: String?, status: Int) : XrpcError("InvalidBlobSize", message, status)
+
+/** Records the request auth headers each 401 was reported with, and always asks for a retry. */
+private class RotatingAuth(initial: String) : AuthProvider {
+    var token: String = initial
+    val rejectedAuthHeaders = mutableListOf<Map<String, String>>()
+    override suspend fun authHeaders(method: String, url: String): Map<String, String> = mapOf("Authorization" to "Bearer $token")
+    override suspend fun onUnauthorized(
+        responseHeaders: Map<String, String>,
+        requestAuthHeaders: Map<String, String>,
+    ): Boolean {
+        rejectedAuthHeaders += requestAuthHeaders
+        return true
+    }
+}
 
 private class RefreshingAuth(initial: String, private val refreshed: String) : AuthProvider {
     private var token: String = initial

@@ -49,6 +49,34 @@ public interface AuthProvider {
      *   should be retried with fresh [authHeaders], `false` otherwise.
      */
     public suspend fun onUnauthorized(responseHeaders: Map<String, String>): Boolean = false
+
+    /**
+     * Called by [XrpcClient] when a request returns HTTP 401, together with
+     * the auth headers that request was sent with. This is the overload
+     * [XrpcClient] calls.
+     *
+     * A 401 can arrive after the provider's credentials have changed: another
+     * request may have refreshed them while this one was in flight. What the
+     * provider holds when the 401 arrives is then not what the server
+     * rejected. [requestAuthHeaders] is, so a provider whose refresh spends a
+     * single-use credential should compare against it before refreshing again.
+     *
+     * The default ignores [requestAuthHeaders] and delegates to the
+     * one-argument overload, so an implementation that only overrides that one
+     * behaves as before. The exception is a provider that wraps another with
+     * `by` delegation: delegation forwards this overload straight to the
+     * wrapped provider, so a wrapper that intercepts 401s must override it too.
+     *
+     * @param responseHeaders The headers of the 401 response.
+     * @param requestAuthHeaders What [authHeaders] returned for the rejected
+     *   request.
+     * @return `true` if the request should be retried with fresh
+     *   [authHeaders], `false` otherwise.
+     */
+    public suspend fun onUnauthorized(
+        responseHeaders: Map<String, String>,
+        requestAuthHeaders: Map<String, String>,
+    ): Boolean = onUnauthorized(responseHeaders)
 }
 
 /** No authentication — requests are sent without auth headers. */

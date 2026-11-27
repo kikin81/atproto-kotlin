@@ -11,7 +11,9 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
@@ -959,6 +961,181 @@ class DpopAuthProviderTest {
         assertEquals(listOf(true, true), listOf(a.await(), b.await()))
         assertEquals(1, tokenCalls, "the second provider must adopt the rotation, not replay the token")
         assertEquals("rt_new", store.session?.refreshToken)
+    }
+
+    private val timelineUrl = "https://pds.test/xrpc/app.bsky.feed.getTimeline"
+
+    private val invalidTokenChallenge = mapOf("WWW-Authenticate" to """DPoP error="invalid_token", error_description="Invalid token"""")
+
+    /**
+     * A token endpoint that issues a new pair on every call (`rt_1`, `rt_2`, …),
+     * so a second rotation is visible in the tokens as well as in [calls].
+     * MockEngine answers on its own threads, hence the atomic counter. Each
+     * answer is held until [release] completes; [inFlight] completes once a
+     * request has arrived.
+     */
+    private fun rotatingRefreshClient(
+        calls: AtomicInteger,
+        accessToken: (Int) -> String = { "at_$it" },
+        inFlight: CompletableDeferred<Unit> = CompletableDeferred(),
+        release: CompletableDeferred<Unit> = CompletableDeferred(Unit),
+    ): HttpClient = HttpClient(
+        MockEngine { _ ->
+            val call = calls.incrementAndGet()
+            inFlight.complete(Unit)
+            release.await()
+            respond(
+                ByteReadChannel("""{"access_token":"${accessToken(call)}","refresh_token":"rt_$call","token_type":"DPoP"}"""),
+                HttpStatusCode.OK,
+                jsonHeaders,
+            )
+        },
+    )
+
+    /**
+     * The sequence seen on a device: a request leaves with the old access
+     * token while a refresh is in flight, and its `401 invalid_token` comes
+     * back after that refresh has finished. The provider used to compare
+     * against the token it held when the 401 arrived (already the new one),
+     * conclude nothing had rotated, and spend the refresh token a second time.
+     */
+    private suspend fun TestScope.assertALate401RetriesWithoutRefreshingAgain(
+        initialAccessToken: String,
+        issuedAccessToken: (Int) -> String,
+    ) {
+        val tokenCalls = AtomicInteger()
+        val refreshInFlight = CompletableDeferred<Unit>()
+        val releaseRefresh = CompletableDeferred<Unit>()
+        val refreshClient = rotatingRefreshClient(tokenCalls, issuedAccessToken, refreshInFlight, releaseRefresh)
+        val (provider, store) = fixtureWithAccessToken(initialAccessToken, refreshClient)
+
+        val firstRequest = provider.authHeaders("GET", timelineUrl)
+        val refresh = async { provider.onUnauthorized(invalidTokenChallenge, firstRequest) }
+        refreshInFlight.await()
+        val sentDuringTheRefresh = provider.authHeaders("GET", timelineUrl)
+        assertEquals("DPoP $initialAccessToken", sentDuringTheRefresh["Authorization"], "precondition: it left with the old token")
+        releaseRefresh.complete(Unit)
+        assertTrue(refresh.await(), "precondition: the first 401 rotates the tokens")
+
+        val retry = provider.onUnauthorized(invalidTokenChallenge, sentDuringTheRefresh)
+
+        assertTrue(retry, "the request must be re-sent with the token the session now holds")
+        assertEquals(1, tokenCalls.get(), "a 401 for a token the session already replaced must not rotate again")
+        assertEquals("DPoP ${issuedAccessToken(1)}", provider.authHeaders("GET", timelineUrl)["Authorization"])
+        assertEquals("rt_1", store.session?.refreshToken)
+    }
+
+    @Test
+    fun aLate401ForAnOpaqueTokenTheSessionAlreadyReplacedRetriesWithoutRefreshingAgain() = runTest {
+        assertALate401RetriesWithoutRefreshingAgain(initialAccessToken = "opaque-at-old", issuedAccessToken = { "at_$it" })
+    }
+
+    @Test
+    fun aLate401ForAnExpiredJwtTheSessionAlreadyReplacedRetriesWithoutRefreshingAgain() = runTest {
+        // After the rotation the session's JWT is no longer expired, so only
+        // the invalid_token challenge could ask for the second refresh.
+        val now = System.currentTimeMillis() / 1000
+        assertALate401RetriesWithoutRefreshingAgain(
+            initialAccessToken = makeJwtWithExp(now - 3600),
+            issuedAccessToken = { makeJwtWithExp(now + 3600 + it) },
+        )
+    }
+
+    @Test
+    fun anInvalidTokenChallengeForTheCurrentTokenRefreshesEveryTime() = runTest {
+        // The other side of the late-401 rule: when the rejected token IS the
+        // one the session holds, the refresh is legitimate, including the
+        // next time that token is rejected in turn.
+        val tokenCalls = AtomicInteger()
+        val (provider, store) = fixtureWithAccessToken("opaque-at-old", rotatingRefreshClient(tokenCalls))
+
+        val sentWithTheOldToken = provider.authHeaders("GET", timelineUrl)
+        assertTrue(provider.onUnauthorized(invalidTokenChallenge, sentWithTheOldToken))
+        assertEquals(1, tokenCalls.get())
+        assertEquals("rt_1", store.session?.refreshToken)
+
+        val sentWithTheFirstRotation = provider.authHeaders("GET", timelineUrl)
+        assertEquals("DPoP at_1", sentWithTheFirstRotation["Authorization"])
+        assertTrue(provider.onUnauthorized(invalidTokenChallenge, sentWithTheFirstRotation))
+        assertEquals(2, tokenCalls.get(), "a rejection of the current token must still refresh")
+        assertEquals("rt_2", store.session?.refreshToken)
+    }
+
+    @Test
+    fun aLate401WithNoChallengeDoesNotRefreshAnOpaqueTokenAgain() = runTest {
+        // An opaque token and no challenge header is "no evidence either way",
+        // which refreshes. Not when the token that was rejected is already gone.
+        val tokenCalls = AtomicInteger()
+        val (provider, _) = fixtureWithAccessToken("opaque-at-old", rotatingRefreshClient(tokenCalls))
+        val sentWithTheOldToken = provider.authHeaders("GET", timelineUrl)
+        assertTrue(provider.onUnauthorized(emptyMap(), sentWithTheOldToken))
+        assertEquals(1, tokenCalls.get(), "precondition: a bare 401 for the current opaque token refreshes")
+
+        assertTrue(provider.onUnauthorized(emptyMap(), sentWithTheOldToken))
+
+        assertEquals(1, tokenCalls.get())
+    }
+
+    @Test
+    fun aLate401StillStoresANewNonceBeforeRetrying() = runTest {
+        val tokenCalls = AtomicInteger()
+        val (provider, store) = fixtureWithAccessToken("opaque-at-old", rotatingRefreshClient(tokenCalls))
+        val sentWithTheOldToken = provider.authHeaders("GET", timelineUrl)
+        assertTrue(provider.onUnauthorized(invalidTokenChallenge, sentWithTheOldToken))
+
+        val retry = provider.onUnauthorized(invalidTokenChallenge + ("DPoP-Nonce" to "fresh-nonce"), sentWithTheOldToken)
+
+        assertTrue(retry)
+        assertEquals(1, tokenCalls.get())
+        assertEquals("fresh-nonce", store.session?.pdsNonce, "the retry needs the nonce this 401 carried")
+        assertEquals("rt_1", store.session?.refreshToken, "persisting the nonce must keep the rotated tokens")
+    }
+
+    @Test
+    fun theRejectedTokenIsReadWhateverTheCaseOfTheHeaderNameAndScheme() = runTest {
+        val tokenCalls = AtomicInteger()
+        val (provider, _) = fixtureWithAccessToken("opaque-at-old", rotatingRefreshClient(tokenCalls))
+        assertTrue(provider.onUnauthorized(invalidTokenChallenge, provider.authHeaders("GET", timelineUrl)))
+
+        assertTrue(provider.onUnauthorized(invalidTokenChallenge, mapOf("authorization" to "dpop opaque-at-old")))
+
+        assertEquals(1, tokenCalls.get())
+    }
+
+    @Test
+    fun anExpiredCurrentTokenIsRefreshedWhateverTokenTheRequestCarried() = runTest {
+        // An expired JWT is evidence about the token the session holds now,
+        // not about the one that was rejected: retrying with it could only
+        // fail again, and XrpcClient retries once.
+        val tokenCalls = AtomicInteger()
+        val (provider, store) = fixtureWithAccessToken(makeJwtWithExp(0), rotatingRefreshClient(tokenCalls))
+
+        val recovered = provider.onUnauthorized(invalidTokenChallenge, mapOf("Authorization" to "DPoP an-even-older-token"))
+
+        assertTrue(recovered)
+        assertEquals(1, tokenCalls.get())
+        assertEquals("rt_1", store.session?.refreshToken)
+    }
+
+    @Test
+    fun a401WhoseRequestTokenCannotBeReadIsJudgedAgainstTheCurrentSession() = runTest {
+        // No request headers (the one-argument overload), no Authorization, a
+        // scheme this provider never sends, or a scheme with no token: none of
+        // them says the session moved on, so the challenge decides, as before.
+        val unreadable = listOf(
+            emptyMap(),
+            mapOf("DPoP" to "proof-only"),
+            mapOf("Authorization" to "Bearer some-other-token"),
+            mapOf("Authorization" to "DPoP"),
+            mapOf("Authorization" to "DPoP "),
+        )
+        for (requestAuthHeaders in unreadable) {
+            val tokenCalls = AtomicInteger()
+            val (provider, _) = fixtureWithAccessToken("opaque-at-old", rotatingRefreshClient(tokenCalls))
+
+            assertTrue(provider.onUnauthorized(invalidTokenChallenge, requestAuthHeaders), "$requestAuthHeaders")
+            assertEquals(1, tokenCalls.get(), "$requestAuthHeaders")
+        }
     }
 
     private fun fixtureWithOpaqueToken(refreshClient: HttpClient): Pair<DpopAuthProvider, InMemorySessionStore> {

@@ -126,16 +126,19 @@ public final class io/github/kikin81/atproto/runtime/AtUriParts {
 
 public abstract interface class io/github/kikin81/atproto/runtime/AuthProvider {
 	public abstract fun authHeaders (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun onUnauthorized (Ljava/util/Map;Ljava/util/Map;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun onUnauthorized (Ljava/util/Map;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class io/github/kikin81/atproto/runtime/AuthProvider$DefaultImpls {
+	public static fun onUnauthorized (Lio/github/kikin81/atproto/runtime/AuthProvider;Ljava/util/Map;Ljava/util/Map;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static fun onUnauthorized (Lio/github/kikin81/atproto/runtime/AuthProvider;Ljava/util/Map;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class io/github/kikin81/atproto/runtime/BearerTokenAuth : io/github/kikin81/atproto/runtime/AuthProvider {
 	public fun <init> (Ljava/lang/String;)V
 	public fun authHeaders (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun onUnauthorized (Ljava/util/Map;Ljava/util/Map;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun onUnauthorized (Ljava/util/Map;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
@@ -353,6 +356,7 @@ public final class io/github/kikin81/atproto/runtime/Language$Companion {
 public final class io/github/kikin81/atproto/runtime/NoAuth : io/github/kikin81/atproto/runtime/AuthProvider {
 	public static final field INSTANCE Lio/github/kikin81/atproto/runtime/NoAuth;
 	public fun authHeaders (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun onUnauthorized (Ljava/util/Map;Ljava/util/Map;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun onUnauthorized (Ljava/util/Map;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
